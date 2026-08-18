@@ -1,0 +1,3119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周子骐 — 游戏系统策划</title>
+<meta name="description" content="周子骐的个人作品集：游戏系统策划。游戏经历、FF14系统拆解、可玩Demo展示。">
+<script>document.documentElement.className = 'js';</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.2.5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.2.5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.2.5/700.css">
+<style>
+/* ============================================================
+   DESIGN TOKENS — 浅色机能档案风（参考明日方舟官网排版语言）
+   ============================================================ */
+:root {
+  --bg: #F7F8F7;
+  --surface: #FFFFFF;
+  --ink: #17191B;
+  --gray-1: #454B4F;
+  --gray-2: #6E7477;
+  --line: #DCDFDD;
+  --accent: #0E7C86;
+  --accent-deep: #09565E;
+  --accent-tint: #E4F1F2;
+  /* 明日方舟官网色系：纯黑框架 + 标志青 */
+  --ak-cyan: #18D1FF;
+  --ak-black: #07090B;
+  --ak-dark: #1D1F20;
+  --font-en-display: "Oswald", "Arial Narrow", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --chamfer: 14px;
+  --max-w: 1120px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::selection { background: var(--accent); color: #fff; }
+
+a { color: var(--accent-deep); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+button { font-family: inherit; cursor: pointer; background: none; border: none; color: inherit; }
+img, video { display: block; max-width: 100%; }
+
+.mono { font-family: var(--font-mono); }
+
+/* 斜切角：右上 + 左下 */
+.chamfer {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer))
+  );
+}
+
+/* 区块标注：ARCHIVE / 01 */
+.tag-index {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--gray-2);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.tag-index::before {
+  content: "";
+  width: 8px; height: 8px;
+  border: 1.5px solid var(--accent);
+  transform: rotate(45deg);
+  flex: none;
+}
+.tag-index .cn {
+  color: var(--accent-deep);
+  letter-spacing: 0.3em;
+  font-weight: 600;
+}
+
+/* ============ 顶部导航（方舟官网式黑条） ============ */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  border-bottom: 1px solid #000;
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.nav-logo {
+  font-family: var(--font-en-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #fff;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.nav-logo b { color: var(--ak-cyan); font-weight: 700; }
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 16px;
+  color: rgba(255,255,255,0.78);
+  position: relative;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+  transition: color 200ms var(--ease-out);
+}
+.nav-tab .en {
+  order: -1;
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.15;
+  text-transform: uppercase;
+  transition: color 200ms var(--ease-out);
+}
+.nav-tab::after {
+  content: "";
+  position: absolute;
+  left: 16px; right: 16px; bottom: 0;
+  height: 2px;
+  background: var(--ak-cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms var(--ease-out);
+}
+.nav-tab:hover { color: #fff; }
+.nav-tab:hover::after { transform: scaleX(0.5); }
+.nav-tab.active { color: #fff; }
+.nav-tab.active .en { color: var(--ak-cyan); }
+.nav-tab.active::after { transform: scaleX(1); }
+
+/* ============ 页签转场遮罩 ============ */
+.wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  visibility: hidden;
+}
+.wipe.active { visibility: visible; }
+.wipe-panel {
+  position: absolute;
+  inset: -10% -25%;
+  background: var(--ink);
+  transform: translateX(-110%) skewX(-8deg);
+}
+.wipe-panel.p2 { background: var(--ak-cyan); }
+.wipe-code {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-en-display);
+  color: #fff;
+  font-size: clamp(18px, 3vw, 28px);
+  letter-spacing: 0.35em;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+/* ============ 页面容器 ============ */
+.page { display: none; }
+.page.current { display: block; }
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+.section { padding: 72px 0 0; position: relative; }
+.section:last-child { padding-bottom: 96px; }
+
+/* 官网式巨号描边背景字（浅底区） */
+.section[data-bgword]::before {
+  content: attr(data-bgword);
+  position: absolute;
+  top: 44px;
+  right: -0.05em;
+  z-index: -1;
+  font-family: var(--font-en-display);
+  font-size: clamp(88px, 13vw, 180px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(23,25,27,0.09);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 区块标题 */
+.section-title {
+  font-size: clamp(30px, 4.2vw, 44px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  margin-bottom: 28px;
+  text-wrap: balance;
+}
+.section-title .sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray-2);
+  letter-spacing: 0.2em;
+  margin-top: 8px;
+}
+
+/* 细分隔线（带十字端点） */
+.rule {
+  border: none;
+  border-top: 1px solid var(--line);
+  position: relative;
+  margin: 56px 0 0;
+}
+.rule::before, .rule::after {
+  content: "+";
+  position: absolute;
+  top: -9px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray-2);
+}
+.rule::before { left: 0; }
+.rule::after { right: 0; }
+
+/* ============ 首页 PROFILE（官网式黑 Hero 带） ============ */
+.hero-band {
+  position: relative;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 24px 24px,
+    var(--ak-black);
+  color: #fff;
+  overflow: hidden;
+}
+.hero-band .wrap { position: relative; z-index: 2; }
+.hero-bg-word {
+  position: absolute;
+  left: -0.03em;
+  bottom: -0.24em;
+  z-index: 1;
+  font-family: var(--font-en-display);
+  font-size: clamp(130px, 21vw, 300px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255,255,255,0.13);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 64px;
+  align-items: center;
+  padding: 68px 0 40px;
+  position: relative;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  color: var(--ak-cyan);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-eyebrow::after {
+  content: "";
+  flex: 0 0 64px;
+  height: 1px;
+  background: var(--ak-cyan);
+}
+.hero h1 {
+  font-size: clamp(56px, 8vw, 96px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  color: #fff;
+}
+.hero-name-en {
+  font-family: var(--font-en-display);
+  font-size: clamp(18px, 2.4vw, 26px);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 28px;
+}
+.hero-role {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--ak-cyan);
+  border: 1px solid var(--ak-cyan);
+  padding: 6px 16px;
+  margin-bottom: 32px;
+  background: transparent;
+}
+.hero-intro {
+  max-width: 620px;
+  color: rgba(255,255,255,0.74);
+  font-size: 15.5px;
+  line-height: 1.9;
+  margin-bottom: 40px;
+}
+.hero-intro strong { color: #fff; font-weight: 600; }
+
+.hero-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+}
+.contact-item .k {
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--ak-cyan);
+  display: block;
+  margin-bottom: 2px;
+}
+.contact-item .v {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #fff;
+}
+
+/* 照片框：官网式青色衬板 + 机能角标 */
+.hero-photo {
+  position: relative;
+  justify-self: end;
+}
+.hero-photo::before {
+  content: "";
+  position: absolute;
+  top: -26px; right: -26px;
+  width: 132px; height: 190px;
+  background: var(--ak-cyan);
+  z-index: 0;
+}
+.hero-photo .frame {
+  width: 280px;
+  height: 360px;
+  overflow: hidden;
+  background: var(--ak-dark);
+  position: relative;
+  z-index: 1;
+}
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+.hero-photo .corner {
+  position: absolute;
+  width: 22px; height: 22px;
+  border: 2px solid var(--ak-cyan);
+  z-index: 2;
+}
+.hero-photo .c-tl { top: -8px; left: -8px; border-right: none; border-bottom: none; }
+.hero-photo .c-tr { top: -8px; right: -8px; border-left: none; border-bottom: none; }
+.hero-photo .c-bl { bottom: -8px; left: -8px; border-right: none; border-top: none; }
+.hero-photo .c-br { bottom: -8px; right: -8px; border-left: none; border-top: none; }
+.hero-photo .caption {
+  margin-top: 14px;
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.42);
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+/* 底部 SCROLL 提示（官网签名元素） */
+.hero-scroll {
+  position: absolute;
+  left: 50%; bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  letter-spacing: 0.32em;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  pointer-events: none;
+}
+.hero-scroll::after {
+  content: "";
+  display: block;
+  width: 10px; height: 10px;
+  margin: 6px auto 0;
+  border-right: 2px solid var(--ak-cyan);
+  border-bottom: 2px solid var(--ak-cyan);
+  transform: rotate(45deg);
+}
+
+/* ============ 页脚（官网式黑带） ============ */
+.site-footer {
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 24px 24px,
+    var(--ak-black);
+  color: #fff;
+  margin-top: 40px;
+  overflow: hidden;
+  position: relative;
+}
+.footer-inner {
+  padding: 64px 32px 56px;
+  position: relative;
+  z-index: 1;
+}
+.footer-name {
+  font-family: var(--font-en-display);
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.footer-name b { color: var(--ak-cyan); }
+.footer-role {
+  font-size: 14px;
+  letter-spacing: 0.24em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 32px;
+}
+.footer-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 40px;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255,255,255,0.14);
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+  margin-bottom: 24px;
+}
+.footer-contacts .fk {
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--ak-cyan);
+  margin-right: 10px;
+}
+.footer-contacts .fv { font-size: 14px; color: rgba(255,255,255,0.85); letter-spacing: 0.03em; }
+.footer-note {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.06em;
+}
+
+/* 信息条目（教育/实习） */
+.entry {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 26px 30px;
+  margin-bottom: 18px;
+  position: relative;
+}
+.entry-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.entry-head h3 { font-size: 19px; font-weight: 700; }
+.entry-head .date {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray-2);
+  letter-spacing: 0.08em;
+}
+.entry-role {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-deep);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.entry p { color: var(--gray-1); font-size: 14.5px; }
+
+/* 技能四组 */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 24px 26px;
+}
+.skill-card .k {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--accent-deep);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.skill-card .k::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+.skill-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.skill-card p { font-size: 14px; color: var(--gray-1); line-height: 1.8; }
+
+/* ============ 拆解案 TEARDOWN ============ */
+.td-subtabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.td-subtab {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 10px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--gray-1);
+  transition: all 220ms var(--ease-out);
+  position: relative;
+}
+.td-subtab .no {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray-2);
+  margin-right: 8px;
+}
+.td-subtab:hover { border-color: var(--ak-black); color: var(--ink); }
+.td-subtab.active {
+  background: var(--ak-black);
+  border-color: var(--ak-black);
+  color: #fff;
+}
+.td-subtab.active .no { color: var(--ak-cyan); }
+
+.td-article { display: none; }
+.td-article.current { display: block; }
+
+.td-lead {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  padding: 20px 26px;
+  margin-bottom: 36px;
+  font-size: 14.5px;
+  color: var(--gray-1);
+}
+.td-lead .scope {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent-deep);
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* 问题→解法 速查卡 */
+.td-quick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 44px;
+}
+.td-quick .qc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 18px 20px;
+}
+.td-quick .qc .q {
+  font-size: 14px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--gray-2);
+  margin-bottom: 6px;
+}
+.td-quick .qc .a {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-deep);
+}
+
+/* 文章排版 */
+.td-body { max-width: 860px; }
+.td-body h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 52px 0 18px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  line-height: 1.4;
+}
+.td-body h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.td-body h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 32px 0 12px;
+  color: var(--ink);
+}
+.td-body p { margin-bottom: 16px; color: #2C3134; font-size: 15.5px; }
+.td-body strong { color: var(--ink); font-weight: 700; }
+.td-body ul, .td-body ol { margin: 0 0 16px 1.4em; color: #2C3134; font-size: 15.5px; }
+.td-body li { margin-bottom: 8px; }
+.td-body blockquote {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-tint);
+  padding: 16px 22px;
+  margin: 0 0 20px;
+  color: var(--accent-deep);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ============ 拆解案结构图组件（HTML+CSS 重绘，文字全部 ≥14px） ============ */
+.diagram {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 26px 28px 30px;
+  margin: 0 0 24px;
+  overflow-x: auto;
+}
+.diagram .d-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--gray-2);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.diagram .d-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* 节点 */
+.d-node {
+  border: 1.5px solid var(--ink);
+  background: var(--surface);
+  padding: 14px 18px;
+  min-width: 0;
+}
+.d-node .nk {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--accent-deep);
+  margin-bottom: 3px;
+}
+.d-node .nv { display: block; font-size: 16px; font-weight: 800; }
+.d-node .nd { display: block; font-size: 14px; color: var(--gray-1); margin-top: 3px; }
+.d-node.hub { background: var(--ak-black); border-color: var(--ak-black); color: #fff; }
+.d-node.hub .nk { color: var(--ak-cyan); }
+.d-node.hub .nd { color: rgba(255,255,255,0.65); }
+.d-node.key { border-color: var(--accent); }
+
+/* 连接符：竖箭头 / 横箭头 */
+.d-arr { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 2px 0; }
+.d-arr .ln { width: 2px; height: 24px; background: var(--ink); }
+.d-arr .hd { width: 0; height: 0; border: 6px solid transparent; border-top-color: var(--ink); }
+.d-arr.up .ln { order: 2; }
+.d-arr.up .hd { order: 1; border-top-color: transparent; border-bottom-color: var(--ink); }
+.d-arr .al { font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); letter-spacing: 0.06em; }
+.d-arr-r { display: flex; flex-direction: row; align-items: center; gap: 6px; }
+.d-arr-r .ln { width: 30px; height: 2px; background: var(--ink); flex: none; }
+.d-arr-r .hd { width: 0; height: 0; border: 6px solid transparent; border-left-color: var(--ink); }
+.d-arr-r .al { font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); letter-spacing: 0.06em; }
+.d-arr-r.rev { flex-direction: row-reverse; }
+.d-arr-r.rev .hd { border-left-color: transparent; border-right-color: var(--ink); }
+.elbl { font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); letter-spacing: 0.06em; }
+
+/* 小芯片 */
+.d-chip {
+  display: inline-block;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C3134;
+}
+.d-chip b { font-weight: 800; }
+.d-chip .cs { display: block; font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); font-weight: 400; margin-top: 2px; }
+.d-chip.key { border-color: var(--accent); background: var(--accent-tint); }
+
+/* 三层循环（嵌套层） */
+.loop-layer {
+  border: 1.5px solid var(--ink);
+  border-left: 5px solid var(--accent);
+  padding: 16px 20px;
+  margin-bottom: 4px;
+  background: var(--surface);
+}
+.loop-layer .lk { font-size: 16px; font-weight: 800; letter-spacing: 0.04em; }
+.loop-layer .lk span { font-family: var(--font-mono); font-weight: 400; font-size: 14px; color: var(--accent-deep); margin-left: 10px; letter-spacing: 0.08em; }
+.loop-layer .lv { font-size: 14px; color: var(--gray-1); margin: 2px 0 6px; }
+.loop-layer .ld { font-size: 14px; color: #2C3134; font-weight: 600; }
+.loop-nest { margin-left: 26px; }
+.loop-back {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px dashed var(--accent);
+  background: var(--accent-tint);
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+.loop-back .lb-ar { font-family: var(--font-mono); font-weight: 700; }
+
+/* 网络图（FIG.02 四系统） */
+.net { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
+.net .d-node { text-align: center; }
+.net .span2 { grid-column: 1 / -1; width: 52%; justify-self: center; }
+.net .arr-cell { display: flex; flex-direction: column; align-items: center; padding: 2px 0; }
+
+/* 闭环（FIG.04 神典石 / 类似） */
+.cyc { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px 10px; align-items: center; }
+.cyc .d-node { text-align: center; }
+.cyc .cyc-center {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent-deep);
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 10px 6px;
+  border: 1px dashed var(--accent);
+  background: var(--accent-tint);
+  font-weight: 600;
+}
+.cyc .cyc-mid { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
+
+/* 分岔（FIG.03 双轨 / FIG.07 双层） */
+.fork-head { width: 46%; margin: 0 auto; text-align: center; }
+.fork-lines { position: relative; height: 26px; }
+.fork-lines::before {
+  content: "";
+  position: absolute;
+  left: 25%; right: 25%; top: 0;
+  border-top: 2px solid var(--ink);
+  height: 0;
+  transform: translateY(12px);
+}
+.fork-lines::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 0;
+  width: 2px; height: 13px;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+.fork-arms { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; }
+.fork-arms::before, .fork-arms::after {
+  content: "";
+  position: absolute;
+  top: -14px;
+  width: 2px; height: 14px;
+  background: var(--ink);
+}
+.fork-arms::before { left: 25%; }
+.fork-arms::after { right: 25%; }
+
+/* 回流步骤（FIG.05 日随循环） */
+.reflow { position: relative; padding-left: 34px; }
+.reflow::before {
+  content: "";
+  position: absolute;
+  left: 10px; top: 14px; bottom: 14px;
+  width: 2px;
+  background: var(--accent);
+}
+.reflow::after {
+  content: "";
+  position: absolute;
+  left: 4px; top: 2px;
+  width: 0; height: 0;
+  border: 7px solid transparent;
+  border-bottom-color: var(--accent);
+}
+.reflow .rf-tag {
+  position: absolute;
+  left: -6px; top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--accent-deep);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  padding: 8px 2px;
+}
+
+/* 映射行（FIG.06 冲突→补偿） */
+.map-row {
+  display: grid;
+  grid-template-columns: 200px auto 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.map-row:last-child { border-bottom: none; }
+.map-src { border: 1.5px solid var(--ink); padding: 10px 14px; font-weight: 800; font-size: 15px; background: var(--surface); }
+.map-src span { display: block; font-family: var(--font-mono); font-size: 14px; font-weight: 400; color: var(--gray-2); margin-top: 2px; }
+.map-tgts { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* 汇聚流（FIG.08 魔晶石三线） */
+.funnel { display: grid; grid-template-columns: 1fr auto auto auto 1fr; gap: 10px; align-items: center; }
+.funnel .f-col { display: flex; flex-direction: column; gap: 10px; }
+.funnel .f-hub { text-align: center; }
+
+@media (max-width: 700px) {
+  .net .span2 { width: 100%; }
+  .fork-head { width: 100%; }
+  .cyc { grid-template-columns: 1fr; }
+  .cyc .cyc-mid { grid-template-columns: 1fr; }
+  .map-row { grid-template-columns: 1fr; gap: 8px; }
+  .funnel { grid-template-columns: 1fr; }
+  .funnel .f-col { flex-direction: column; }
+  .reflow { padding-left: 26px; }
+  .loop-nest { margin-left: 12px; }
+  /* 横箭头转竖 */
+  .d-arr-r, .d-arr-r.rev { flex-direction: column; justify-content: center; }
+  .d-arr-r .ln { width: 2px; height: 24px; }
+  .d-arr-r .hd { border-left-color: transparent; border-right-color: transparent; border-top-color: var(--ink); }
+  .d-arr-r.rev .hd { order: -1; border-top-color: transparent; border-bottom-color: var(--ink); }
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; padding: 120px 0 80px; gap: 40px; }
+  .hero-photo { justify-self: start; }
+  .hero-scroll { display: none; }
+  .skill-grid { grid-template-columns: 1fr; }
+  .wrap { padding: 0 20px; }
+  .nav-inner { padding: 0 20px; }
+  .hero h1 { white-space: nowrap; }
+  .hero-role { white-space: nowrap; }
+  .td-quick { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .nav-tab .en { display: none; }        /* 窄屏页签只留中文单行（版式适配，非缩小字号） */
+  .nav-logo .logo-suffix { display: none; }
+  .nav-tab { padding: 6px 12px; }
+}
+
+/* ============ 游戏经历 ARCHIVE ============ */
+.stat-band {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  color: #fff;
+  margin-bottom: 64px;
+}
+.stat-item {
+  flex: 1 1 180px;
+  padding: 26px 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+}
+.stat-item:last-child { border-right: none; }
+.stat-item .num {
+  font-family: var(--font-mono);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--ak-cyan);
+  line-height: 1.1;
+}
+.stat-item .lbl {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.1em;
+  margin-top: 6px;
+}
+
+/* 档位标题 */
+.tier-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 56px 0 24px;
+}
+.tier-head .t-name {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.tier-head .t-en {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--gray-2);
+}
+.tier-head .t-line { flex: 1; height: 1px; background: var(--line); align-self: center; }
+
+/* 挚爱大卡 */
+.fav-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 34px 38px;
+  margin-bottom: 26px;
+  position: relative;
+}
+.fav-card .archive-no {
+  position: absolute;
+  top: 22px; right: 26px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--gray-2);
+}
+.fav-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.fav-head h3 { font-size: 26px; font-weight: 800; }
+.fav-head .en {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--gray-2);
+}
+.fav-meta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent-deep);
+  letter-spacing: 0.06em;
+  margin-bottom: 18px;
+}
+.fav-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.fav-badge {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border: 1px solid var(--accent);
+  color: var(--accent-deep);
+  background: var(--accent-tint);
+  font-weight: 600;
+}
+.fav-card .exp { color: #2C3134; font-size: 14.5px; margin-bottom: 18px; }
+.fav-insight {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-tint);
+  padding: 16px 22px;
+}
+.fav-insight .k {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--accent-deep);
+  display: block;
+  margin-bottom: 6px;
+}
+.fav-insight p { font-size: 14px; color: #23545A; margin: 0; }
+.fav-insight a { font-weight: 600; }
+
+/* 偏爱中卡 */
+.like-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.like-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 22px 24px;
+  transition: border-color 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.like-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.like-card h4 { font-size: 17px; font-weight: 700; }
+.like-card .en {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--gray-2);
+  display: block;
+  margin: 2px 0 10px;
+}
+.like-card .hrs {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent-deep);
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+.like-card p { font-size: 14px; color: var(--gray-1); margin: 0; line-height: 1.7; }
+
+/* 欣赏陈列带 */
+.cat-strip {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 8px 24px;
+  padding: 18px 0;
+  border-bottom: 1px dashed var(--line);
+  align-items: baseline;
+}
+.cat-strip:last-child { border-bottom: none; }
+.cat-strip .cat-name {
+  font-weight: 700;
+  font-size: 14.5px;
+}
+.cat-strip .cat-name .en {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--gray-2);
+  font-weight: 400;
+  margin-top: 2px;
+}
+.cat-strip .games { font-size: 14px; color: #2C3134; line-height: 1.9; }
+.cat-strip .games b { font-weight: 600; }
+.cat-strip .games .h {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray-2);
+}
+.cat-strip .note { grid-column: 2; font-size: 14px; color: var(--gray-2); }
+
+@media (max-width: 700px) {
+  .cat-strip { grid-template-columns: 1fr; }
+  .cat-strip .note { grid-column: 1; }
+  .fav-card { padding: 24px 22px; }
+}
+
+/* ============ DEMO WORKS ============ */
+.works-shell { position: relative; }
+.works-viewport { overflow: hidden; }
+.works-track {
+  display: flex;
+  transition: transform 520ms var(--ease-out);
+  will-change: transform;
+}
+.works-track.dragging { transition: none; }
+
+.work-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding: 4px;
+}
+.work-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.work-head h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 800; }
+.work-head .en {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--gray-2);
+}
+.work-meta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent-deep);
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+}
+.work-awards { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+/* 媒体轮播 */
+.media-carousel {
+  position: relative;
+  background: var(--ink);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.media-viewport { overflow: hidden; }
+.media-track {
+  display: flex;
+  transition: transform 480ms var(--ease-out);
+}
+.media-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  background: #0D0F10;
+}
+.media-slide img, .media-slide video {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  background: #0D0F10;
+}
+.media-slide .ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 18px, rgba(255,255,255,0.03) 18px 19px),
+    #111416;
+}
+.media-slide .ph .no { font-size: 22px; color: rgba(255,255,255,0.22); }
+.video-cover {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+.video-cover img { width: 100%; height: 100%; object-fit: cover; }
+.video-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.45));
+}
+.video-play {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px; height: 76px;
+  background: rgba(14, 124, 134, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 220ms var(--ease-out), background 220ms var(--ease-out);
+  z-index: 2;
+}
+.video-cover:hover .video-play { transform: translate(-50%, -50%) scale(1.08); background: var(--accent-deep); }
+.video-play svg { margin-left: 5px; }
+.video-tag {
+  position: absolute;
+  left: 14px; bottom: 12px;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  padding: 4px 10px;
+}
+
+/* 轮播控制 */
+.media-ctrl {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.9);
+  color: var(--ink);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 200ms var(--ease-out);
+}
+.media-ctrl:hover { background: #fff; }
+.media-ctrl.prev { left: 12px; }
+.media-ctrl.next { right: 12px; }
+.media-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 7px;
+}
+.media-dots i {
+  width: 7px; height: 7px;
+  background: rgba(255,255,255,0.35);
+  transform: rotate(45deg);
+  cursor: pointer;
+  transition: background 200ms;
+}
+.media-dots i.on { background: var(--ak-cyan); }
+
+/* demo 面板切换控制 */
+.works-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.works-dots { display: flex; gap: 10px; align-items: center; }
+.works-dot {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--gray-2);
+  padding: 6px 4px;
+  border-bottom: 2px solid transparent;
+  transition: all 220ms var(--ease-out);
+  white-space: nowrap;
+}
+.works-dot.on { color: var(--accent-deep); border-bottom-color: var(--accent); font-weight: 700; }
+.works-arrows { display: flex; gap: 8px; }
+.works-arrow {
+  width: 44px; height: 44px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 16px;
+  transition: all 200ms var(--ease-out);
+}
+.works-arrow:hover { background: var(--ak-black); border-color: var(--ak-black); color: #fff; }
+
+/* 信息块 */
+.work-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.work-block {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 24px 26px;
+}
+.work-block.full { grid-column: 1 / -1; }
+.work-block .bk {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--accent-deep);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.work-block .bk::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+.work-block p, .work-block li { font-size: 14.5px; color: #2C3134; }
+.work-block ul { margin-left: 1.3em; }
+.work-block li { margin-bottom: 8px; }
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 12px 26px;
+  transition: background 200ms var(--ease-out);
+}
+.dl-btn:hover { background: var(--ak-cyan); color: var(--ak-black); text-decoration: none; }
+.dl-btn:hover .mono { color: var(--ak-black); }
+.dl-btn .mono { font-size: 14px; color: var(--ak-cyan); letter-spacing: 0.15em; }
+.dl-pending {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray-2);
+  margin-left: 12px;
+}
+
+@media (max-width: 800px) {
+  .work-cols { grid-template-columns: 1fr; }
+  .works-dots { display: none; }
+}
+
+/* ============ 滚动揭示（仅 JS 可用时启用隐藏态） ============ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateX(var(--rx, 0px)) translateY(var(--ry, 16px));
+  transition: opacity 650ms var(--ease-out), transform 650ms var(--ease-out);
+}
+.js [data-reveal].rv-l { --rx: -46px; --ry: 0px; }
+.js [data-reveal].rv-r { --rx: 46px; --ry: 0px; }
+.js [data-reveal].revealed { opacity: 1; transform: none; }
+
+/* 页面大标题 */
+.page-title {
+  font-size: clamp(38px, 5.4vw, 56px);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  margin-bottom: 28px;
+}
+.page-title .sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray-2);
+  letter-spacing: 0.2em;
+  margin-top: 10px;
+}
+
+/* 拆解案篇章切换吸顶 */
+.td-subtabs {
+  position: sticky;
+  top: 68px;
+  z-index: 60;
+  background: rgba(247, 248, 247, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* 篇末「下一篇」 */
+.td-next { display: flex; justify-content: flex-end; margin-top: 44px; }
+.td-next a {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--accent-deep);
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  padding: 10px 22px;
+  transition: background 200ms var(--ease-out), color 200ms var(--ease-out);
+  text-decoration: none;
+}
+.td-next a:hover { background: var(--ak-black); border-color: var(--ak-black); color: #fff; }
+
+/* works 视口：纵向滚动放行，横向拖拽交给 JS；不拦截内部按钮点击 */
+.works-viewport { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.works-viewport:active { cursor: grabbing; }
+
+/* ============ 字号下限·统一：所有文字 ≥14px，装饰字降级视觉权重 ============ */
+.tag-index { font-size: 14px; }
+.entry-head .date { font-size: 14px; }
+.entry-role { font-size: 14px; }
+.skill-card .k, .work-block .bk { font-size: 14px; }
+.stat-item .lbl { font-size: 14px; }
+.tier-head .t-en { font-size: 14px; }
+.fav-badge { font-size: 14px; padding: 6px 13px; }
+.fav-meta { font-size: 14px; }
+.fav-insight .k { font-size: 14px; }
+.like-card p { font-size: 14px; }
+.like-card .hrs { font-size: 14px; }
+.cat-strip .games .h { font-size: 14px; }
+.cat-strip .note { font-size: 14px; }
+.td-lead .scope { font-size: 14px; }
+.td-quick .qc .q { font-size: 14px; }
+.works-dot { font-size: 14px; }
+.work-head .en { font-size: 14px; }
+.work-meta { font-size: 14px; }
+.video-tag { font-size: 14px; }
+.dl-btn .mono { font-size: 14px; }
+.dl-pending { font-size: 14px; }
+.media-slide .ph { font-size: 14px; }
+.section-title .sub { font-size: 14px; }
+.page-title .sub { font-size: 14px; }
+.tl-node .tl-c, .tl-node .tl-n { font-size: 14px; }
+.cmp-row span { font-size: 14px; }
+.conf-side { font-size: 14px; }
+.conf-side .who { font-size: 14px; }
+.conf-vs { font-size: 14px; }
+.conf-essence { font-size: 14px; }
+.conf-essence::before { font-size: 14px; }
+.aud-who span { font-size: 14px; }
+.aud-bar em { font-size: 14px; }
+
+/* 装饰性英文/编号：同样 14px，用常规字重+灰阶退后 */
+.like-card .en { font-size: 14px; font-weight: 400; }
+.cat-strip .cat-name .en { font-size: 14px; font-weight: 400; }
+.fav-card .archive-no { font-size: 14px; font-weight: 400; }
+.fav-head .en { font-size: 14px; font-weight: 400; }
+.td-subtab .no { font-size: 14px; font-weight: 400; }
+.rule::before, .rule::after { font-size: 14px; }
+
+/* ============ 拆解案图形组件（替代表格） ============ */
+/* 演进史时间轴 */
+.timeline {
+  display: flex;
+  position: relative;
+  margin: 28px 0 32px;
+  padding-top: 22px;
+  overflow-x: auto;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 6px; left: 6px; right: 6px;
+  height: 2px;
+  background: var(--ink);
+}
+.tl-node { flex: 1 0 128px; position: relative; padding: 0 12px 0 22px; }
+.tl-node::before {
+  content: "";
+  position: absolute;
+  top: -20px; left: 10px;
+  width: 11px; height: 11px;
+  background: var(--surface);
+  border: 2.5px solid var(--accent);
+  transform: rotate(45deg);
+}
+.tl-node .tl-v { display: block; font-weight: 800; font-size: 15px; margin-bottom: 3px; }
+.tl-node .tl-c { display: block; font-family: var(--font-mono); font-size: 14px; color: var(--accent-deep); margin-bottom: 3px; }
+.tl-node .tl-n { display: block; font-size: 14px; color: var(--gray-1); }
+
+/* 横向对比卡组 */
+.cmp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 0 0 28px;
+}
+.cmp-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px 22px;
+}
+.cmp-card h4 { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+.cmp-card.cmp-self { border-color: var(--accent); border-width: 1.5px; }
+.cmp-row { display: grid; grid-template-columns: 52px 1fr; gap: 12px; padding: 6px 0; border-top: 1px dashed var(--line); font-size: 14px; color: #2C3134; }
+.cmp-row span { font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); padding-top: 2px; }
+
+/* 三方冲突卡 */
+.conf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 0 0 28px;
+}
+.conf-card { background: var(--surface); border: 1px solid var(--line); padding: 22px; }
+.conf-card h4 { font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+.conf-sides { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; margin-bottom: 14px; }
+.conf-side {
+  background: var(--bg);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2C3134;
+}
+.conf-side .who {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--accent-deep);
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.conf-vs {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-2);
+}
+.conf-essence {
+  font-size: 14px;
+  color: var(--accent-deep);
+  font-weight: 600;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.conf-essence::before { content: "本质 — "; font-family: var(--font-mono); font-size: 14px; color: var(--gray-2); font-weight: 400; }
+
+/* 受众分层条 */
+.aud-list { margin: 0 0 28px; }
+.aud-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 8px 20px;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.aud-row:last-child { border-bottom: none; }
+.aud-who b { font-size: 15px; display: block; }
+.aud-who span { font-size: 14px; color: var(--gray-1); }
+.aud-bar { position: relative; height: 26px; background: var(--surface); border: 1px solid var(--line); }
+.aud-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent));
+}
+.aud-bar em {
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--gray-1);
+}
+
+@media (max-width: 700px) {
+  .aud-row { grid-template-columns: 1fr; }
+  .conf-sides { grid-template-columns: 1fr; }
+  .conf-vs { justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 导航 ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">ZHOU<b>ZIQI</b><span class="logo-suffix"> // SYS.DESIGN</span></div>
+    <nav class="nav-tabs" role="tablist" aria-label="页面导航">
+      <button class="nav-tab active" data-page="profile" role="tab" aria-selected="true">首页<span class="en">PROFILE</span></button>
+      <button class="nav-tab" data-page="archive" role="tab" aria-selected="false">游戏经历<span class="en">ARCHIVE</span></button>
+      <button class="nav-tab" data-page="teardown" role="tab" aria-selected="false">拆解案<span class="en">TEARDOWN</span></button>
+      <button class="nav-tab" data-page="works" role="tab" aria-selected="false">Demo<span class="en">WORKS</span></button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ 页签转场遮罩 ============ -->
+<div class="wipe" id="wipe" aria-hidden="true">
+  <div class="wipe-panel p1"></div>
+  <div class="wipe-panel p2"></div>
+  <div class="wipe-code" id="wipeCode">PROFILE</div>
+</div>
+
+<main id="main">
+
+<!-- ============ 首页 PROFILE ============ -->
+<section class="page current" id="page-profile" data-code="PROFILE / 00">
+
+  <div class="hero-band">
+    <div class="hero-bg-word" aria-hidden="true">ZHOU ZIQI</div>
+    <div class="wrap">
+      <div class="hero">
+        <div class="hero-text">
+        <div class="hero-eyebrow">GAME SYSTEM DESIGNER — 求职作品集</div>
+        <h1>周子骐</h1>
+        <div class="hero-name-en">ZHOU ZIQI</div>
+        <div class="hero-role">求职意向 · 游戏系统策划</div>
+        <p class="hero-intro">
+          北京邮电大学数字媒体设计硕士在读，<strong>SNK 中国系统策划实习生</strong>（拳皇 IP 卡牌在研）。千小时级的《炉石传说》与《最终幻想14》深度玩家，最高美服前 50、国服 ADPS 第一；独立撰写 FF14 四篇系统拆解，覆盖整体架构、经济、社交与养成；具备引擎与美术工具链实操能力，NOIP / ACM 省级荣誉的编程基础，并以 AI 工作流全程制作多款可玩 Demo，获 AI 视频大赛国家奖项。
+        </p>
+        <div class="hero-contact">
+          <div class="contact-item">
+            <span class="k">TEL</span>
+            <span class="v">18021276625</span>
+          </div>
+          <div class="contact-item">
+            <span class="k">MAIL</span>
+            <span class="v">3357373852@qq.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="k">BASE</span>
+            <span class="v">江苏苏州 · 北京在读</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <div class="frame chamfer">
+          <img src="assets/img/photo.jpg" alt="周子骐证件照" width="280" height="360">
+        </div>
+        <span class="corner c-tl"></span>
+        <span class="corner c-tr"></span>
+        <span class="corner c-bl"></span>
+        <span class="corner c-br"></span>
+        <div class="caption">ID PHOTO — 2002.09</div>
+      </div>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">SCROLL</div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="wrap">
+    <div class="section">
+      <div class="tag-index"><span class="cn">教育背景</span>EDUCATION / 01</div>
+      <div class="entry chamfer">
+        <div class="entry-head">
+          <h3>北京邮电大学 · 数字媒体设计（硕士在读）</h3>
+          <span class="date">2024 // 09 — 至今</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="tag-index"><span class="cn">实习经历</span>EXPERIENCE / 02</div>
+
+      <div class="entry chamfer">
+        <div class="entry-head">
+          <h3>SNK 中国</h3>
+          <span class="date">2026 // 06 — 至今</span>
+        </div>
+        <div class="entry-role">游戏系统策划（实习）· 在研拳皇 IP 卡牌</div>
+        <p>设计玩法方案并撰写功能文档，修改、重构游戏内配置表；负责赛季养成、赛季小游戏与休闲互动玩法设计，创建网页原型；跑测游戏，依据内部与玩家测试反馈对接美术、程序，持续优化对应功能。</p>
+      </div>
+
+      <div class="entry chamfer">
+        <div class="entry-head">
+          <h3>苏州红鲸动画</h3>
+          <span class="date">2025 // 07 — 2025 // 08</span>
+        </div>
+        <div class="entry-role">3D 动画场景组（实习）</div>
+        <p>负责三维 MAYA 场景与环境搭建、PBR 道具模型制作；根据分镜寻找场景参考，完成 MAYA 内远景搭建与部分 PBR 场景道具。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="tag-index"><span class="cn">专业技能</span>SKILLS / 03</div>
+      <div class="skill-grid">
+        <div class="skill-card chamfer">
+          <div class="k">DESIGN — 设计能力</div>
+          <h4>体验与视觉设计</h4>
+          <p>Figma / Photoshop 原型与视觉设计；熟悉设计心理学与人机交互原理，能把体验意图落到界面与流程细节。</p>
+        </div>
+        <div class="skill-card chamfer">
+          <div class="k">ENGINE & ART — 引擎与美术工具链</div>
+          <h4>从引擎到建模</h4>
+          <p>Unity / Unreal / Godot 引擎实操；MAYA / Blender / ZBrush 建模与 PBR 流程。</p>
+        </div>
+        <div class="skill-card chamfer">
+          <div class="k">AI WORKFLOW — AI 工作流</div>
+          <h4>AI 全流程制作</h4>
+          <p>AI 视频大赛国家奖项；使用 AI 工具链全程制作多款可玩 Demo，覆盖策划、程序到美术的完整管线。</p>
+        </div>
+        <div class="skill-card chamfer">
+          <div class="k">LANGUAGE & CS — 语言与工程基础</div>
+          <h4>英语与编程底子</h4>
+          <p>英语六级 550 分，常态化英文文献与 GDC 视频调研；高中 NOIP、大学 ACM 均获省级荣誉，有扎实编程基础，与程序对接无障碍。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ 游戏经历 ARCHIVE ============ -->
+<section class="page" id="page-archive" data-code="ARCHIVE / 01">
+  <div class="wrap">
+    <div class="section" style="padding-top: 128px;" data-bgword="ARCHIVE">
+      <h2 class="page-title">游戏经历<span class="sub">GAME ARCHIVE</span></h2>
+
+      <div class="stat-band chamfer">
+        <div class="stat-item"><div class="num">10+ 年</div><div class="lbl">深度游戏阅历</div></div>
+        <div class="stat-item"><div class="num">100+ 款</div><div class="lbl">跨平台作品体验</div></div>
+        <div class="stat-item"><div class="num">×3</div><div class="lbl">千小时级游戏</div></div>
+        <div class="stat-item"><div class="num">8 大</div><div class="lbl">覆盖品类</div></div>
+      </div>
+
+      <!-- ===== 挚爱 ===== -->
+      <div class="tier-head">
+        <span class="t-name">挚爱</span>
+        <span class="t-en">TIER-S — 千小时级，带着策划脑子在玩</span>
+        <span class="t-line"></span>
+      </div>
+
+      <div class="fav-card chamfer" data-reveal>
+        <span class="archive-no">ARCHIVE / 01</span>
+        <div class="fav-head"><h3>炉石传说</h3><span class="en">HEARTHSTONE</span></div>
+        <div class="fav-meta">PC · 移动 — 1000+ 小时（6 年以上）</div>
+        <div class="fav-badges">
+          <span class="fav-badge">美服 TOP 50</span>
+          <span class="fav-badge">国服 TOP 1000</span>
+          <span class="fav-badge">酒馆战棋 10000+ 分</span>
+          <span class="fav-badge">黄金赛 512 强</span>
+        </div>
+        <p class="exp">狂野模式常驻传说：2023 年国服回归前打到美服前 50，2025 年回归后用红龙贼打上国服前 1000；酒馆战棋连续两个大版本万分以上，胜率约 65%。擅长 OTK / 超展开类卡组（黑眼术、红龙贼），喜欢针对环境自组卡组——曾在任务术与暗牧横行的版本，用自己构筑的峰磷牧打上传说；高中时期晋级黄金赛 512 强，常驻贴吧做经验分享与冒险解谜。</p>
+        <div class="fav-insight">
+          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <p>理解卡组构筑中费用曲线、过牌效率与致胜回合的数值关系，关注资源管理机制如何形成对局节奏；研究 OTK 斩杀链的限制条件（key 牌上手率、费用效率、回合数）与斩杀稳定性之间的设计平衡；在酒馆战棋中持续观察铸币节奏、棋子池概率分布如何塑造策略深度，积累了「决策反馈周期」与「随机性可控边界」的直觉。</p>
+        </div>
+      </div>
+
+      <div class="fav-card chamfer" data-reveal>
+        <span class="archive-no">ARCHIVE / 02</span>
+        <div class="fav-head"><h3>最终幻想14</h3><span class="en">FINAL FANTASY XIV</span></div>
+        <div class="fav-meta">PC — 1000+ 小时（4 年以上）</div>
+        <div class="fav-badges">
+          <span class="fav-badge">绝本通关 ×2</span>
+          <span class="fav-badge">国服 ADPS 第 1</span>
+          <span class="fav-badge">零式 · 万魔殿</span>
+          <span class="fav-badge">副部队长</span>
+        </div>
+        <p class="exp">主线完成至 7.0；极神全通、零式通关万魔殿系列、绝本通关绝巴哈与绝神兵。固定队主玩 H2（学者/贤者），野排主玩红职（黑魔/召唤），Logs 最低紫色、最高以召唤打出金色（国服 ADPS 第 1）。担任副部队长参与部队管理；与好友经营轻 RP 店铺（海龟汤、跑团），用插件导入 MIDI 校准乐队演奏。</p>
+        <div class="fav-insight">
+          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <p>深入体验多职业的技能循环设计，理解 GCD 与能力技穿插的节奏框架、资源积累与泄放的循环结构；经营 RP 店铺时观察到玩家自发的 UGC 如何依托游戏提供的底层系统（房屋装修、乐器动作、聊天频道）形成生态，对「提供工具而非内容」的设计理念有切身体会。这份理解沉淀成了本站「<a href="#" data-goto-page="teardown">拆解案</a>」页的四篇系统分析。</p>
+        </div>
+      </div>
+
+      <div class="fav-card chamfer" data-reveal>
+        <span class="archive-no">ARCHIVE / 03</span>
+        <div class="fav-head"><h3>守望先锋</h3><span class="en">OVERWATCH</span></div>
+        <div class="fav-meta">PC — 1100+ 小时（5 年以上）</div>
+        <div class="fav-badges">
+          <span class="fav-badge">单排钻石 3</span>
+          <span class="fav-badge">支援位专精</span>
+        </div>
+        <p class="exp">排位主玩支援位，单排最高钻石 3，擅长雾子、巴蒂斯特、安娜。比起个人操作，更喜欢通过团队的资源分配、关键时刻的技能支援与击杀来影响局势。</p>
+        <div class="fav-insight">
+          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <p>深度使用多位支援英雄，理解技能组的设计逻辑——将治疗、伤害、位移、控制等功能模块组合成有特色的技能循环；支援位需要持续评估全队状态分布、敌方威胁位置与技能 CD，这种「信息过载下的决策训练」对理解竞技游戏的 HUD 设计与信息呈现很有价值；单排上分过程中关注 ELO 匹配如何在保证公平性的同时维持挫败感与成就感的平衡。</p>
+        </div>
+      </div>
+
+      <!-- ===== 偏爱 ===== -->
+      <div class="tier-head">
+        <span class="t-name">偏爱</span>
+        <span class="t-en">TIER-A — 长期投入，各有专攻</span>
+        <span class="t-line"></span>
+      </div>
+      <div class="like-grid">
+        <div class="like-card chamfer" data-reveal>
+          <h4>明日方舟</h4><span class="en">ARKNIGHTS</span>
+          <span class="hrs">6 年 · 120 级</span>
+          <p>长期关注抽卡与养成系统的保底机制、资源投放节奏，以及角色设计如何驱动情感投入。</p>
+        </div>
+        <div class="like-card chamfer" data-reveal>
+          <h4>英雄联盟</h4><span class="en">LEAGUE OF LEGENDS</span>
+          <span class="hrs">800+ 小时 · 白金 2</span>
+          <p>关注 MOBA 的英雄设计与装备系统、英雄技能之间的交互可能性。</p>
+        </div>
+        <div class="like-card chamfer" data-reveal>
+          <h4>星露谷物语</h4><span class="en">STARDEW VALLEY</span>
+          <span class="hrs">493 小时</span>
+          <p>作息循环与心流管理的样本：每日体力限制如何被转化为目标引导而非挫败。</p>
+        </div>
+        <div class="like-card chamfer" data-reveal>
+          <h4>APEX 英雄</h4><span class="en">APEX LEGENDS</span>
+          <span class="hrs">200+ 小时 · 白金 3</span>
+          <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
+        </div>
+      </div>
+
+      <!-- ===== 欣赏 ===== -->
+      <div class="tier-head">
+        <span class="t-name">欣赏</span>
+        <span class="t-en">TIER-B — 广度覆盖，品类即视野</span>
+        <span class="t-line"></span>
+      </div>
+      <div class="cat-list">
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">角色扮演<span class="en">RPG</span></div>
+          <div class="games"><b>塞尔达传说 旷野之息/王国之泪</b> <span class="h">70+h</span> · 巫师3 <span class="h">13h</span> · 对马岛之魂 <span class="h">20h</span> · 艾尔登法环 <span class="h">20h</span> · 荒野大镖客2 <span class="h">20+h</span> · 赛博朋克2077 <span class="h">30h</span> · 碧蓝幻想 Relink <span class="h">50h</span> · 宝可梦系列</div>
+          <div class="note">关注开放世界/箱庭的引导设计（视觉引导、三角法则）、成长数值曲线、多分支叙事的选择与反馈。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">射击<span class="en">SHOOTER</span></div>
+          <div class="games"><b>无主之地3</b> <span class="h">40h</span> · 三角洲行动 <span class="h">20h</span></div>
+          <div class="note">关注射击手感调校（TTK、后坐力模式、命中反馈）。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">动作 / 平台跳跃<span class="en">ACTION</span></div>
+          <div class="games"><b>哈迪斯 1&amp;2</b> <span class="h">30+h</span> · 蔚蓝 <span class="h">20+h</span> · 奥日系列 <span class="h">13h</span></div>
+          <div class="note">关注手感调校（重力感、滞空时间、冲刺距离），以及肉鸽元素如何与叙事结合成进度系统。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">竞技 / MOBA<span class="en">MOBA</span></div>
+          <div class="games"><b>DOTA2</b> <span class="h">400h</span> · 斯普拉遁 2&amp;3 <span class="h">50+h</span></div>
+          <div class="note">关注英雄（武器）设计、装备系统与英雄技能的交互可能性。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">休闲模拟<span class="en">SIMULATION</span></div>
+          <div class="games"><b>动物森友会</b> <span class="h">100+h</span> · 潜水员戴夫 <span class="h">20h</span></div>
+          <div class="note">关注模拟经营的作息循环设计、心流管理（每日体力限制与目标引导）。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">二次元手游<span class="en">MOBILE</span></div>
+          <div class="games"><b>鸣潮</b> <span class="h">80 级 · 3 年</span> · 幻塔 <span class="h">50+h</span> · 赛马娘 <span class="h">1 年</span> · 学园偶像大师 <span class="h">1 年</span> · 异环 <span class="h">主线通关</span> · 洛克王国 <span class="h">第一赛季全异色</span></div>
+          <div class="note">关注抽卡与养成机制（保底、资源投放节奏）、角色设计、游戏如何引导玩家消费。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">视觉小说<span class="en">VISUAL NOVEL</span></div>
+          <div class="games"><b>CLANNAD</b> · 白色相簿2 · Ever17 · 播种之谣 · 逆转裁判系列（除大逆外全通）</div>
+          <div class="note">关注分支叙事的选项设计、不同路线间的信息互补机制、如何通过有限交互创造情感沉浸。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 拆解案 TEARDOWN ============ -->
+<section class="page" id="page-teardown" data-code="TEARDOWN / 02">
+  <div class="wrap">
+    <div class="section" style="padding-top: 128px;" data-bgword="TEARDOWN">
+      <div class="tag-index"><span class="cn">拆解案</span>TEARDOWN / 最终幻想14</div>
+      <h2 class="section-title">《最终幻想14》系统拆解<span class="sub">FFXIV SYSTEM TEARDOWN — 版本口径：7.5x 线上现状 + 8.0「银海之天舟」前瞻</span></h2>
+
+      <div class="td-subtabs" role="tablist" aria-label="拆解篇章">
+        <button class="td-subtab active" data-td="overall" role="tab" aria-selected="true"><span class="no">01</span>整体拆解</button>
+        <button class="td-subtab" data-td="economy" role="tab" aria-selected="false"><span class="no">02</span>经济系统 · 神典石</button>
+        <button class="td-subtab" data-td="social" role="tab" aria-selected="false"><span class="no">03</span>社交系统 · 日随</button>
+        <button class="td-subtab" data-td="growth" role="tab" aria-selected="false"><span class="no">04</span>养成系统 · 魔晶石</button>
+      </div>
+
+      <!-- ===== 01 整体拆解 ===== -->
+      <article class="td-article current" data-td="overall">
+        <div class="td-lead">
+          <span class="scope">SCOPE — 锚定 7.5x（当前线上）+ 8.0「银海之天舟」（2027-01）前瞻</span>
+          本文讲清 FF14 面对了什么问题、又是怎么解决的。前一半是四个抽象解法，后一半是四个系统的具体落地。细节深挖见对应篇章。
+        </div>
+
+        <div class="td-quick">
+          <div class="qc chamfer"><div class="q">劝退点 01</div><div class="a">强社交压力 → 弱社交强社区</div></div>
+          <div class="qc chamfer"><div class="q">劝退点 02</div><div class="a">爆肝分层 → 周上限收敛</div></div>
+          <div class="qc chamfer"><div class="q">劝退点 03</div><div class="a">随机挫败 → 三通道保底</div></div>
+          <div class="qc chamfer"><div class="q">劝退点 04</div><div class="a">长线通胀 → 双轨软重置</div></div>
+        </div>
+
+        <div class="td-body">
+          <h2>一、FF14 真正在解决的问题</h2>
+          <p>《最终幻想14》有一段传奇历史：2010 年初版 49 分灾难接近关服，2013 年「重生之境」浴火重生，2020 年「暗影之逆焰」IGN 满分、成为全球第二活跃 MMORPG，2024 年「黄金的遗产」（7.0）口碑下滑，2026 年官方宣布 8.0 做「自 2.0 以来最大规模底层重构」。</p>
+          <p>这段历史背后藏着一个更本质的问题：传统 MMO 到底在劝退什么。FF14 的成功，不在于把传统 MMO 做得更好，而在于它识别出了传统 MMO 的劝退点，再用一套反直觉的设计逐一化解。</p>
+          <p><strong>四个核心劝退问题：</strong></p>
+          <ol>
+            <li><strong>强社交压力</strong>：传统 MMO 用「不社交玩不下去」绑架玩家，社交从选择变成必修课，把独狼玩家排除在核心体验之外。</li>
+            <li><strong>爆肝与分层</strong>：传统 MMO 的时间换成长，让休闲玩家被肝帝碾压，玩得越久、差距越大、焦虑越重。</li>
+            <li><strong>随机挫败</strong>：终局装备靠随机掉落，刷一个月不出货就劝退脸黑玩家。</li>
+            <li><strong>长线通胀</strong>：货币无限沉淀，老玩家囤积、新玩家被稀释，经济随版本推移必然失衡。</li>
+          </ol>
+
+          <h2>二、解法一：弱社交强社区</h2>
+          <p>强社交压力的本质，是社交成了内容的前置条件——传统 MMO 里，不组队就打不了本、不做公会任务就少一块养成。FF14 的做法是把这个前置条件拆掉：亲信战友让玩家带 NPC 队友单人推进主线，五层社交梯度让每一层都能停。社交从必修课变成选修课，压力自然消失。</p>
+          <p>但只做到「不强迫社交」是不够的。玩家一旦全留在单人层，社区就散了，MMO 的人多优势——匹配、公会、高难组队——也没了。所以 FF14 补上了「强社区」这半边：它不是强迫社交，而是让善意自然发生，豆芽标识让新人被看见、新人频道降低提问门槛、GM 治理把善待新人从道德变成约束。社区氛围本身成为留存的原因，而不是社交义务。</p>
+          <p>不过弱社交也有它的副作用。大部分玩家停留在浅层，绝本需要的固定队没人组，公会内容参与率低，处理不好就会滑向社区荒漠。FF14 的应对不是加一套强制社交任务，而是让内容难度自己筛选：极神需要招募板、零式需要固定队默契、绝本几乎必须组队。玩家是被内容难度自然推到深度社交的，不是被系统逼的。</p>
+          <p>到最后，弱社交和强社区各管一头：弱社交负责降低门槛、扩大受众，强社区负责保住长线留存，中间靠内容难度衔接。独狼可以永远停在单人层，想深入的人会被内容引向固定队，谁都没被强迫。</p>
+
+          <h2>三、解法二：低压力留存 + 周上限收敛</h2>
+          <p>爆肝分层的本质，是成长和投入时间线性挂钩——玩得越多、成长越快、差距无限拉大。FF14 用周上限把这条线改成了有封顶的曲线：神典石每周有获取上限，刷满之后再投入没有收益。于是肝帝和休闲的差距不再线性拉大，而是收敛到同一个上限。再叠加「无签到、接受版本式回归」的低压力设计，玩家可以不打卡也不掉队。</p>
+          <p>这套设计也不是没有代价。周上限本质上是个 FOMO 机制，它靠「错过就亏」制造留存，时间一长，「每天刷满上限」就从自由选择变成义务，打卡感超过获得感——这正是 8.0 要废掉它的原因。低压力设计还牺牲了日活数据，换来的口碑和回归率是滞后的、看不见的。</p>
+          <p>FF14 用追赶机制来消化这些代价：版本末期提升神典石获取、超越之力降低旧副本难度、剧情跳过包，让掉队的人能快速追回来。8.0 更进一步，把每日制改成每周制、错过可回溯，从根上削弱 FOMO。</p>
+          <p>最终落在一个平衡点上：差距被压到「不致命但仍有吸引力」，每周玩几小时的人能毕业，每周玩 40 小时的人也不被过度惩罚。低压力换来的高回归率，反过来补足了日活的损失——用口碑换日活，是它和所有氪金手游的根本分野。</p>
+
+          <h2>四、解法三：三通道确定性保底</h2>
+          <p>随机挫败的本质，是成长依赖单一随机源——装备只有随机掉落一条路，脸黑玩家被概率劝退。FF14 把确定性梯度化：神典石兑换是保底、制作是中等、副本掉落是随机惊喜，三条路并行。脸黑的人走保底，追求刺激的人走随机，各有确定可达的路径。</p>
+          <p>三通道也带来了自己的问题。如果保底就能拿到最好的装备，副本掉落的惊喜就贬值了，高难内容没人打，整个内容生态的「随机奖励」这一环就失效了。</p>
+          <p>FF14 用装等梯度把三条路拉开：神典石兑换的装备装等低于副本掉落的最高装等，保底保证「能玩」，但「冲顶」还是要靠掉落。再用装等门槛把三通道串起来——打高难前必须先靠保底凑够装等门槛，于是保底成了掉落的「前置」，而不是「替代」。</p>
+          <p>最后达成的是确定性和随机性的平衡：保底给「能毕业」的确定路径，随机给「毕业更快更强」的追求空间。休闲玩家靠保底毕业，硬核玩家靠掉落冲顶，两类人都不觉得被亏待。</p>
+
+          <h2>五、解法四：货币双轨软重置</h2>
+          <p>长线通胀的本质，是货币无限沉淀——老玩家囤积的币越来越多，购买力被稀释，新玩家被通胀压制。FF14 把货币拆成双轨：诗学轨永久存在、负责追赶旧内容，当期轨每 2 个版本退役一代、负责当前毕业节奏。当期币退役时按 4:1 软兑换、不清零但贬值，旧币自然退出流通，沉淀被切断。</p>
+          <p>软重置的代价是被清空的隐性焦虑——玩家辛苦攒的币每 2 个版本贬值一次。货币隔离还带来认知负担：诗学、当期、已退役，加上军票、工票，新手分不清。</p>
+          <p>好在软重置本身就是二次手段：4:1 兑换比例加缓冲期，给玩家消化库存的时间，把「清零」的激烈反抗软化成了「贬值」的可接受损失。诗学轨再兜一层底：旧币永远能兑换旧内容，不会完全作废，进一步缓解被清空感。</p>
+          <p>最终是防通胀和防焦虑的平衡：货币会贬值但不清零、有缓冲期、有诗学轨兜底，玩家的损失可接受，经济又能长年不崩。这就是它能在纯订阅、无付费点的情况下，把经济维持十几年的原因。</p>
+
+          <h2>六、经济系统：金币该买什么、不该买什么</h2>
+          <p>上面四个解法落到系统里，经济系统承担的是「长线通胀」和「随机挫败」这两个问题。它的核心决策，其实是一件事：<strong>给金币划一条职能边界</strong>。</p>
+          <p>FF14 的金币其实非常强大——市场板上几乎什么都能买：制作装备、材料、魔晶石、食物药水、坐骑、宠物、幻化、甚至房屋。如果金币真的能买一切，玩家的所有行为都会被简化成赚钱，有钱就有一切，谁还去打本、做任务、研究生产？这正好违反 FF14「不鼓励把赚钱当主要目标」的定位。</p>
+          <p>所以 FF14 刻意保留了一些金币买不到的东西。当期神典石兑换的毕业装，只能靠时间投入刷币，金币买不到；零式、绝本掉落的最高装等装备是绑定的、不可交易，只能靠挑战；军票、狼印、工票兑换的玩法奖励，只能用对应的玩法货币换。这三类「金币禁区」不是设计遗漏，而是刻意为之——它们各自代表一种金币不该买的价值：神典石装备代表时间投入，零式绝本装备代表挑战成果，军票狼印工票代表玩法参与。金币一旦能买到这些，「时间」「挑战」「参与」就都失去了意义。</p>
+          <p>金币的职能被圈定在通用消费里——市场板、房屋、修理、传送，但不负责核心成长。后果很明确：金币买不到实力，只能买到便利和外观。玩家赚再多金币也无法用钱绕过硬核成长，公平保住了；反过来，金币的边际效用被压低，赚钱动力自然减弱，正好符合「不鼓励赚钱」的意图。</p>
+          <p>控制金币职能靠三件事：货币隔离，神典石、军票、狼印、工票各自独立，不能换成金币；装备绑定，高难装备不可交易；特定货币兑换，玩法奖励绑定玩法参与。而解决通胀的部分，就是上面说的货币双轨软重置，再加上三层回收——传送修理这种高频小额消耗、市场板 5% 交易税、房屋坐骑这种大额沉淀，三层一起把流进市场的金币慢慢吸走。完整拆解见<a href="#" data-goto="economy">「经济系统 · 神典石」篇</a>。</p>
+
+          <h2>七、战斗系统：易学和难精怎么同时成立</h2>
+          <p>战斗系统承担的是「操作门槛」这个问题，它的解法不是降低难度，而是把深度从「操作」转移到「节奏」。</p>
+          <p>FF14 的战斗技能分两层。GCD 层提供稳定的节拍，是 2.5 秒全局冷却构成的循环骨架；oGCD 层在这个节拍上填充密度，负责爆发、减伤、治疗。这样做的效果是，新手只要按节拍打循环就能玩，高手则在 GCD 间隙插入 oGCD 做出差异化决策——深度来源从「手速」变成了「节奏规划」。代价是失去了动作游戏的连招爽感，但换来受众扩大，动作苦手、高延迟玩家都能玩。</p>
+          <p>副本这边，则是把内容难度本身做成一套教学。四人本教基础协作，讨伐战教个人责任，24 人团本制造场面感，极神教机制密度，零式教团队配合，绝本教极致执行。玩家从零逐步掌握战斗规则，每个层级都是前一层能力的自然延伸，学习曲线是平滑的，而不是在某个节点突然被高难内容挡在门外。</p>
+          <p>但梯度设计也有一个隐患：如果每层都只是难度数字递增、没有明确的「教什么」，梯度就退化成单纯的数字门槛。FF14 的做法是让每一层都锚定一种具体能力，四人本建立机制语言、讨伐战建立个人责任、极神引入零式的复杂机制类型——玩家爬的是「能力阶梯」，不是「数值阶梯」。同时用超越之力给过期高难降门槛，让迟来的玩家也能渐进追赶，而不是被一道墙永远挡在外面。</p>
+
+          <h2>八、社交系统：五层梯度怎么落地</h2>
+          <p>社交系统承担的是「强社交压力」和「新手匹配荒」，它把解法一落成了五层梯度。</p>
+          <p>五层是：单人体验层有亲信战友、单人主线，被动接触层有豆芽标识，轻度互动层有跨服好友、新人频道，目标协作层有招募板、房屋，深度归属层有部队、固定队、RP。每层之间不强绑定，玩家可以停在任一层获得完整体验，社交从必修前置变成可选增强。</p>
+          <p>这五层的难点不在「分几层」，而在「让每一层都有完整的体验闭环」。亲信战友要会走位、会处理机制、会按职业分工，这样单人才是真能玩，而不是残缺的替代；豆芽标识要能让老玩家一眼识别新人、自发帮忙；新人频道要隔离成一个「提问不算打扰」的空间；GM 治理要把「善待新人」从道德期待变成行为约束。每一层都不是空架子，都有对应的机制撑着。</p>
+          <p>至于「新手匹配荒」，靠的是日随的奖励换时间循环——系统用奖励买老玩家排低级副本的时间，再把这笔时间分配到新人的匹配需求上，让老带新成为拿奖励的副产品，而非强制任务。这套循环的完整拆解见<a href="#" data-goto="social">「社交系统 · 日随」篇</a>。</p>
+
+          <h2>九、养成系统：三条路和一道门槛</h2>
+          <p>养成系统承担的是「随机挫败」和「制造分层」，它把解法二、解法三落成了具体设计。</p>
+          <p>先说三条路。制作装备是非副本玩家的替代路径，神典石兑换是确定性保底，副本掉落是随机惊喜，三条线并行，汇入同一个装等目标。它的意义在于让「变强」这件事对任何偏好的玩家都可达——不想打本的靠制作，脸黑的靠保底，追求刺激的靠掉落，没有人被逼上唯一的独木桥。</p>
+          <p>再说一道门槛。装等这个数字统一衡量成长，同时作为高难内容的准入门槛。它配合周上限一起用：装等给玩家一个清晰的「下一个目标」，周上限让「多投入」有递减收益，把肝帝和休闲的差距从线性拉大收敛到同一上限。于是每周只玩几小时的人也能毕业，不打日随也不掉队。</p>
+          <p>这里面的平衡也值得说清楚。装等门槛如果太高，休闲玩家被挡在门外；太低，高难内容失去意义。周上限如果太松，肝帝碾压休闲；太紧，又变成打卡负担。FF14 的落点是让门槛「够得着但需要一点努力」，让周上限「压得住差距但不制造焦虑」，再用追赶机制兜住那些中途离开的人。魔晶石镶嵌作为装等之上的属性定制层，则给硬核玩家留了一个「同装等也能拉开差距」的深度空间，见<a href="#" data-goto="growth">「养成系统 · 魔晶石」篇</a>。</p>
+
+          <h2>十、三层循环与系统全景图</h2>
+          <p>四个系统不是各自为战，而是架在一个三层循环的时间尺度架构上：</p>
+
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.01 — 三层循环时间尺度架构</div>
+            <div class="loop-layer">
+              <div class="lk">情感循环<span>年尺度</span></div>
+              <div class="lv">为什么入坑、为什么留下</div>
+              <div class="ld">主线剧情 → 角色认同 → 情感触点 → 社交传播 → 再投入</div>
+              <div class="loop-nest">
+                <div class="d-arr"><span class="al">驱动</span><span class="ln"></span><span class="hd"></span></div>
+                <div class="loop-layer">
+                  <div class="lk">战斗循环<span>日尺度</span></div>
+                  <div class="lv">每天做什么、反复打本的动力</div>
+                  <div class="ld">副本挑战 → 机制学习 → 装备获取 → 难度解锁</div>
+                  <div class="loop-nest">
+                    <div class="d-arr"><span class="al">驱动</span><span class="ln"></span><span class="hd"></span></div>
+                    <div class="loop-layer">
+                      <div class="lk">赛季循环<span>版本尺度</span></div>
+                      <div class="lv">长期活力</div>
+                      <div class="ld">版本重置 → 内容消耗 → 毕业等待 → 新版本</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="loop-back"><span class="lb-ar">↑</span>赛季反哺情感（身份、装备、社区），三层构成闭合驱动链</div>
+          </div>
+
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.02 — 四系统支撑网络</div>
+            <div class="net">
+              <div class="d-node hub span2">
+                <span class="nk">核心玩法 · 时间消费主场景</span>
+                <span class="nv">战斗系统</span>
+              </div>
+              <div class="arr-cell"><span class="elbl">产出神典石</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
+              <div class="arr-cell"><span class="elbl">掉落装备</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
+              <div class="d-node">
+                <span class="nk">货币 / 神典石 / 市场</span>
+                <span class="nv">经济系统</span>
+              </div>
+              <div class="d-node">
+                <span class="nk">装等 / 三通道</span>
+                <span class="nv">养成系统</span>
+              </div>
+              <div class="arr-cell"><span class="elbl">周上限 / 兑换</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
+              <div class="arr-cell"><span class="elbl">装等门槛</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
+              <div class="d-node key span2">
+                <span class="nk">匹配、老带新、固定队</span>
+                <span class="nv">社交系统</span>
+              </div>
+            </div>
+          </div>
+
+          <p>没有任何一个系统是终点，所有系统都在支撑别的系统——战斗产出神典石，经济调控兑换节奏，养成转化为装等门槛，社交反哺匹配生态。这套互相支撑的网络，正是它能在十余年里持续运转的架构基础。</p>
+
+          <h2>十一、8.0 的转折：这些解法自己也遇到了问题</h2>
+          <p>FF14 的低压力设计成就了它，但 13 年后，这套解法自己也走向了反面：</p>
+          <ul>
+            <li><strong>周上限从保护变成了负担。</strong>本意是防爆肝，落到每天刷一点的执行上，反而变成每天必须打卡，奖励从激励异化成了义务。</li>
+            <li><strong>公式化更新的路径依赖。</strong>X.0 主线、X.01 零式、X.1 24 人本、X.2 新零式层，高度可预测，期待感转成疲劳感。</li>
+            <li><strong>副职业重复刷装。</strong>单角色 21 个职业，终局装备要逐职业刷，重复劳动严重。</li>
+          </ul>
+          <p>所以 8.0「银海之天舟」的改动，本质是再次把选择权还给玩家：废除每日刷神典石，改为「冒险者活跃度」每周任务制 + 赛季制；最高装等全职业共享；战斗双轨。</p>
+          <blockquote>这个转折揭示了 FF14 最深刻的一课：低压力不是一劳永逸的设计，它有它自己的生命周期。当周上限从保护玩家的手段变成绑架玩家的约束时，就需要再次把固定时间投入改成自由时间。设计减负机制时，必须预设它未来会被重新评价。</blockquote>
+
+          <h2>十二、启示</h2>
+          <ol>
+            <li><strong>先识别劝退问题，再设计解法，还要想清楚代价。</strong>FF14 的每一个核心系统，都是对一个具体劝退点的回应。但真正的功夫不在「想到了解法」，而在「想清楚了代价」——每个解法都自带副作用，能不能用二次手段消化副作用，决定了这个解法是能跑十几年还是三个月就崩。</li>
+            <li><strong>把选择权还给玩家是终极解法。</strong>FF14 所有系统都不强迫，而是可选——经济不强迫赚钱、社交不强迫组队、养成不强迫爆肝。强迫制造焦虑，可选产生归属感。这一条是四个解法的共同内核。</li>
+            <li><strong>循环网络比功能清单更有生命力。</strong>衡量一个系统的价值，看它是否让某个循环持续运转，而不是功能多不多。FF14 的系统价值在于互相支撑、互相供给，这样才能长年不崩。</li>
+          </ol>
+
+          <div class="td-next"><a href="#" data-goto="economy">下一篇 — 经济系统 · 神典石 →</a></div>
+</div>
+</article>
+
+      <!-- ===== 02 经济系统·神典石 ===== -->
+      <article class="td-article" data-td="economy">
+        <div class="td-lead">
+          <span class="scope">SCOPE — 锚定 7.5x（神典石现行）+ 8.0 废除神典石刷取前瞻</span>
+          神典石（亚拉戈神典石）是 FF14 战斗向核心代币，是「货币双轨 + 软重置」架构最完整的样本。本篇从架构下钻到设计批判与横向对比，回答：这个模式好在哪、为什么必须改、是设计自带缺陷还是时代变了。
+        </div>
+
+        <div class="td-quick">
+          <div class="qc chamfer"><div class="q">架构模式</div><div class="a">货币双轨 + 软重置</div></div>
+          <div class="qc chamfer"><div class="q">解决的问题</div><div class="a">沉淀通胀 + 追赶困难</div></div>
+          <div class="qc chamfer"><div class="q">关键权衡</div><div class="a">软重置（贬值）而非硬清零</div></div>
+          <div class="qc chamfer"><div class="q">8.0 走向</div><div class="a">每日制 → 每周任务制</div></div>
+        </div>
+
+        <div class="td-body">
+          <h2>一、定位与架构</h2>
+          <p>神典石是 FF14 战斗玩家「变强」的确定性货币，它连接战斗（产出）、经济（货币）、养成（装等兑换）三个系统。其架构核心是<strong>双轨</strong>：</p>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.03 — 货币双轨架构</div>
+            <div class="fork-head d-node hub">
+              <span class="nk">亚拉戈神典石</span>
+              <span class="nv">双轨并行</span>
+            </div>
+            <div class="fork-lines"></div>
+            <div class="fork-arms">
+              <div class="d-node key">
+                <span class="nk">诗学神典石 — 永久轨</span>
+                <span class="nv">追赶 / 补漏</span>
+                <span class="nd">永久存在 · 无周上限 · 换旧内容装备</span>
+              </div>
+              <div class="d-node">
+                <span class="nk">当期神典石 — 轮换轨</span>
+                <span class="nv">节奏 / 毕业</span>
+                <span class="nd">每 2 个小版本退役一代 · 按 4:1 软兑换 · 换当前毕业装</span>
+              </div>
+            </div>
+          </div>
+          <ul>
+            <li><strong>永久轨</strong>解决「回归玩家如何快速赶上旧内容」——用通用币换历史装备；</li>
+            <li><strong>轮换轨</strong>解决「当前版本如何控制毕业节奏」——用当期币换顶级装备。</li>
+          </ul>
+          <p>两条轨各司其职，正是 FF14 经济系统「诗学永久 + 当期轮换」架构的完整落地。</p>
+
+          <h2>二、架构模式提炼：货币双轨 + 软重置</h2>
+          <ul>
+            <li><strong>核心结构</strong>：① 双轨——一条永久通用币（追赶）+ 一条当期轮换币（毕业）；② 软重置——当期币退役时不直接清零，而是按 4:1 兑换为上一代，再 2 个版本后移除。</li>
+            <li><strong>解决什么问题</strong>：长期运营游戏的两大货币顽疾——「旧玩家沉淀通胀」和「回归玩家追赶困难」，用「双轨」一次性解决。</li>
+            <li><strong>关键权衡</strong>：选「软重置（贬值）」而非「硬清零」。清零会引发强烈抵触；软重置用「时间 + 固定兑换比例」给玩家留出消化库存的缓冲期，把「被清空」的焦虑软化到可接受范围。</li>
+            <li><strong>适用范围</strong>：有明确「版本/赛季」节奏、且存在「毕业装备」概念的长周期产品。</li>
+            <li><strong>代价</strong>：当期币贬值仍会让老玩家产生「辛苦积累被稀释」的隐性焦虑，只是被软化了；且「诗学 + 当期 + 已退役」多种神典石并存，有一定认知成本。</li>
+          </ul>
+
+          <h2>三、系统关系 / 循环图</h2>
+          <p>神典石把「战斗 → 经济 → 养成 → 战斗」串成一个闭环：</p>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.04 — 神典石终局循环</div>
+            <div class="cyc">
+              <div class="d-node hub">
+                <span class="nk">日随 / 副本 / 讨伐 / 狩猎 / 蛮族</span>
+                <span class="nv">战斗玩法</span>
+              </div>
+              <div class="d-arr-r"><span class="al">产出</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node key">
+                <span class="nk">受周上限约束</span>
+                <span class="nv">神典石</span>
+              </div>
+              <div class="d-arr up"><span class="al">回到战斗</span><span class="hd"></span><span class="ln"></span></div>
+              <div class="cyc-center">CLOSED LOOP<br>周上限把节奏拉长到整个版本周期</div>
+              <div class="d-arr"><span class="al">兑换</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node">
+                <span class="nk">零式 / 绝本</span>
+                <span class="nv">高难内容准入</span>
+              </div>
+              <div class="d-arr-r rev"><span class="al">装等达标</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node">
+                <span class="nk">兑换毕业装备</span>
+                <span class="nv">养成</span>
+              </div>
+            </div>
+          </div>
+          <ul>
+            <li><strong>周上限</strong>是这条闭环的「节奏手段」：它让「每周投入」和「毕业进度」挂钩，玩家无法靠爆肝一次性追平，从而把终局内容节奏拉长到整个版本周期；</li>
+            <li><strong>诗学轨</strong>则旁路这条闭环，专供「旧内容补漏/回归追赶」，不干扰当期节奏。</li>
+          </ul>
+
+          <h2>四、演进史</h2>
+          <p>神典石从 2.0 起就是战斗养成核心代币，十余年里「诗学 + 当期轮换」的架构<strong>结构稳定不变</strong>，变的只是当期币的名称与对应装等：</p>
+          <div class="timeline">
+            <div class="tl-node"><span class="tl-v">2.0 新生</span><span class="tl-c">哲学 → 神话</span><span class="tl-n">确立「诗学+当期」双轨</span></div>
+            <div class="tl-node"><span class="tl-v">3.0 苍穹</span><span class="tl-c">法典 → 传承</span><span class="tl-n"></span></div>
+            <div class="tl-node"><span class="tl-v">4.0 红莲</span><span class="tl-c">创世</span><span class="tl-n"></span></div>
+            <div class="tl-node"><span class="tl-v">5.0 暗影</span><span class="tl-c">寓言 → 幻想 → 战利品</span><span class="tl-n"></span></div>
+            <div class="tl-node"><span class="tl-v">6.0 晓月</span><span class="tl-c">无言 → 天文 → 因果 → 神曲</span><span class="tl-n">6.57 周上限放宽</span></div>
+            <div class="tl-node"><span class="tl-v">7.0 金曦</span><span class="tl-c">美学 → 天道 → 数理 → 新一代</span><span class="tl-n">装等 700 → 780 逐版抬升</span></div>
+          </div>
+          <p><strong>关键洞察</strong>：演进史揭示的是「<strong>架构稳定、参数滚动</strong>」——轮换机制本身十余年不变，但每 2 个版本换一次「当期币」，用「改名 + 改兑换装等」完成一次温和的经济重置。这种「以不变应万变」正是它能长期运转的原因。</p>
+
+          <h2>五、神典石模式为什么能跑 13 年</h2>
+          <p>神典石不是单一货币，而是一套「<strong>周上限 + 确定性保底 + 双轨 + 软重置</strong>」组合拳。拆开看，每一手都解决了一个真实问题：</p>
+          <ol>
+            <li><strong>周上限 = 用「时间门槛」替代「体力值」</strong>。FF14 没有体力系统，靠「每周获取上限」控制毕业节奏——玩家无法靠爆肝一次性追平，终局内容被均匀拉长到整个版本周期。这同时保护了「每周只玩 2 小时」的玩家不被「每周玩 40 小时」的玩家碾压。</li>
+            <li><strong>确定性保底对冲随机掉落</strong>。副本掉落是随机的，神典石兑换是确定的。「随机」负责惊喜，「确定」负责兜底——让「脸黑」的玩家也有一条可规划的毕业路径，不被概率劝退。</li>
+            <li><strong>双轨同时解决两个相反问题</strong>。诗学轨管「回归玩家如何快速补上旧内容」，当期轨管「当前版本如何控制毕业节奏」。一条轨防止「落后」，一条轨防止「通胀」。</li>
+            <li><strong>软重置防长期沉淀</strong>。当期币每 2 个版本退役、4:1 软兑换，不清零但贬值——阻止老玩家囤币造成通胀，同时用「缓冲期」化解「被清空」的抵触。</li>
+            <li><strong>作为「老带新」的动力</strong>。神典石是日随的核心奖励，驱动老玩家排低级本、填满新人匹配池（见<a href="#" data-goto="social">「社交 · 日随」篇</a>）。它不只是一个货币，还是社交/匹配循环的「动力」。</li>
+          </ol>
+          <blockquote>神典石是一套「用时间门槛控制节奏、用确定性保护公平、用软重置维护经济」的成熟设计，它让 FF14 在「无付费点、纯订阅」的前提下，维持了 13 年稳定的终局循环。</blockquote>
+
+          <h2>六、为什么 8.0 必须改</h2>
+          <p>官方给出的信号非常明确：吉田直树在粉丝节直言「玩家早已厌倦刷神典石」，并宣布废除沿用 13 年的神典石刷取机制，改为「冒险者活跃度」每周任务制。改的动因可以拆成四条：</p>
+          <ol>
+            <li><strong>「每日刷石」的疲劳感</strong>：神典石获取绑定每日随机，玩家为了刷满周上限，被迫每天上线打一遍「练级/高难」随机——奖励从「激励」异化成了「义务」。</li>
+            <li><strong>每日打卡的强制感</strong>：周上限本意是「防爆肝」，但落到「每天刷一点」的执行上，反而变成「每天都必须来」，对时间碎片化的玩家是一种反向绑定。</li>
+            <li><strong>公式化更新的路径依赖</strong>：X.0 主线 → X.01 零式 → X.1 24 人本 → X.2 新零式层 → X.3-X.5 逐步开放，配上「每个版本刷新一代神典石」，整个终局节奏高度可预测，期待感转成疲劳感。</li>
+            <li><strong>副职业重复刷装</strong>：单角色 21 个职业，但终局装备要逐职业刷神典石兑换，重复劳动严重（8.0 用「装等全职业共享」一并解决）。</li>
+          </ol>
+
+          <h2>七、核心判断：设计自带问题，还是时代变迁？</h2>
+          <p>这是最关键的一问。我的判断是：<strong>两者都有，但主因是「时代变迁把设计自带的副作用放大了」，最终导致同一个设计从「优点」翻转为「缺点」。</strong></p>
+
+          <h3>设计自带的问题（从 2013 年就埋下的）</h3>
+          <ul>
+            <li><strong>周上限本质是 FOMO 机制</strong>：它用「错过就亏」制造留存。这个机制从出生就自带「打卡感」——只是早期玩家少、竞品少，副作用不明显。</li>
+            <li><strong>货币轮换自带「被清空焦虑」</strong>：软重置只是「软化」了清零，没有「消除」贬值焦虑。老玩家辛苦攒的币，每 2 个版本就贬值一次。</li>
+            <li><strong>「奖励换时间」会退化</strong>：神典石作为日随奖励，本意是「用奖励买老玩家时间反哺新人」，但时间一长，「奖励」会变成「义务」，老带新从「自发」变成「被迫打卡」。</li>
+          </ul>
+
+          <h3>时代变迁（外部环境的根本变化）</h3>
+          <ul>
+            <li><strong>玩家时间碎片化加剧</strong>：手游时代把「碎片时间」变成了主流，而神典石要求「每天固定上线打一遍随机」，与碎片化背道而驰。</li>
+            <li><strong>竞品转向「减负/尊重时间」</strong>：逆水寒手游「不肝不氪不卷」、命运方舟 2.0「一周上线三天拿满」，整个行业把「尊重玩家时间」变成了硬标准。</li>
+            <li><strong>「时间换成长」模式整体失效</strong>：传统 MMO 的「用时间换数值」正在被「短时可参与、即时可收获」取代。</li>
+            <li><strong>赛季制/战斗通行证成为主流心智</strong>：玩家已经习惯了「赛季刷新 + 进度条 + 分级奖励」的节奏，反而觉得「永久累计」是老套的。</li>
+          </ul>
+
+          <h3>为什么说「时代放大了自带问题」</h3>
+          <p>周上限这个设计，在 2013 年叫「低压力、防爆肝、尊重玩家」，到 2025 年却变成了「打卡、FOMO、不尊重玩家」——<strong>设计没变，是评价标准变了</strong>。当「每天 30 分钟固定打卡」从「可接受的成本」变成「不可接受的负担」时，神典石的「周上限」就从「保护玩家的手段」变成了「绑架玩家的约束」。</p>
+          <p>所以答案不是「神典石设计错了」，而是「<strong>神典石是一套为『固定时间投入』时代设计的东西，遇到了『碎片化时间』的时代</strong>」。8.0 改它，改的不是某个数值，而是「从固定打卡到自由时间」的底层假设。</p>
+
+          <h2>八、权衡与反例</h2>
+          <ul>
+            <li><strong>周上限的两面性</strong>：好处是「每周只玩固定时间也有明确目标」，坏处是催生「每日/每周打卡」的强制感——时间碎片化的玩家反而被绑定。这正是 8.0 要废掉它的直接原因。</li>
+            <li><strong>8.0 的架构自我否定</strong>：官方宣布废除沿用 13 年的神典石刷取机制，改为「冒险者活跃度」每周任务制 + 赛季制。这本质是<strong>架构级的自我否定</strong>——当「周上限 + 每日刷」从「节奏手段」异化成「疲劳来源」时，整个货币架构被重构。这是观察「长线运营型 MMO 如何在成熟期否定自己的成功范式」的绝佳样本。</li>
+          </ul>
+
+          <h2>九、横向对比：其他游戏的同类系统</h2>
+          <div class="cmp-grid">
+            <div class="cmp-card cmp-self chamfer">
+              <h4>FF14 · 神典石（旧）</h4>
+              <div class="cmp-row"><span>机制</span>每周 450 上限 + 每日随机</div>
+              <div class="cmp-row"><span>上限</span>周上限，纯时间投入</div>
+              <div class="cmp-row"><span>差异</span>谁都能换，纯靠时间</div>
+            </div>
+            <div class="cmp-card cmp-self chamfer">
+              <h4>FF14 8.0 · 活跃度</h4>
+              <div class="cmp-row"><span>机制</span>每周活跃度清单 + 赛季</div>
+              <div class="cmp-row"><span>上限</span>无日上限、错过可回溯</div>
+              <div class="cmp-row"><span>差异</span>自由时间、殊途同归</div>
+            </div>
+            <div class="cmp-card chamfer">
+              <h4>WoW · 勇气点数</h4>
+              <div class="cmp-row"><span>机制</span>升级大秘境装备</div>
+              <div class="cmp-row"><span>上限</span>周上限 750 + 携带上限 1500</div>
+              <div class="cmp-row"><span>差异</span>用「限时成就」解锁升级资格</div>
+            </div>
+            <div class="cmp-card chamfer">
+              <h4>WoW · 宏伟宝库（低保）</h4>
+              <div class="cmp-row"><span>机制</span>每周开箱，按上周最高层数</div>
+              <div class="cmp-row"><span>上限</span>周重置</div>
+              <div class="cmp-row"><span>差异</span>确定性保底，绑定实力</div>
+            </div>
+            <div class="cmp-card chamfer">
+              <h4>命运方舟 2.0</h4>
+              <div class="cmp-row"><span>机制</span>周常整合 + 赛季制</div>
+              <div class="cmp-row"><span>上限</span>一周三天拿满</div>
+              <div class="cmp-row"><span>差异</span>砍日常、合并周常</div>
+            </div>
+            <div class="cmp-card chamfer">
+              <h4>逆水寒手游</h4>
+              <div class="cmp-row"><span>机制</span>殊途同归 + 赛季制</div>
+              <div class="cmp-row"><span>上限</span>资源获取上限</div>
+              <div class="cmp-row"><span>差异</span>每天 5 分钟、不同玩法同收益</div>
+            </div>
+          </div>
+
+          <h3>三个关键对比洞察</h3>
+          <p><strong>① FF14 神典石对 WoW 勇气点数：同为「周上限 + 确定性升级」，但门槛不同。</strong>FF14 用「时间」做门槛（低压力、谁都能毕业），WoW 用「实力」做门槛（升级资格 = 挑战成果）。这背后是两款游戏对「终局装备」的定位差异：FF14 的装备是「参与就能拿到」，WoW 的装备是「挑战才能升级」。</p>
+          <p><strong>② FF14 神典石对 WoW 低保：殊途同归的「确定性保底」。</strong>两者本质都是「用确定性兜住随机的底」，只是形式不同：一个是「开箱」，一个是「兑换」。这印证了一个普遍规律：<strong>长线 MMO 的终局必须有一条确定性路径，纯随机是留不住人的</strong>。</p>
+          <p><strong>③ FF14 8.0 对命运方舟 2.0 / 逆水寒：殊途同归的「减负方向」。</strong>三家不约而同地走向同一个方向：<strong>从「固定打卡」到「自由时间」，从「单一玩法绑定」到「殊途同归」，从「错过即亏」到「可追赶」</strong>。</p>
+
+          <h2>十、当前玩家更接受什么</h2>
+          <p>从 FF14 8.0 和竞品的共同转向，可以提炼出「当前玩家对终局节奏」的五个明确偏好：</p>
+          <ol>
+            <li><strong>每周制 &gt; 每日制</strong>：玩家要「时间自由」，能周末集中玩，而不是每天被绑定 30 分钟。</li>
+            <li><strong>可追赶/可回溯 &gt; 错过即亏</strong>：FOMO（错失恐惧）正在被玩家集体抵制，8.0 的「回溯获取上周奖励」、逆水寒的「殊途同归」都是对这一诉求的回应。</li>
+            <li><strong>殊途同归 &gt; 单一玩法绑定</strong>：玩家想「用自己喜欢的方式毕业」（打本/PvP/生产/探索都行），而不是被锁死在「刷随机副本」一条路上。</li>
+            <li><strong>赛季制 &gt; 永久累计</strong>：清爽的赛季重置 &gt; 无限积累的老库存——玩家要「每个赛季重新开始的干净感」。</li>
+            <li><strong>确定性保底仍是硬需求</strong>：这条没变。变的只是「保底的形式」（从「周上限兑换」变成「每周活跃度解锁」），但「确定性」这个内核是玩家永远要的。</li>
+          </ol>
+
+          <h2>十一、结论：神典石给系统设计的三条启示</h2>
+          <ol>
+            <li><strong>时间门槛是双刃剑</strong>：周上限/日上限同时是「节奏手段」和「FOMO 负担」。它的好坏不取决于设计本身，而取决于「玩家时间是否碎片化」。设计「时间门槛」时，必须预设它未来会被重新评价——要留一个「从固定到自由」的退路。</li>
+            <li><strong>设计的自带问题会随时代「显性化」</strong>：神典石的「打卡感」从 2013 年就存在，只是 13 年后才成为致命伤。没有永恒的「好设计」，只有「适配当前时代的设计」。老系统的定期重估，应该问的不是「它哪里错了」，而是「它当初的假设（固定时间投入）今天还成立吗」。</li>
+            <li><strong>减负不是砍内容，是「把选择权还给玩家」</strong>：8.0 的改动本质不是「减少内容」，而是「把『每天固定打卡』改成『一周内自由安排』、把『单一刷随机』改成『殊途同归』」。玩家要的不是更少的内容，而是对自己时间的控制权。</li>
+          </ol>
+
+          <div class="td-next"><a href="#" data-goto="social">下一篇 — 社交系统 · 日随 →</a></div>
+</div>
+</article>
+
+      <!-- ===== 03 社交系统·日随 ===== -->
+      <article class="td-article" data-td="social">
+        <div class="td-lead">
+          <span class="scope">SCOPE — 锚定 7.5x（当前线上）+ 8.0 前瞻</span>
+          日随（每日随机任务）是 FF14 用一套奖励设计，把「老玩家时间」自动转化为「新人匹配供给」的跨层循环架构。本篇从架构下钻到「冲突补偿」与「参与平衡调研」，层层深入。
+        </div>
+
+        <div class="td-quick">
+          <div class="qc chamfer"><div class="q">架构模式</div><div class="a">奖励换时间的跨层匹配循环</div></div>
+          <div class="qc chamfer"><div class="q">解决的问题</div><div class="a">MMO 新手匹配荒</div></div>
+          <div class="qc chamfer"><div class="q">核心洞察</div><div class="a">分离优于调和</div></div>
+          <div class="qc chamfer"><div class="q">平衡区间</div><div class="a">驱动进池 vs 逼打卡</div></div>
+        </div>
+
+        <div class="td-body">
+          <h2>一、定位与架构</h2>
+          <p>日随是<strong>每日随机任务副本</strong>：玩家不指定具体副本，由任务搜索器随机匹配，每日首次完成获得额外奖励。它的架构价值不在「副本」，而在它构造了一个<strong>自维持的跨层匹配循环</strong>。</p>
+          <p>日随的种类覆盖不同目的：练级/主线任务/讨伐歼灭战/高难度/50-80 级/行会令/团队任务/大型任务/指导者/每日挑战（PVP）。奖励结构按玩家状态分流：未满级 → 经验 + 军票；满级 → 神典石；金币则是保底收入。</p>
+
+          <h2>二、架构模式提炼：奖励换时间的跨层匹配循环</h2>
+          <ul>
+            <li><strong>核心结构</strong>：① 系统用「奖励」（神典石/金币/经验）买老玩家去排「本不再需要的低级副本」的时间；② 这笔时间被分配到「新人的匹配需求」上，保证新人主线副本始终有队友；③ 新人获得「偶遇式陪伴」的体验 → 留存 → 成长为新的老玩家 → 反哺匹配池。</li>
+            <li><strong>解决什么问题</strong>：MMO 的「新手匹配荒」——老玩家都泡在高难内容，新人排低级副本没人、排不进队、体验差、流失。日随用「奖励」这个经济手段，自动调配「高价值玩家的冗余时间」去填补「低价值内容的供给缺口」。</li>
+            <li><strong>关键价值</strong>：这是「<strong>用经济激励解决社交/匹配问题</strong>」的架构——它不强制导师带新人，而是让老带新成为「拿奖励的副产品」，偶遇式陪伴比强制匹配导师更符合社交的自然状态。</li>
+            <li><strong>适用范围</strong>：有随机匹配/组队场景、且存在「老玩家不愿打低级内容」问题的多人在线产品。</li>
+            <li><strong>代价</strong>：老玩家可能把日随当「每日打工」，产生与「刷神典石」绑定的疲劳感；「速刷」老玩家与「想慢慢体验」新人的节奏冲突，可能破坏新人首次体验（FF14 对这一点的完整补偿见下文「冲突补偿设计」）。</li>
+          </ul>
+
+          <h2>三、系统关系 / 循环图</h2>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.05 — 奖励换时间的跨层匹配循环</div>
+            <div class="reflow">
+              <span class="rf-tag">反哺匹配池 · 循环闭合</span>
+              <div class="d-node hub">
+                <span class="nk">有奖励需求：神典石 / 金币 / 经验</span>
+                <span class="nv">老玩家</span>
+              </div>
+              <div class="d-arr"><span class="al">为了奖励，排入低级副本</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node key">
+                <span class="nv">匹配池：低级副本有人排队</span>
+              </div>
+              <div class="d-arr"><span class="al">新人排主线副本，立刻有队友</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node">
+                <span class="nv">新人首次体验 = 队里有经验老玩家</span>
+                <span class="nd">偶遇式陪伴 → 体验好 → 留存</span>
+              </div>
+              <div class="d-arr"><span class="al">新人长大</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node">
+                <span class="nv">成为新的「老玩家」</span>
+              </div>
+            </div>
+          </div>
+          <p>这条循环横跨三个系统：<strong>社交</strong>（老带新、偶遇式陪伴）、<strong>战斗</strong>（匹配池、副本供给）、<strong>经济</strong>（奖励是循环的「动力」）。</p>
+
+          <h2>四、演进史</h2>
+          <ul>
+            <li><strong>从单一到多元</strong>：日随从基础「练级」随机起步，逐步扩展出主线、讨伐、高难、团队、指导者、PVP 等多种随机，覆盖不同目的（练级/拿币/带新人/补位）；</li>
+            <li><strong>奖励结构随版本迭代</strong>：满级后奖励从经验切换为当期神典石，与货币轮换架构同步（见<a href="#" data-goto="economy">「经济 · 神典石」篇</a>）；</li>
+            <li><strong>8.0 前瞻</strong>：核心日常从「每日随机刷神典石」改为「冒险者活跃度」每周任务制，日随的「每日」属性将让位于「每周清单」，但「老带新匹配」这一底层循环大概率保留。</li>
+          </ul>
+
+          <h2>五、权衡与反例</h2>
+          <ul>
+            <li><strong>好处</strong>：零成本自维持匹配生态；老带新是「偶遇式」而非「任务式」，避免社交压力。</li>
+            <li><strong>代价</strong>：老玩家可能把日随当「每日打工」，与「刷神典石」绑定的疲劳感（8.0 改革针对的正是这一点）；「速刷」老玩家与「想慢慢体验」新人的节奏冲突，可能破坏新人首次体验。</li>
+          </ul>
+          <blockquote>这个案例最值得借鉴的不是「日随」本身，而是「用奖励把冗余时间调配到供给缺口」的架构思路——它证明了一个系统可以同时服务「老玩家拿资源」和「新人获得陪伴」两个看似矛盾的目标。</blockquote>
+
+          <h2>六、冲突补偿：不是「一个」冲突，是「三个」</h2>
+          <p>「速刷 vs 慢体验」听起来是一个矛盾，但它其实是三个<strong>可分离</strong>的子冲突，各自有不同的伤害方式和补偿方式：</p>
+          <div class="conf-grid">
+            <div class="conf-card chamfer">
+              <h4>剧情冲突</h4>
+              <div class="conf-sides">
+                <div class="conf-side"><span class="who">老玩家</span>跳过动画、快点打完</div>
+                <div class="conf-vs">VS</div>
+                <div class="conf-side"><span class="who">新人</span>完整看完剧情与演出</div>
+              </div>
+              <div class="conf-essence">时间效率 vs 内容体验</div>
+            </div>
+            <div class="conf-card chamfer">
+              <h4>教学冲突</h4>
+              <div class="conf-sides">
+                <div class="conf-side"><span class="who">老玩家</span>用最优解速刷、不等你看机制</div>
+                <div class="conf-vs">VS</div>
+                <div class="conf-side"><span class="who">新人</span>想看清机制、慢慢学</div>
+              </div>
+              <div class="conf-essence">熟练者 vs 学习者</div>
+            </div>
+            <div class="conf-card chamfer">
+              <h4>社交压力冲突</h4>
+              <div class="conf-sides">
+                <div class="conf-side"><span class="who">老玩家</span>希望你「别拖后腿」</div>
+                <div class="conf-vs">VS</div>
+                <div class="conf-side"><span class="who">新人</span>不想被催促、被嘲讽</div>
+              </div>
+              <div class="conf-essence">效率优先 vs 感受优先</div>
+            </div>
+          </div>
+          <p>关键认知：<strong>这三个冲突不是同一个问题，所以不能用同一个手段解决。</strong>FF14 的高明之处，正是它针对每个子冲突，用了不同的补偿层。</p>
+
+          <h2>七、补偿体系的分层（五层，各司其职）</h2>
+          <h3>第 1 层：空间分离 —— 亲信战友（最根本的补偿）</h3>
+          <p>亲信战友（Trust）从 5.0 起允许玩家与 NPC 队友单人攻略主线副本，6.1 后并入「剧情辅助器」。这是<strong>最根本</strong>的补偿，因为它不是「在冲突里加规则」，而是「另开一个池子，让慢体验的需求根本不用进速刷池」。官方定位很明确：亲信战友的价值就是「初见时慢慢看副本风景、触发 NPC 对话彩蛋」；NPC 队友会走位、会处理机制、会按职业分工，等于一个不会催促你的教学示范。代价是宝箱内容减少、奖励不如真人匹配，本质是「用奖励换来了不被打扰的慢体验」。</p>
+          <blockquote>设计洞察：FF14 没有试图「让速刷老玩家慢下来」，而是把「慢体验」分离成一个独立通道。这是「分离优于调和」——与其调和两种不可调和的节奏，不如给它们各自一个空间。</blockquote>
+
+          <h3>第 2 层：激励对齐 —— 初见奖励 / 职能奖励</h3>
+          <p>对于仍然愿意「和真人一起」的新人，FF14 用奖励把「带新人」从成本变成收益：<strong>初见奖励</strong>——队伍中有玩家第一次通关该副本时，全队获得额外神典石奖励，系统提示「队伍中有初次挑战的成员」，新人的存在从「负担」变成「红利」；<strong>职能奖励</strong>——缺 T/奶时以稀缺职能排队额外拿奖励，缓解职能失衡。激励对齐的本质：把老玩家的利益和新人的存在绑定在一起，让「陪新人」从「被逼」变成「有利可图」。</p>
+
+          <h3>第 3 层：机制强制 —— 不可跳过动画的副本</h3>
+          <p>针对「剧情冲突」，FF14 用了最「硬」的一招——在主线随机（帝国魔导城、最终决战）里，动画不可跳过，强迫速刷老玩家也必须看完剧情。设计意图是保护新人的「首次剧情体验」不被老玩家带节奏跳过；代价对冲是这类副本给了全游戏最高的神典石奖励，用高奖励「买」老玩家的耐心。</p>
+
+          <h3>第 4 层：能力约束 —— 等级同步 / 装等同步</h3>
+          <p>针对「教学冲突」，FF14 用等级同步把老玩家的属性和技能压到副本上限，让老玩家无法靠数值碾压直接秒杀 Boss。它不能阻止老玩家「心态上」想速刷，但阻止了「物理上」的碾压——机制仍然要处理，新人仍然看得见「正确打法」被演示，即便被速刷，也不至于「什么都没看到就通关了」。</p>
+
+          <h3>第 5 层：软性规范 —— 豆芽标识 + GM 治理</h3>
+          <p>针对「社交压力冲突」，FF14 用了「软硬结合」的两手：<strong>软</strong>——豆芽标识让新人「被看见」，激活老玩家的自发善意；<strong>硬</strong>——GM 治理极其严格，判定标准不是「有没有骂脏话」，而是「是否持续影响他人体验」；24 人本挂普攻属「消极游玩」违规；嘲讽新手会被拉进「小黑屋」。这一层是整个补偿体系能成立的地基：如果没有强 GM 治理，「豆芽友好」就只是一句口号；正是「检举即处理」的制度，把「善待新人」从「道德期待」变成了「行为约束」。</p>
+
+          <h2>八、三层冲突 → 五层补偿的对应关系</h2>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.06 — 三层冲突 → 五层补偿 对应关系</div>
+            <div class="map-row">
+              <div class="map-src">剧情冲突<span>想跳 vs 想看</span></div>
+              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
+              <div class="map-tgts">
+                <span class="d-chip key"><b>空间分离</b><span class="cs">亲信战友</span></span>
+                <span class="d-chip"><b>机制强制</b><span class="cs">不可跳过动画</span></span>
+              </div>
+            </div>
+            <div class="map-row">
+              <div class="map-src">教学冲突<span>速刷 vs 学习</span></div>
+              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
+              <div class="map-tgts">
+                <span class="d-chip key"><b>空间分离</b><span class="cs">亲信战友单人教学</span></span>
+                <span class="d-chip"><b>能力约束</b><span class="cs">等级同步</span></span>
+              </div>
+            </div>
+            <div class="map-row">
+              <div class="map-src">社交压力冲突<span>催促 / 嘲讽 vs 想慢慢打</span></div>
+              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
+              <div class="map-tgts">
+                <span class="d-chip"><b>激励对齐</b><span class="cs">初见奖励</span></span>
+                <span class="d-chip"><b>软性规范</b><span class="cs">豆芽 + GM 治理</span></span>
+              </div>
+            </div>
+            <div class="loop-back" style="margin-top:16px;"><span class="lb-ar">★</span>「空间分离」（亲信战友）是唯一同时覆盖三个子冲突的补偿——它直接把「慢体验」从「快池」里拿走，釜底抽薪</div>
+          </div>
+          <p>可以看到：<strong>「空间分离」（亲信战友）是唯一一个同时覆盖三个子冲突的补偿</strong>——因为它是「釜底抽薪」，直接把「慢体验」从「快池」里拿走了。</p>
+
+          <h2>九、补偿的副作用（这套体系不是免费的）</h2>
+          <p>强 GM 治理 + 过度保护，也产生了反噬：</p>
+          <ul>
+            <li><strong>寒蝉效应</strong>：举报机制过严，老玩家「不敢说话」，真正的交流意愿下降，反而减少了「热心指导」；</li>
+            <li><strong>过度举报</strong>：剧透举报、恶意举报被滥用，「要保护自己就当哑巴」；</li>
+            <li><strong>出警文化</strong>：部分老玩家用 ACT 伤害统计「出警」新人（骂伤害低、逼装备差的新人退队），抵消了制度保护的善意；</li>
+            <li><strong>恶意利用</strong>：有人建部队专拉豆芽，锁权限、侵占收益，把「新人保护」反向利用成「收割工具」。</li>
+          </ul>
+          <p><strong>关键判断</strong>：FF14 的补偿体系本质是<strong>「不对称地偏袒新人」</strong>——它宁可让一部分老玩家「寒蝉」，也要保住「新人友好」这块招牌。这不是「完美解」，而是一个明确的价值取舍：在「老玩家的表达自由」和「新人的安全感」之间，它选了后者。</p>
+
+          <h2>十、参与平衡调研：打日随 vs 不打日随的差距</h2>
+          <h3>先问：每个老玩家都必须打日随吗？</h3>
+          <p><strong>答案：没有一个人「必须」打。这是刻意的设计，不是遗漏。</strong>但「必须」和「倾向」是两回事：</p>
+          <div class="aud-list">
+            <div class="aud-row">
+              <div class="aud-who"><b>练副职业的</b><span>日随经验效率高</span></div>
+              <div class="aud-bar full"><i style="width:88%"></i><em>强倾向</em></div>
+            </div>
+            <div class="aud-row">
+              <div class="aud-who"><b>追当前毕业装的</b><span>日随刷神典石效率高</span></div>
+              <div class="aud-bar full"><i style="width:88%"></i><em>强倾向</em></div>
+            </div>
+            <div class="aud-row">
+              <div class="aud-who"><b>休闲 / 剧情向</b><span>想打就打，不打也行</span></div>
+              <div class="aud-bar"><i style="width:34%"></i><em>弱</em></div>
+            </div>
+            <div class="aud-row">
+              <div class="aud-who"><b>已毕业的</b><span>无动机</span></div>
+              <div class="aud-bar"><i style="width:5%"></i><em>不打</em></div>
+            </div>
+          </div>
+          <p>所以日随的设计目标是：它应该是一个「高性价比选项」，而不是一个「每日义务」。有没有人「必须」打，是判断这个系统是否健康的第一个指标——一旦出现「必须」，就说明平衡开始失衡。</p>
+
+          <h3>打与不打的差距：不是「有无」，是「快慢」</h3>
+          <p>这是本篇的核心判断。很多人直觉以为差距是「神典石多少」，但其实 FF14 用「周上限」把差距的性质改变了：<strong>神典石</strong>有周上限封顶（450，6.57 后升 900），打日随的人可能 3 天刷满，不打的人靠副本/狩猎也能刷满，差距是「到达上限的速度」而非「总量」；<strong>装备</strong>有制作、副本掉落两条路对冲，神典石差距 ≠ 装备差距 ≠ 战力差距；<strong>金币</strong>在 FF14 里不是核心追求。所以结论是：<strong>差距被层层封顶和对冲后，最终落在「毕业速度」上，而不是「最终战力」上</strong>——这正是 FF14「养成不制造分层」哲学的落地。</p>
+
+          <h3>平衡的核心杠杆（三个，缺一不可）</h3>
+          <ol>
+            <li><strong>周上限 = 差距收敛器</strong>：让「多投入」有递减收益，把「肝帝 vs 休闲」的差距从「线性拉大」改成「收敛到同一个上限」。周上限的本质不是「限制玩家」，而是「让差距收敛」。</li>
+            <li><strong>多路径可替代</strong>：神典石不只日随一种来源（副本、狩猎、讨伐、蛮族任务、挖宝都可获得），日随只是「效率最高的那条」，不是「唯一的那条」。</li>
+            <li><strong>低压力定位</strong>：整体设计哲学是「不惩罚不打卡的人」——无每日签到、接受版本式回归，差距在心理上也不致命。</li>
+          </ol>
+
+          <h3>双边风险（边界分析）</h3>
+          <p>日随的平衡是一个「平衡区间」问题，奖励必须落在「够高驱动老玩家进池，又不够高逼所有人必须打」之间。<strong>差距过大</strong>：不打的人被落下 → FOMO → 被迫打卡 → 疲劳流失，这正是 8.0 要解决的问题；<strong>差距过小</strong>：老玩家没动力 → 匹配池空 → 新人排不到队 → 新人流失，这是日随的「存在性危机」。所以日随的平衡是「双重约束」：<strong>奖励既要保「匹配池」的供给，又要防「打卡义务」的反噬</strong>，FF14 用「周上限」这个可调节的手段来动态卡位。</p>
+
+          <h3>失效信号</h3>
+          <p>13 年后，平衡在「每日制」上失衡了。当「每日刷石」的打卡感超过「获得神典石」的获得感时，日随就从「平衡点」滑向了「义务」。8.0 的「每周活跃度」改革，本质是把这个「平衡区间」从「每日」整体搬到「每周」——用更宽松的时间尺度，重新找回「够高驱动、不够高逼人」的平衡点。</p>
+
+          <h2>十一、调研方法论小结</h2>
+          <p>这个案例能提炼出一个系统策划做「参与平衡调研」的通用框架：</p>
+          <ol>
+            <li><strong>受众分层</strong>：谁「必须」用这个系统、谁「倾向」用、谁「不用」——先问「有没有人被迫」；</li>
+            <li><strong>差距定性</strong>：参与 vs 不参与的差距，落在哪个维度（战力？速度？资源？），是「有无」还是「快慢」；</li>
+            <li><strong>平衡杠杆</strong>：用什么机制把差距压到目标区间（上限？多路径？软性定位？）；</li>
+            <li><strong>双边风险</strong>：差距过大/过小各会触发什么崩溃（逼打卡 vs 系统破产）；</li>
+            <li><strong>失效信号</strong>：什么信号说明平衡开始失衡（义务感 &gt; 获得感），以及如何调整。</li>
+          </ol>
+          <blockquote>系统策划的价值不在于「能描述系统」，而在于「能回答这些平衡问题」。这套框架也是我做任何游戏拆解时的默认追问。</blockquote>
+
+          <div class="td-next"><a href="#" data-goto="growth">下一篇 — 养成系统 · 魔晶石 →</a></div>
+</div>
+</article>
+
+      <!-- ===== 04 养成系统·魔晶石 ===== -->
+      <article class="td-article" data-td="growth">
+        <div class="td-lead">
+          <span class="scope">SCOPE — 锚定 7.5x（当前线上）+ 8.0 前瞻</span>
+          魔晶石镶嵌（Materia Melding）是 FF14 在「装等」之上提供的一层「属性定制」，是「确定性 + 分层投入」架构的典型案例。
+        </div>
+
+        <div class="td-quick">
+          <div class="qc chamfer"><div class="q">架构模式</div><div class="a">确定性 + 分层投入</div></div>
+          <div class="qc chamfer"><div class="q">双层结构</div><div class="a">安全孔 + 禁断孔</div></div>
+          <div class="qc chamfer"><div class="q">兜底硬约束</div><div class="a">属性上限封顶</div></div>
+          <div class="qc chamfer"><div class="q">8.0 定位</div><div class="a">职业差异化最后保留地</div></div>
+        </div>
+
+        <div class="td-body">
+          <h2>一、定位与架构</h2>
+          <p>在 FF14 的养成架构里，装等是「统一节奏器」（决定你能进什么本），而<strong>魔晶石镶嵌是装等之上的「深度定制层」</strong>——装等相同的情况下，玩家通过镶嵌不同魔晶石微调副属性，实现装备的差异化。其关键架构特征是<strong>双层</strong>：</p>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.07 — 魔晶石双层结构</div>
+            <div class="fork-head d-node hub">
+              <span class="nk">魔晶石镶嵌</span>
+              <span class="nv">确定性 + 分层投入</span>
+            </div>
+            <div class="fork-lines"></div>
+            <div class="fork-arms">
+              <div class="d-node key">
+                <span class="nk">安全孔（绿）— 确定性层</span>
+                <span class="nv">100% 成功</span>
+                <span class="nd">装备自带孔 · 人人可做 · 确定的基础强化</span>
+              </div>
+              <div class="d-node">
+                <span class="nk">禁断孔（红）— 投入层</span>
+                <span class="nv">成功率逐孔递减</span>
+                <span class="nd">仅生产制作装备可禁断 · 追求极限才需要</span>
+              </div>
+            </div>
+          </div>
+
+          <h2>二、架构模式提炼：确定性 + 分层投入</h2>
+          <ul>
+            <li><strong>核心结构</strong>：① 确定性层（安全孔）——装备自带的孔，镶嵌 100% 成功，给所有玩家确定的基础强化；② 投入层（禁断孔）——安全孔打满后继续强行镶嵌，成功率逐孔递减，只有生产职业制作的装备才能禁断。</li>
+            <li><strong>解决什么问题</strong>：把一个「定制」系统做成「深浅两用」——休闲玩家用安全孔拿到确定的基础强化即可，硬核玩家用禁断孔追求极限属性。用「分层」同时服务两端，而不强迫任何一端。</li>
+            <li><strong>关键权衡</strong>：禁断的「递减成功率」本质是一种赌博性投入，但 FF14 用两个硬约束兜底，防止它失控：① <strong>属性上限</strong>——每件装备每种属性有上限，超出部分显示红色 +0、无收益，堵住「无限堆砌」；② <strong>偶数高阶型只能第一禁断孔</strong>——用硬规则（后续孔 0% 成功率）限制极端堆叠。</li>
+            <li><strong>适用范围</strong>：装备有「孔/槽」概念、属性可叠加、且想给硬核玩家留「投入空间」又不强迫休闲玩家的系统。</li>
+            <li><strong>代价</strong>：「溢出无收益」需要玩家自行计算阈值，认知成本高（需配装工具辅助）；禁断的赌博性若无属性上限兜底，容易滑向纯赌博。</li>
+          </ul>
+
+          <h2>三、系统关系 / 循环图</h2>
+          <p>魔晶石把「生产/狩猎/经济」三线拉进养成系统：</p>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.08 — 生产 / 狩猎 / 经济 三线汇入养成</div>
+            <div class="funnel">
+              <div class="f-col">
+                <span class="d-chip"><b>狩猎</b><span class="cs">A怪 / 战利品兑换</span></span>
+                <span class="d-chip"><b>生产</b><span class="cs">橙票 / 紫票</span></span>
+                <span class="d-chip"><b>分解装备</b></span>
+                <span class="d-chip"><b>市场</b><span class="cs">可交易</span></span>
+              </div>
+              <div class="d-arr-r"><span class="al">产出</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="d-node hub f-hub">
+                <span class="nv">魔晶石</span>
+              </div>
+              <div class="d-arr-r"><span class="al">消耗</span><span class="ln"></span><span class="hd"></span></div>
+              <div class="f-col">
+                <span class="d-chip key"><b>安全孔镶嵌</b><span class="cs">100% 成功</span></span>
+                <span class="d-chip"><b>禁断孔镶嵌</b><span class="cs">成功率逐孔递减</span></span>
+                <span class="d-chip"><b>镶嵌失败</b><span class="cs">石头消失</span></span>
+              </div>
+              <div class="loop-back" style="grid-column: 1 / -1; margin-top: 6px;"><span class="lb-ar">↓</span>属性 +N（受装备属性上限约束，溢出显示红色 +0、无收益）</div>
+            </div>
+          </div>
+          <ul>
+            <li><strong>来源</strong>：魔晶石主要通过狩猎掉落与战利品兑换获取，把「材料产出」绑定到「玩家参与的玩法」上，而非挂机分解；</li>
+            <li><strong>去向</strong>：镶嵌到装备孔，属性受装备上限约束；</li>
+            <li><strong>耦合</strong>：与生产采集（制作装备才能禁断）、狩猎（主要掉落）、经济（魔晶石可交易）三线联动。</li>
+          </ul>
+
+          <h2>四、演进史</h2>
+          <ul>
+            <li><strong>型号随版本升级</strong>：魔晶石型号随大版本推进（6.x 用 9/10 型，7.x 用 11/12 型），新装备品级要求匹配新型号；</li>
+            <li><strong>便利性改进</strong>：5.4 加入「一气禁断」，减少反复点击的枯燥；</li>
+            <li><strong>获取途径变迁</strong>：从早期「分解装备」为主，演变为「狩猎 + 战利品兑换」为主——把魔晶石获取绑定到「想要玩家参与的玩法」上，是「材料产出与玩法活跃度挂钩」的架构调整。</li>
+          </ul>
+
+          <h2>五、权衡与反例</h2>
+          <ul>
+            <li><strong>「确定性 + 赌博性」的分层</strong>：安全孔 100% 给确定的基础强化，禁断孔递减成功率制造「追求极限」的投入空间——用赌博性服务硬核玩家，而不惩罚只想基础强化的玩家。</li>
+            <li><strong>硬约束兜底</strong>：属性上限（红色 +0）和偶数高阶只能第一孔，这两个「硬规则」是防止赌博性失控的关键；反例是若没有这类兜底，分层投入会滑向纯赌博、招致反感。</li>
+            <li><strong>8.0 关联</strong>：8.0「最高装等全职业共享」明确<strong>排除魔晶石属性</strong>——意味着魔晶石将成为「每个职业仍需单独追求」的少数成长维度之一。这进一步印证了魔晶石在养成架构中的定位：<strong>它是「职业差异化」的最后保留地</strong>，当装等走向全共享时，属性定制成为硬核玩家的核心差异化空间。</li>
+          </ul>
+
+          <h2>六、系统调研：参与与平衡</h2>
+          <ul>
+            <li><strong>受众分层</strong>：没有人「必须」镶嵌。安全孔 100% 是基础，禁断是可选的深坑——休闲玩家打安全孔即可，硬核玩家才追禁断。</li>
+            <li><strong>差距定性</strong>：镶嵌 vs 不镶嵌，差距落在「副属性」上，被「属性上限」封顶——不能无限堆砌。</li>
+            <li><strong>平衡杠杆</strong>：安全孔（确定）+ 禁断（递减）+ 属性上限（封顶）。</li>
+            <li><strong>双边风险</strong>：禁断太值钱（逼人赌博 → 付费反感）vs 太弱（没人投入 → 系统闲置）。</li>
+            <li><strong>失效信号</strong>：溢出无收益的挫败、赌博反感、配装工具成为刚需（认知成本过高）。</li>
+          </ul>
+
+          <div class="td-next"><a href="#" data-goto="overall">← 回到整体拆解</a></div>
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<!-- ============ DEMO WORKS ============ -->
+<section class="page" id="page-works" data-code="WORKS / 03">
+  <div class="wrap">
+    <div class="section" style="padding-top: 128px;" data-bgword="WORKS">
+      <h2 class="page-title">Demo 展示<span class="sub">PLAYABLE WORKS — 左右滑动切换</span></h2>
+
+      <div class="works-nav">
+        <div class="works-dots" id="worksDots"></div>
+        <div class="works-arrows">
+          <button class="works-arrow" id="worksPrev" aria-label="上一个 Demo">←</button>
+          <button class="works-arrow" id="worksNext" aria-label="下一个 Demo">→</button>
+        </div>
+      </div>
+
+      <div class="works-shell">
+        <div class="works-viewport" id="worksViewport">
+          <div class="works-track" id="worksTrack">
+
+            <!-- ===== 01 GameIntern ===== -->
+            <div class="work-panel" data-work="gameintern">
+              <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span></div>
+              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · PC</div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide"><img src="assets/img/gameintern-1.png" alt="GameIntern 截图 — 家中场景" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-2.png" alt="GameIntern 截图 — 地铁场景" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-3.png" alt="GameIntern 截图 — 游戏界面 1" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-4.png" alt="GameIntern 截图 — 游戏界面 2" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-5.png" alt="GameIntern 截图 — 游戏界面 3" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-6.png" alt="GameIntern 截图 — 游戏界面 4" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-7.png" alt="GameIntern 截图 — 游戏界面 5" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-8.png" alt="GameIntern 截图 — 游戏界面 6" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>类《逃脱者2》的 2D 俯视职场沙盒：扮演一名游戏策划实习生，在真实时钟驱动的小公司世界里管理「钱 / 能力 / 人脉 / 体力 / 心情」五维资源。无胜负、目标自设——攒钱、练技能、或跳槽进大厂。核心循环：入职 → 每天上班（工作 / 摸鱼 / 问同事 / 食堂）→ 下班扣费存档 → 离职 → 面试 → 下一家公司。6 个月任期制 + 主动离职跳槽；线上面试必须躲进私密房间，被同事看到就算暴露。工作内容还原策划日常：配置表工单、QA 审核、BUG 任务、转正答辩，外加三款包装成工单的工作小游戏。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">Windows 完整包（约 51MB）。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
+                  <ul>
+                    <li>NPC 对话与 9 类氛围文本（工作小结 / 周会腹稿 / 评审意见 / 面试点评等）由 AI 实时生成，并做了全链路预算控制；</li>
+                    <li>开发过程采用多窗口 AI 分工：策划、程序、美术各有独立日志与任务看板，由「指挥日志」统一调度；</li>
+                    <li>收获与踩坑：待补充。</li>
+                  </ul>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li>待补充：遇到的问题 → 解决方案。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 02 Loomfall ===== -->
+            <div class="work-panel" data-work="loomfall">
+              <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span></div>
+              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT · 个人项目 · PC / 安卓</div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide"><img src="assets/img/loomfall-1.jpg" alt="Loomfall 截图 — 主界面" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/loomfall-2.jpg" alt="Loomfall 截图 — 游戏界面" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/loomfall-3.jpg" alt="Loomfall 截图 — 合成界面" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/loomfall-4.jpg" alt="Loomfall 截图 — 占卜界面" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/loomfall-5.jpg" alt="Loomfall 截图 — 战斗界面" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>落针界题材的 Roguelike 自动战斗卡牌：扮演「针缚者」，收集现实碎片，把素材转化、合成为卡牌，再通过站位与构筑完成战斗，缝合被撕裂的世界。每天用行动点探索地区、冥想、整理素材并合成卡牌；战斗前选择最多 4 张卡牌并调整站位顺序，随后自动结算。第 7、14 天进行 BOSS 战，一局约 10–15 分钟。设计支柱：发现（素材组合产生可理解但不完全预期的结果）、取舍（AP 与容量限制每日路线）、成长可见、短局可重玩。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">Windows 版 / 安卓 APK。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / APK</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
+                  <ul>
+                    <li>全程使用 AI 工具链制作：Kimi K3 / Claude Opus 参与系统与数值迭代，GPT image2 负责美术资产生成；</li>
+                    <li>设计文档体系先行（世界 / 玩法 / 卡牌 / 平衡共 15 篇），让 AI 在明确约束下产出，而非边做边想；</li>
+                    <li>收获与踩坑：待补充。</li>
+                  </ul>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li>待补充：遇到的问题 → 解决方案。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 03 龙舟消消乐 ===== -->
+            <div class="work-panel" data-work="longzhouxiaoxiaole">
+              <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span></div>
+              <div class="work-meta">2026 // 01 · 途游游戏 GAMEJAM · 四人小组：策划（系统 + 数值）· 安卓</div>
+              <div class="work-awards">
+                <span class="fav-badge">最佳玩法奖</span>
+                <span class="fav-badge">最佳 AI 应用奖</span>
+              </div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide"><img src="assets/img/longzhouxiaoxiaole-1.jpg" alt="龙舟消消乐 截图 1" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/longzhouxiaoxiaole-2.jpg" alt="龙舟消消乐 截图 2" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/longzhouxiaoxiaole-3.jpg" alt="龙舟消消乐 截图 3" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/longzhouxiaoxiaole-4.jpg" alt="龙舟消消乐 截图 4" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/longzhouxiaoxiaole-5.jpg" alt="龙舟消消乐 截图 5" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>三国 × 龙舟题材的 Gamejam 作品，将传统消消乐与竞速结合：玩家通过消除方块，转化为龙舟的推进动力或技能，在竞速中压倒对手。我在四人小组中担任策划（系统 + 数值）并承担部分美术工作，负责核心循环、数值框架与玩法策划案撰写。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">安卓 APK（附完整玩法策划案）。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">APK</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
+                  <ul>
+                    <li>AI 辅助素材产出与开发提速，获本届 Gamejam「最佳 AI 应用奖」；</li>
+                    <li>具体分工与收获：待补充。</li>
+                  </ul>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li>待补充：遇到的问题 → 解决方案。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 04 梗纪元 ===== -->
+            <div class="work-panel" data-work="gengjiyuan">
+              <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span></div>
+              <div class="work-meta">2025 · UNREAL ENGINE 5 · 团队项目：策划 / 卡牌设计 · PC</div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide">
+                      <video src="assets/video/gengjiyuan-demo.mp4" preload="none" playsinline></video>
+                      <div class="video-cover">
+                        <img src="assets/img/gengjiyuan-cover.jpg" alt="梗纪元演示视频封面">
+                        <span class="video-play"><svg width="26" height="30" viewBox="0 0 26 30" fill="none"><path d="M2 2.5v25L24 15 2 2.5z" fill="#fff"/></svg></span>
+                        <span class="video-tag">PLAY — 演示视频 02:55</span>
+                      </div>
+                    </div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-1.jpg" alt="梗纪元 截图 1" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-2.jpg" alt="梗纪元 截图 2" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-3.jpg" alt="梗纪元 截图 3" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-4.jpg" alt="梗纪元 截图 4" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-5.jpg" alt="梗纪元 截图 5" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gengjiyuan-6.jpg" alt="梗纪元 截图 6" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>网络热梗题材的 Roguelike 卡牌战斗（杀戮尖塔式）：在逐层推进的地图上选择路线——普通 / 精英敌人、商店、休息处、抽奖，并在「地图塌陷」剩余步数的倒计时压力下规划路径，赶在陷落前击败本层 BOSS。卡牌围绕「梗」设计效果（零元购、准备架势、好很有精神），配合宝石在合成台强化构筑，形成可复玩的卡组构筑循环。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">Windows 完整包。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li>待补充：遇到的问题 → 解决方案。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 05 永夜轮回 ===== -->
+            <div class="work-panel" data-work="yongyelunhui">
+              <div class="work-head"><h3>永夜轮回</h3><span class="en">东方风 STG 弹幕射击</span></div>
+              <div class="work-meta">2024 · GAMEMAKER · 个人项目（AIGC 课程作业）· PC</div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide">
+                      <video src="assets/video/yongyelunhui-pv.mp4" preload="none" playsinline></video>
+                      <div class="video-cover">
+                        <img src="assets/img/yongyelunhui-cover.jpg" alt="永夜轮回 PV 封面">
+                        <span class="video-play"><svg width="26" height="30" viewBox="0 0 26 30" fill="none"><path d="M2 2.5v25L24 15 2 2.5z" fill="#fff"/></svg></span>
+                        <span class="video-tag">PLAY — PV 02:20</span>
+                      </div>
+                    </div>
+                    <div class="media-slide"><img src="assets/img/yongyelunhui-1.jpg" alt="永夜轮回 截图 1" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/yongyelunhui-2.jpg" alt="永夜轮回 截图 2" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/yongyelunhui-3.jpg" alt="永夜轮回 截图 3" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/yongyelunhui-4.jpg" alt="永夜轮回 截图 4" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/yongyelunhui-5.jpg" alt="永夜轮回 截图 5" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>东方 Project 风格的纵向卷轴 STG 弹幕射击：操控角色在「永夜幻境」中穿梭，躲避密集的符卡式弹幕并以 Bomb 化解危机，残机 / Bomb 资源管理是核心决策。全部角色、弹幕视觉与场景美术由 AI 生成，弹幕 pattern 与关卡节奏由本人设计。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">Windows 完整包。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
+                  <ul>
+                    <li>AIGC 游戏创作课程作业：角色立绘、弹幕视觉、场景美术全部由 AI 生成；</li>
+                    <li>具体工具链与收获：待补充。</li>
+                  </ul>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li>待补充：遇到的问题 → 解决方案。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ 页脚 ============ -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-name">ZHOU <b>ZIQI</b></div>
+    <div class="footer-role">GAME SYSTEM DESIGNER — 求职作品集</div>
+    <div class="footer-contacts">
+      <span><span class="fk">TEL</span><span class="fv">18021276625</span></span>
+      <span><span class="fk">MAIL</span><span class="fv">3357373852@qq.com</span></span>
+      <span><span class="fk">BASE</span><span class="fv">江苏苏州 · 北京在读</span></span>
+    </div>
+    <div class="footer-note">© 2026 ZHOU ZIQI // GAME SYSTEM DESIGN — 本页面为个人作品集，内容持续补充中</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof window.gsap !== 'undefined';
+
+  /* ---------- 页签切换（带遮罩转场） ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.nav-tab'));
+  var pages = {};
+  document.querySelectorAll('.page').forEach(function (p) {
+    pages[p.id.replace('page-', '')] = p;
+  });
+  var wipe = document.getElementById('wipe');
+  var wipeCode = document.getElementById('wipeCode');
+  var current = 'profile';
+  var switching = false;
+
+  function activate(name) {
+    Object.keys(pages).forEach(function (k) {
+      pages[k].classList.toggle('current', k === name);
+    });
+    tabs.forEach(function (t) {
+      var on = t.dataset.page === name;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    if (typeof stopAllVideos === 'function') stopAllVideos();
+    window.scrollTo(0, 0);
+    current = name;
+  }
+
+  function switchTo(name) {
+    if (name === current || switching) return;
+    var code = pages[name] ? pages[name].dataset.code || name.toUpperCase() : name.toUpperCase();
+
+    if (reduced || !hasGsap) { activate(name); return; }
+    switching = true;
+    wipeCode.textContent = code;
+    wipe.classList.add('active');
+    var tl = gsap.timeline({
+      onComplete: function () {
+        wipe.classList.remove('active');
+        switching = false;
+      }
+    });
+    tl.set('.wipe-panel', { x: '-110%' })
+      .set(wipeCode, { opacity: 0, y: 12 })
+      .to('.wipe-panel.p1', { x: '0%', duration: 0.42, ease: 'power3.in' })
+      .to('.wipe-panel.p2', { x: '0%', duration: 0.42, ease: 'power3.in' }, '-=0.34')
+      .to(wipeCode, { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }, '-=0.15')
+      .add(function () { activate(name); })
+      .to(wipeCode, { opacity: 0, y: -12, duration: 0.22, ease: 'power2.in' }, '+=0.28')
+      .to('.wipe-panel.p2', { x: '110%', duration: 0.45, ease: 'power3.out' }, '-=0.05')
+      .to('.wipe-panel.p1', { x: '110%', duration: 0.45, ease: 'power3.out' }, '-=0.38');
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { switchTo(t.dataset.page); });
+  });
+
+  /* ---------- 首屏入场 ---------- */
+  if (!reduced && hasGsap) {
+    gsap.from('.hero-eyebrow, .hero h1, .hero-name-en, .hero-role, .hero-intro, .hero-contact', {
+      y: 26, opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08, delay: 0.15
+    });
+    gsap.from('.hero-photo', { opacity: 0, scale: 0.96, duration: 0.9, ease: 'power3.out', delay: 0.45 });
+  }
+
+  /* ---------- 拆解案子页签 ---------- */
+  var tdTabs = Array.prototype.slice.call(document.querySelectorAll('.td-subtab'));
+  var tdArticles = {};
+  document.querySelectorAll('.td-article').forEach(function (a) {
+    tdArticles[a.dataset.td] = a;
+  });
+
+  function tdActivate(key) {
+    Object.keys(tdArticles).forEach(function (k) {
+      tdArticles[k].classList.toggle('current', k === key);
+    });
+    tdTabs.forEach(function (t) {
+      var on = t.dataset.td === key;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+
+  tdTabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tdActivate(t.dataset.td);
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* 文内「见 xx 篇」跳转 */
+  document.querySelectorAll('[data-goto]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      tdActivate(link.dataset.goto);
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* 跨页签跳转（如 FF14 卡片 → 拆解案） */
+  document.querySelectorAll('[data-goto-page]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      switchTo(link.dataset.gotoPage);
+    });
+  });
+
+  /* ---------- Demo 面板横滑 ---------- */
+  var wTrack = document.getElementById('worksTrack');
+  var wViewport = document.getElementById('worksViewport');
+  var wDotsBox = document.getElementById('worksDots');
+  var wPanels = Array.prototype.slice.call(wTrack.children);
+  var wNames = ['GameIntern', 'Loomfall', '龙舟消消乐', '梗纪元', '永夜轮回'];
+  var wIndex = 0;
+
+  wPanels.forEach(function (_, i) {
+    var d = document.createElement('button');
+    d.className = 'works-dot' + (i === 0 ? ' on' : '');
+    d.textContent = '0' + (i + 1) + ' ' + wNames[i];
+    d.addEventListener('click', function () { wGo(i); });
+    wDotsBox.appendChild(d);
+  });
+  var wDots = Array.prototype.slice.call(wDotsBox.children);
+
+  function wGo(i) {
+    wIndex = Math.max(0, Math.min(wPanels.length - 1, i));
+    wTrack.style.transform = 'translateX(-' + wIndex * 100 + '%)';
+    wDots.forEach(function (d, k) { d.classList.toggle('on', k === wIndex); });
+    stopAllVideos();
+  }
+  document.getElementById('worksPrev').addEventListener('click', function () { wGo(wIndex - 1); });
+  document.getElementById('worksNext').addEventListener('click', function () { wGo(wIndex + 1); });
+
+  /* 拖拽 */
+  var dragX = null, dragDX = 0;
+  wViewport.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button, a, video, .video-cover, .media-dots')) return;
+    dragX = e.clientX; dragDX = 0;
+    wTrack.classList.add('dragging');
+    wViewport.setPointerCapture(e.pointerId);
+  });
+  wViewport.addEventListener('pointermove', function (e) {
+    if (dragX === null) return;
+    dragDX = e.clientX - dragX;
+    wTrack.style.transform = 'translateX(calc(-' + wIndex * 100 + '% + ' + dragDX + 'px))';
+  });
+  function dragEnd() {
+    if (dragX === null) return;
+    wTrack.classList.remove('dragging');
+    if (Math.abs(dragDX) > 60) wGo(wIndex + (dragDX < 0 ? 1 : -1));
+    else wTrack.style.transform = 'translateX(-' + wIndex * 100 + '%)';
+    dragX = null;
+  }
+  wViewport.addEventListener('pointerup', dragEnd);
+  wViewport.addEventListener('pointercancel', dragEnd);
+
+  /* ---------- 媒体轮播 ---------- */
+  function stopAllVideos(except) {
+    document.querySelectorAll('.media-slide video').forEach(function (v) {
+      if (v !== except && !v.paused) v.pause();
+    });
+  }
+
+  document.querySelectorAll('[data-carousel]').forEach(function (root) {
+    var track = root.querySelector('.media-track');
+    var slides = Array.prototype.slice.call(track.children);
+    var dotsBox = root.querySelector('.media-dots');
+    var idx = 0, timer = null;
+
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('i');
+      if (i === 0) dot.className = 'on';
+      dot.addEventListener('click', function () { go(i, true); });
+      dotsBox.appendChild(dot);
+    });
+    var dots = Array.prototype.slice.call(dotsBox.children);
+
+    function go(i, manual) {
+      idx = (i + slides.length) % slides.length;
+      track.style.transform = 'translateX(-' + idx * 100 + '%)';
+      dots.forEach(function (d, k) { d.classList.toggle('on', k === idx); });
+      if (manual) restart();
+    }
+    function playing() {
+      return !!root.querySelector('video') && Array.prototype.some.call(root.querySelectorAll('video'), function (v) { return !v.paused; });
+    }
+    function tick() { if (!playing()) go(idx + 1); }
+    function restart() {
+      if (timer) clearInterval(timer);
+      if (!reduced) timer = setInterval(tick, 4500);
+    }
+    root.querySelector('.prev').addEventListener('click', function () { go(idx - 1, true); });
+    root.querySelector('.next').addEventListener('click', function () { go(idx + 1, true); });
+
+    /* 视频封面 → 播放 */
+    var cover = root.querySelector('.video-cover');
+    var video = root.querySelector('video');
+    if (cover && video) {
+      cover.addEventListener('click', function () {
+        stopAllVideos(video);
+        cover.style.display = 'none';
+        video.controls = true;
+        video.play();
+      });
+      video.addEventListener('pause', function () {
+        cover.style.display = '';
+        video.controls = false;
+      });
+      video.addEventListener('ended', function () {
+        cover.style.display = '';
+        video.controls = false;
+      });
+    }
+    restart();
+  });
+
+  /* ---------- 滚动揭示（踏浪式：同区域同向，区域间交替） ---------- */
+  document.querySelectorAll('.entry, .skill-card, .td-lead, .td-quick .qc, .td-body > *, .work-block, .media-carousel, .stat-band, .works-nav, .work-head, .work-meta, .work-awards').forEach(function (el) {
+    el.setAttribute('data-reveal', '');
+  });
+
+  /* 拆解文：按 h2 分章，同章同向、换章换向（每篇从左侧起） */
+  document.querySelectorAll('.td-article').forEach(function (art) {
+    var lead = art.querySelector('.td-lead');
+    if (lead) lead.classList.add('rv-l');
+    art.querySelectorAll('.td-quick .qc').forEach(function (qc) { qc.classList.add('rv-r'); });
+    var body = art.querySelector('.td-body');
+    if (!body) return;
+    var dir = 'rv-l', seenH2 = 0;
+    Array.prototype.forEach.call(body.children, function (el) {
+      if (el.tagName === 'H2') {
+        if (seenH2 > 0) dir = (dir === 'rv-l') ? 'rv-r' : 'rv-l';
+        seenH2++;
+      }
+      el.classList.add(dir);
+    });
+  });
+
+  /* 其他页面：按容器分组，同组同向、同页各组交替 */
+  document.querySelectorAll('.page').forEach(function (page) {
+    var order = new Map();
+    page.querySelectorAll('[data-reveal]').forEach(function (el) {
+      if (el.classList.contains('rv-l') || el.classList.contains('rv-r')) return;
+      var g = el.closest('.like-grid, .skill-grid, .cat-list, .work-panel, .section') || el.parentElement;
+      if (!order.has(g)) order.set(g, order.size);
+      el.classList.add(order.get(g) % 2 === 0 ? 'rv-l' : 'rv-r');
+    });
+  });
+
+  var revealEls = document.querySelectorAll('[data-reveal]');
+  if (!reduced && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      var batch = entries.filter(function (e) { return e.isIntersecting; });
+      batch.forEach(function (e, i) {
+        e.target.style.transitionDelay = Math.min(i * 65, 320) + 'ms';
+        e.target.classList.add('revealed');
+        setTimeout(function () { e.target.style.transitionDelay = ''; }, 1100);
+      });
+      /* 离开视口则复位，下次进入重新播放（上滑下拉都触发） */
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) {
+          e.target.style.transitionDelay = '';
+          e.target.classList.remove('revealed');
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -4% 0px' });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('revealed'); });
+  }
+})();
+</script>
+</body>
+</html>
+
