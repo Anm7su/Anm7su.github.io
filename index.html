@@ -378,6 +378,25 @@ img, video { display: block; max-width: 100%; }
   color: #fff;
 }
 
+/* Hero 简历下载按钮（黑底上的描边款，hover 变青底黑字） */
+.hero-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 36px;
+  font-family: var(--font-en-display);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 12px 22px;
+  transition: background 200ms var(--ease-out), color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.hero-dl .mono { font-family: var(--font-mono); font-size: 14px; color: rgba(255,255,255,0.45); letter-spacing: 0.1em; }
+.hero-dl:hover { background: var(--ak-cyan); border-color: var(--ak-cyan); color: var(--ak-black); }
+.hero-dl:hover .mono { color: rgba(7,9,11,0.6); }
+
 /* 照片框：官网式青色衬板 + 机能角标 */
 .hero-photo {
   position: relative;
@@ -887,7 +906,13 @@ img, video { display: block; max-width: 100%; }
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; min-height: auto; padding: 120px 0 80px; gap: 40px; }
-  .hero-photo { justify-self: start; }
+  /* 移动端照片：缩为小图，绝对定位到 Hero 右上角 */
+  .hero-photo { position: absolute; top: 104px; right: 0; }
+  .hero-photo .frame { width: 96px; height: 124px; }
+  .hero-photo::before { top: -12px; right: -12px; width: 52px; height: 68px; }
+  .hero-photo .corner { width: 14px; height: 14px; }
+  .hero-photo .caption { display: none; }
+  .hero-eyebrow { padding-right: 116px; }   /* 给右上角照片让位 */
   .hero-scroll { display: none; }
   .skill-grid { grid-template-columns: 1fr; }
   .wrap { padding: 0 20px; }
@@ -1604,7 +1629,7 @@ img, video { display: block; max-width: 100%; }
         <div class="hero-name-en">ZHOU ZIQI</div>
         <div class="hero-role">求职意向 · 游戏系统策划</div>
         <p class="hero-intro">
-          北京邮电大学数字媒体设计硕士在读，<strong>SNK 中国系统策划实习生</strong>（拳皇 IP 卡牌在研）。千小时级的《炉石传说》与《最终幻想14》深度玩家，最高美服前 50、国服 ADPS 第一；独立撰写 FF14 四篇系统拆解，覆盖整体架构、经济、社交与养成；具备引擎与美术工具链实操能力，NOIP / ACM 省级荣誉的编程基础，并以 AI 工作流全程制作多款可玩 Demo，获 AI 视频大赛国家奖项。
+          北京邮电大学数字媒体设计硕士在读，本科毕业于苏州工学院数字媒体技术专业，设计与技术复合背景。十余年游戏体验，累计体验百余款作品，覆盖主机 / PC / 手游与开放世界、动作、卡牌、竞技等核心品类；其中《炉石传说》《最终幻想14》均超千小时，最高美服前 50、国服 ADPS 第一。拥有 <strong>SNK 中国系统策划实习经历</strong>，在拳皇 IP 在研卡牌项目中负责赛季养成与玩法设计，熟知并热爱系统策划的完整工作流程。先后参与 5 款可玩 Demo 制作，其中 2 款为独立 AI 全流程开发；独立撰写 FF14 系统拆解四篇，覆盖整体架构、经济、社交与养成。
         </p>
         <div class="hero-contact">
           <div class="contact-item">
@@ -1620,6 +1645,7 @@ img, video { display: block; max-width: 100%; }
             <span class="v">江苏苏州 · 北京在读</span>
           </div>
         </div>
+        <a class="hero-dl chamfer" href="resume.pdf" download="周子骐-游戏系统策划-简历.pdf">下载简历<span class="mono">PDF / 1.2MB</span></a>
       </div>
       <div class="hero-photo">
         <div class="frame chamfer">
@@ -1646,6 +1672,14 @@ img, video { display: block; max-width: 100%; }
           <h3>北京邮电大学 · 数字媒体设计（硕士在读）</h3>
           <span class="date">2024 // 09 — 至今</span>
         </div>
+        <p>主修课程：游戏创作（100）、新媒体交互技术（94）、镜头语言研究（92）、高级计算机图形学（91）、设计符号学（90）。</p>
+      </div>
+      <div class="entry chamfer">
+        <div class="entry-head">
+          <h3>苏州工学院 · 数字媒体技术（本科）</h3>
+          <span class="date">2020 // 09 — 2024 // 07</span>
+        </div>
+        <p>主修课程：C 语言、离散数学、概率论、计算机图形学、色彩与构成、多媒体技术。</p>
       </div>
     </div>
 
@@ -1658,7 +1692,7 @@ img, video { display: block; max-width: 100%; }
           <span class="date">2026 // 06 — 至今</span>
         </div>
         <div class="entry-role">游戏系统策划（实习）· 在研拳皇 IP 卡牌</div>
-        <p>设计玩法方案并撰写功能文档，修改、重构游戏内配置表；负责赛季养成、赛季小游戏与休闲互动玩法设计，创建网页原型；跑测游戏，依据内部与玩家测试反馈对接美术、程序，持续优化对应功能。</p>
+        <p>为在研拳皇 IP 卡牌设计玩法方案，累计撰写十份以上 XMind 参考案与功能文档，并创建网页原型验证玩法交互；设计并上线两个小游戏玩法与多个游戏功能，覆盖赛季养成与休闲互动方向；制作十张以上配置表，修改上千条配置数据；跑测游戏，依据内部与玩家测试反馈对接美术、程序，持续优化对应功能。</p>
       </div>
 
       <div class="entry chamfer">
@@ -1676,8 +1710,8 @@ img, video { display: block; max-width: 100%; }
       <div class="skill-grid">
         <div class="skill-card chamfer">
           <div class="k">DESIGN — 设计能力</div>
-          <h4>体验与视觉设计</h4>
-          <p>Figma / Photoshop 原型与视觉设计；熟悉设计心理学与人机交互原理，能把体验意图落到界面与流程细节。</p>
+          <h4>体验与交互设计</h4>
+          <p>熟悉设计心理学与人机交互原理，能把体验意图落到界面布局、信息层级与交互流程的细节；软件技能：Figma、Photoshop。</p>
         </div>
         <div class="skill-card chamfer">
           <div class="k">ENGINE & ART — 引擎与美术工具链</div>
@@ -1691,10 +1725,12 @@ img, video { display: block; max-width: 100%; }
         </div>
         <div class="skill-card chamfer">
           <div class="k">LANGUAGE & CS — 语言与工程基础</div>
-          <h4>英语与编程底子</h4>
-          <p>英语六级 550 分，常态化英文文献与 GDC 视频调研；高中 NOIP、大学 ACM 均获省级荣誉，有扎实编程基础，与程序对接无障碍。</p>
+          <h4>英语与编程基础</h4>
+          <p>英语六级 550 分，可常态化阅读英文文献；高中 NOIP、大学 ACM 均获省级荣誉，编程基础扎实，与程序对接无障碍。</p>
         </div>
       </div>
+
+      <div class="td-next"><a href="#" data-goto-page="archive">下一页 — 游戏经历 · ARCHIVE →</a></div>
     </div>
   </div>
 
