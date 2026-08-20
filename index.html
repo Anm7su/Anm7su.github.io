@@ -958,6 +958,41 @@ img, video { display: block; max-width: 100%; }
   margin-top: 6px;
 }
 
+/* 品类关键词区（数据带右半） */
+.stat-genres {
+  flex: 2.2 1 340px;
+  padding: 22px 28px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+.stat-genres .g-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-genres .g-label::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--ak-cyan);
+}
+.stat-genres .g-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat-genres .g-chips span {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  border: 1px solid rgba(24, 209, 255, 0.45);
+  padding: 4px 12px;
+}
+
 /* 档位标题 */
 .tier-head {
   display: flex;
@@ -978,57 +1013,66 @@ img, video { display: block; max-width: 100%; }
 }
 .tier-head .t-line { flex: 1; height: 1px; background: var(--line); align-self: center; }
 
-/* 挚爱大卡 */
+/* 挚爱大卡：黑框头部（半调网点 + 大序号 + 青色分隔线）+ 白画布正文 */
 .fav-card {
   background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 34px 38px;
+  border: 1px solid var(--ink);
   margin-bottom: 26px;
   position: relative;
 }
-.fav-card .archive-no {
-  position: absolute;
-  top: 22px; right: 26px;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  letter-spacing: 0.15em;
-  color: var(--gray-2);
+.fav-top {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 28px;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  color: #fff;
+  border-bottom: 3px solid var(--ak-cyan);
+}
+.fav-no {
+  font-family: var(--font-en-display);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ak-cyan);
 }
 .fav-head {
   display: flex;
   align-items: baseline;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 4px;
 }
-.fav-head h3 { font-size: 26px; font-weight: 800; }
+.fav-head h3 { font-size: 24px; font-weight: 800; color: #fff; }
 .fav-head .en {
-  font-family: var(--font-mono);
+  font-family: var(--font-en-display);
   font-size: 14px;
   letter-spacing: 0.18em;
-  color: var(--gray-2);
+  color: var(--ak-cyan);
+  text-transform: uppercase;
 }
 .fav-meta {
   font-family: var(--font-mono);
   font-size: 14px;
-  color: var(--accent-deep);
-  letter-spacing: 0.06em;
-  margin-bottom: 18px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  margin-top: 6px;
 }
+.fav-body { padding: 24px 28px 30px; }
 .fav-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .fav-badge {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.06em;
   padding: 5px 12px;
-  border: 1px solid var(--accent);
-  color: var(--accent-deep);
-  background: var(--accent-tint);
+  background: var(--ak-cyan);
+  color: var(--ak-black);
   font-weight: 600;
 }
 .fav-card .exp { color: #2C3134; font-size: 14.5px; margin-bottom: 18px; }
@@ -1115,7 +1159,15 @@ img, video { display: block; max-width: 100%; }
 @media (max-width: 700px) {
   .cat-strip { grid-template-columns: 1fr; }
   .cat-strip .note { grid-column: 1; }
-  .fav-card { padding: 24px 22px; }
+  /* 数据带：窄屏 2×1 + 关键词格独占一行（须放在 .stat-band 基础规则之后） */
+  .stat-band { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 40px; }
+  .stat-item { padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+  .stat-item:nth-child(odd) { border-right: 1px solid rgba(255, 255, 255, 0.14); }
+  .stat-genres { grid-column: 1 / -1; border-left: none; padding: 16px 18px; }
+  /* 本命大卡：窄屏收紧头部与正文内边距 */
+  .fav-top { padding: 18px 20px; gap: 16px; }
+  .fav-no { font-size: 36px; }
+  .fav-body { padding: 20px 20px 26px; }
 }
 
 /* ============ DEMO WORKS ============ */
@@ -1745,21 +1797,28 @@ img, video { display: block; max-width: 100%; }
       <div class="stat-band chamfer">
         <div class="stat-item"><div class="num">10+ 年</div><div class="lbl">深度游戏阅历</div></div>
         <div class="stat-item"><div class="num">100+ 款</div><div class="lbl">跨平台作品体验</div></div>
-        <div class="stat-item"><div class="num">×3</div><div class="lbl">千小时级游戏</div></div>
-        <div class="stat-item"><div class="num">8 大</div><div class="lbl">覆盖品类</div></div>
+        <div class="stat-genres">
+          <div class="g-label">常玩品类 — KEY GENRES</div>
+          <div class="g-chips"><span>卡牌</span><span>战棋</span><span>MMO</span><span>CRPG</span><span>竞技</span><span>肉鸽</span><span>模拟经营</span><span>文字冒险</span></div>
+        </div>
       </div>
 
       <!-- ===== 挚爱 ===== -->
       <div class="tier-head">
-        <span class="t-name">挚爱</span>
-        <span class="t-en">TIER-S — 千小时级，带着策划脑子在玩</span>
+        <span class="t-name">本命</span>
+        <span class="t-en">TIER-S</span>
         <span class="t-line"></span>
       </div>
 
       <div class="fav-card chamfer" data-reveal>
-        <span class="archive-no">ARCHIVE / 01</span>
-        <div class="fav-head"><h3>炉石传说</h3><span class="en">HEARTHSTONE</span></div>
-        <div class="fav-meta">PC · 移动 — 1000+ 小时（6 年以上）</div>
+        <div class="fav-top">
+          <span class="fav-no" aria-hidden="true">01</span>
+          <div>
+            <div class="fav-head"><h3>炉石传说</h3><span class="en">HEARTHSTONE</span></div>
+            <div class="fav-meta">PC · 移动 — 1000+ 小时（6 年以上）</div>
+          </div>
+        </div>
+        <div class="fav-body">
         <div class="fav-badges">
           <span class="fav-badge">美服 TOP 50</span>
           <span class="fav-badge">国服 TOP 1000</span>
@@ -1768,15 +1827,21 @@ img, video { display: block; max-width: 100%; }
         </div>
         <p class="exp">狂野模式常驻传说：2023 年国服回归前打到美服前 50，2025 年回归后用红龙贼打上国服前 1000；酒馆战棋连续两个大版本万分以上，胜率约 65%。擅长 OTK / 超展开类卡组（黑眼术、红龙贼），喜欢针对环境自组卡组——曾在任务术与暗牧横行的版本，用自己构筑的峰磷牧打上传说；高中时期晋级黄金赛 512 强，常驻贴吧做经验分享与冒险解谜。</p>
         <div class="fav-insight">
-          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <span class="k">思考沉淀 — TAKEAWAYS</span>
           <p>理解卡组构筑中费用曲线、过牌效率与致胜回合的数值关系，关注资源管理机制如何形成对局节奏；研究 OTK 斩杀链的限制条件（key 牌上手率、费用效率、回合数）与斩杀稳定性之间的设计平衡；在酒馆战棋中持续观察铸币节奏、棋子池概率分布如何塑造策略深度，积累了「决策反馈周期」与「随机性可控边界」的直觉。</p>
+        </div>
         </div>
       </div>
 
       <div class="fav-card chamfer" data-reveal>
-        <span class="archive-no">ARCHIVE / 02</span>
-        <div class="fav-head"><h3>最终幻想14</h3><span class="en">FINAL FANTASY XIV</span></div>
-        <div class="fav-meta">PC — 1000+ 小时（4 年以上）</div>
+        <div class="fav-top">
+          <span class="fav-no" aria-hidden="true">02</span>
+          <div>
+            <div class="fav-head"><h3>最终幻想14</h3><span class="en">FINAL FANTASY XIV</span></div>
+            <div class="fav-meta">PC — 1000+ 小时（4 年以上）</div>
+          </div>
+        </div>
+        <div class="fav-body">
         <div class="fav-badges">
           <span class="fav-badge">绝本通关 ×2</span>
           <span class="fav-badge">国服 ADPS 第 1</span>
@@ -1785,29 +1850,36 @@ img, video { display: block; max-width: 100%; }
         </div>
         <p class="exp">主线完成至 7.0；极神全通、零式通关万魔殿系列、绝本通关绝巴哈与绝神兵。固定队主玩 H2（学者/贤者），野排主玩红职（黑魔/召唤），Logs 最低紫色、最高以召唤打出金色（国服 ADPS 第 1）。担任副部队长参与部队管理；与好友经营轻 RP 店铺（海龟汤、跑团），用插件导入 MIDI 校准乐队演奏。</p>
         <div class="fav-insight">
-          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <span class="k">思考沉淀 — TAKEAWAYS</span>
           <p>深入体验多职业的技能循环设计，理解 GCD 与能力技穿插的节奏框架、资源积累与泄放的循环结构；经营 RP 店铺时观察到玩家自发的 UGC 如何依托游戏提供的底层系统（房屋装修、乐器动作、聊天频道）形成生态，对「提供工具而非内容」的设计理念有切身体会。这份理解沉淀成了本站「<a href="#" data-goto-page="teardown">拆解案</a>」页的四篇系统分析。</p>
+        </div>
         </div>
       </div>
 
       <div class="fav-card chamfer" data-reveal>
-        <span class="archive-no">ARCHIVE / 03</span>
-        <div class="fav-head"><h3>守望先锋</h3><span class="en">OVERWATCH</span></div>
-        <div class="fav-meta">PC — 1100+ 小时（5 年以上）</div>
+        <div class="fav-top">
+          <span class="fav-no" aria-hidden="true">03</span>
+          <div>
+            <div class="fav-head"><h3>守望先锋</h3><span class="en">OVERWATCH</span></div>
+            <div class="fav-meta">PC — 1100+ 小时（5 年以上）</div>
+          </div>
+        </div>
+        <div class="fav-body">
         <div class="fav-badges">
           <span class="fav-badge">单排钻石 3</span>
           <span class="fav-badge">支援位专精</span>
         </div>
         <p class="exp">排位主玩支援位，单排最高钻石 3，擅长雾子、巴蒂斯特、安娜。比起个人操作，更喜欢通过团队的资源分配、关键时刻的技能支援与击杀来影响局势。</p>
         <div class="fav-insight">
-          <span class="k">策划视角 — DESIGN INSIGHT</span>
+          <span class="k">思考沉淀 — TAKEAWAYS</span>
           <p>深度使用多位支援英雄，理解技能组的设计逻辑——将治疗、伤害、位移、控制等功能模块组合成有特色的技能循环；支援位需要持续评估全队状态分布、敌方威胁位置与技能 CD，这种「信息过载下的决策训练」对理解竞技游戏的 HUD 设计与信息呈现很有价值；单排上分过程中关注 ELO 匹配如何在保证公平性的同时维持挫败感与成就感的平衡。</p>
+        </div>
         </div>
       </div>
 
       <!-- ===== 偏爱 ===== -->
       <div class="tier-head">
-        <span class="t-name">偏爱</span>
+        <span class="t-name">常驻</span>
         <span class="t-en">TIER-A — 长期投入，各有专攻</span>
         <span class="t-line"></span>
       </div>
@@ -1832,49 +1904,74 @@ img, video { display: block; max-width: 100%; }
           <span class="hrs">200+ 小时 · 白金 3</span>
           <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
         </div>
+        <div class="like-card chamfer" data-reveal>
+          <h4>博德之门3</h4><span class="en">BALDUR'S GATE 3</span>
+          <span class="hrs">40 小时</span>
+          <p>CRPG 标杆样本：关注属性检定、对话分支与环境交互如何让同一目标存在多种解法，以及网状叙事的后果反馈设计。</p>
+        </div>
       </div>
 
       <!-- ===== 欣赏 ===== -->
       <div class="tier-head">
-        <span class="t-name">欣赏</span>
+        <span class="t-name">涉猎</span>
         <span class="t-en">TIER-B — 广度覆盖，品类即视野</span>
         <span class="t-line"></span>
       </div>
       <div class="cat-list">
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">角色扮演<span class="en">RPG</span></div>
-          <div class="games"><b>塞尔达传说 旷野之息/王国之泪</b> <span class="h">70+h</span> · 巫师3 <span class="h">13h</span> · 对马岛之魂 <span class="h">20h</span> · 艾尔登法环 <span class="h">20h</span> · 荒野大镖客2 <span class="h">20+h</span> · 赛博朋克2077 <span class="h">30h</span> · 碧蓝幻想 Relink <span class="h">50h</span> · 宝可梦系列</div>
-          <div class="note">关注开放世界/箱庭的引导设计（视觉引导、三角法则）、成长数值曲线、多分支叙事的选择与反馈。</div>
+          <div class="cat-name">开放世界<span class="en">OPEN WORLD</span></div>
+          <div class="games"><b>塞尔达传说 旷野之息/王国之泪</b> <span class="h">70+h</span> · 艾尔登法环 <span class="h">20h</span> · 对马岛之魂 <span class="h">20h</span> · 荒野大镖客2 <span class="h">20+h</span></div>
+          <div class="note">关注开放世界 / 箱庭的引导设计（视觉引导、三角法则）、成长数值曲线、多分支叙事的选择与反馈。</div>
         </div>
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">射击<span class="en">SHOOTER</span></div>
-          <div class="games"><b>无主之地3</b> <span class="h">40h</span> · 三角洲行动 <span class="h">20h</span></div>
-          <div class="note">关注射击手感调校（TTK、后坐力模式、命中反馈）。</div>
+          <div class="cat-name">CRPG / 欧美 RPG<span class="en">CRPG</span></div>
+          <div class="games"><b>辐射2</b> <span class="h">7h</span> · <b>博德之门2</b> <span class="h">7h</span> · 巫师3 <span class="h">13h</span> · 赛博朋克2077 <span class="h">30h</span> · 天国拯救2 <span class="h">19h</span></div>
+          <div class="note">关注网状任务结构——属性检定如何替代战斗、同一目标的多种解法、选择如何产生真实后果。</div>
         </div>
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">动作 / 平台跳跃<span class="en">ACTION</span></div>
+          <div class="cat-name">日系 / 战棋<span class="en">JRPG / TACTICS</span></div>
+          <div class="games"><b>火焰纹章 风花雪月</b> <span class="h">18h</span> · 宝可梦系列 · 碧蓝幻想 Relink <span class="h">50h</span></div>
+          <div class="note">关注战棋的关卡目标与数值对等设计、角色养成与情感绑定的相互驱动。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">动作 / 肉鸽<span class="en">ACTION / ROGUELIKE</span></div>
           <div class="games"><b>哈迪斯 1&amp;2</b> <span class="h">30+h</span> · 蔚蓝 <span class="h">20+h</span> · 奥日系列 <span class="h">13h</span></div>
           <div class="note">关注手感调校（重力感、滞空时间、冲刺距离），以及肉鸽元素如何与叙事结合成进度系统。</div>
         </div>
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">竞技 / MOBA<span class="en">MOBA</span></div>
-          <div class="games"><b>DOTA2</b> <span class="h">400h</span> · 斯普拉遁 2&amp;3 <span class="h">50+h</span></div>
-          <div class="note">关注英雄（武器）设计、装备系统与英雄技能的交互可能性。</div>
+          <div class="cat-name">射击 / 竞技<span class="en">SHOOTER / ESPORTS</span></div>
+          <div class="games"><b>DOTA2</b> <span class="h">400h</span> · 无主之地3 <span class="h">40h</span> · 三角洲行动 <span class="h">20h</span> · 斯普拉遁 2&amp;3 <span class="h">50+h</span></div>
+          <div class="note">关注射击手感调校（TTK、后坐力、命中反馈）与英雄 / 武器技能组的交互可能性。</div>
         </div>
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">休闲模拟<span class="en">SIMULATION</span></div>
-          <div class="games"><b>动物森友会</b> <span class="h">100+h</span> · 潜水员戴夫 <span class="h">20h</span></div>
-          <div class="note">关注模拟经营的作息循环设计、心流管理（每日体力限制与目标引导）。</div>
+          <div class="cat-name">MMO / 多人网游<span class="en">MMO</span></div>
+          <div class="games"><b>逆水寒手游</b> · 幻塔 <span class="h">50+h</span> · 燕云十六声</div>
+          <div class="note">关注多人世界的社交生态与长线养成：日常循环、经济系统与付费边界。</div>
         </div>
         <div class="cat-strip" data-reveal>
           <div class="cat-name">二次元手游<span class="en">MOBILE</span></div>
-          <div class="games"><b>鸣潮</b> <span class="h">80 级 · 3 年</span> · 幻塔 <span class="h">50+h</span> · 赛马娘 <span class="h">1 年</span> · 学园偶像大师 <span class="h">1 年</span> · 异环 <span class="h">主线通关</span> · 洛克王国 <span class="h">第一赛季全异色</span></div>
+          <div class="games"><b>鸣潮</b> <span class="h">80 级 · 3 年</span> · 白夜极光 · 赛马娘 <span class="h">1 年</span> · 学园偶像大师 <span class="h">1 年</span> · 异环 <span class="h">主线通关</span> · 洛克王国 <span class="h">第一赛季全异色</span></div>
           <div class="note">关注抽卡与养成机制（保底、资源投放节奏）、角色设计、游戏如何引导玩家消费。</div>
         </div>
         <div class="cat-strip" data-reveal>
-          <div class="cat-name">视觉小说<span class="en">VISUAL NOVEL</span></div>
-          <div class="games"><b>CLANNAD</b> · 白色相簿2 · Ever17 · 播种之谣 · 逆转裁判系列（除大逆外全通）</div>
+          <div class="cat-name">放置 / 数值手游<span class="en">IDLE</span></div>
+          <div class="games"><b>剑与远征2</b> · 三国志幻想大陆 · 永远的蔚蓝星球</div>
+          <div class="note">关注数值成长曲线与验证节奏：放置品类如何用战力反馈制造短期爽感、用卡关制造长期目标。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">休闲 / 模拟<span class="en">SIMULATION</span></div>
+          <div class="games"><b>动物森友会</b> <span class="h">100+h</span> · 潜水员戴夫 <span class="h">20h</span> · 向僵尸开炮</div>
+          <div class="note">关注作息循环与心流管理：每日体力限制如何被转化为目标引导而非挫败。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">文字冒险<span class="en">ADVENTURE</span></div>
+          <div class="games"><b>CLANNAD</b> · 白色相簿2 · Ever17 · 逆转裁判系列（除大逆外全通） · 播种之谣</div>
           <div class="note">关注分支叙事的选项设计、不同路线间的信息互补机制、如何通过有限交互创造情感沉浸。</div>
+        </div>
+        <div class="cat-strip" data-reveal>
+          <div class="cat-name">叙事 / 恐怖<span class="en">NARRATIVE / HORROR</span></div>
+          <div class="games"><b>心灵杀手2</b> <span class="h">5h</span> · Signalis <span class="h">6h</span> · 本所七大不可思议 · 伊势人鱼物语</div>
+          <div class="note">关注氛围营造与叙事节奏：生存恐怖如何用资源稀缺与信息不对称制造张力。</div>
         </div>
       </div>
     </div>
