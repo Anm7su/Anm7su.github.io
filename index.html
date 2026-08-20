@@ -516,13 +516,20 @@ img, video { display: block; max-width: 100%; }
   letter-spacing: 0.06em;
 }
 
-/* 信息条目（教育/实习） */
+/* 信息条目（教育/实习）：黑框头部 + 白画布正文 */
 .entry {
   background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 26px 30px;
+  border: 1px solid var(--ink);
   margin-bottom: 18px;
   position: relative;
+}
+.entry-top {
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  color: #fff;
+  padding: 16px 26px;
+  border-bottom: 3px solid var(--ak-cyan);
 }
 .entry-head {
   display: flex;
@@ -530,23 +537,23 @@ img, video { display: block; max-width: 100%; }
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
 }
-.entry-head h3 { font-size: 19px; font-weight: 700; }
+.entry-head h3 { font-size: 19px; font-weight: 700; color: #fff; }
 .entry-head .date {
   font-family: var(--font-mono);
   font-size: 14px;
-  color: var(--gray-2);
+  color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.08em;
 }
 .entry-role {
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent-deep);
+  color: var(--ak-cyan);
   letter-spacing: 0.08em;
-  margin-bottom: 10px;
+  margin-top: 6px;
 }
-.entry p { color: var(--gray-1); font-size: 14.5px; }
+.entry-body { padding: 18px 26px 22px; }
+.entry-body p { color: var(--gray-1); font-size: 14.5px; margin: 0; }
 
 /* 技能四组 */
 .skill-grid {
@@ -556,15 +563,21 @@ img, video { display: block; max-width: 100%; }
 }
 .skill-card {
   background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 24px 26px;
+  border: 1px solid var(--ink);
+}
+.skill-card .sk-top {
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  padding: 16px 24px 14px;
+  border-bottom: 3px solid var(--ak-cyan);
 }
 .skill-card .k {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.18em;
-  color: var(--accent-deep);
-  margin-bottom: 10px;
+  color: var(--ak-cyan);
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -572,11 +585,12 @@ img, video { display: block; max-width: 100%; }
 .skill-card .k::before {
   content: "";
   width: 6px; height: 6px;
-  background: var(--accent);
+  background: var(--ak-cyan);
   transform: rotate(45deg);
 }
-.skill-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-.skill-card p { font-size: 14px; color: var(--gray-1); line-height: 1.8; }
+.skill-card h4 { font-size: 17px; font-weight: 700; color: #fff; margin: 0; }
+.skill-card .sk-body { padding: 16px 24px 20px; }
+.skill-card .sk-body p { font-size: 14px; color: var(--gray-1); line-height: 1.8; margin: 0; }
 
 /* ============ 拆解案 TEARDOWN ============ */
 .td-subtabs {
@@ -640,15 +654,18 @@ img, video { display: block; max-width: 100%; }
 }
 .td-quick .qc {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--ink);
   padding: 18px 20px;
 }
 .td-quick .qc .q {
   font-size: 14px;
   font-family: var(--font-mono);
   letter-spacing: 0.1em;
-  color: var(--gray-2);
-  margin-bottom: 6px;
+  color: var(--ak-cyan);
+  margin: -18px -20px 10px;
+  padding: 8px 20px;
+  background: var(--ak-black);
+  border-bottom: 2px solid var(--ak-cyan);
 }
 .td-quick .qc .a {
   font-size: 15px;
@@ -690,7 +707,7 @@ img, video { display: block; max-width: 100%; }
 /* ============ 拆解案结构图组件（HTML+CSS 重绘，文字全部 ≥14px） ============ */
 .diagram {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--ink);
   padding: 26px 28px 30px;
   margin: 0 0 24px;
   overflow-x: auto;
@@ -699,13 +716,18 @@ img, video { display: block; max-width: 100%; }
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.15em;
-  color: var(--gray-2);
-  margin-bottom: 20px;
+  color: var(--ak-cyan);
+  margin: -26px -28px 20px;
+  padding: 12px 28px;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  border-bottom: 3px solid var(--ak-cyan);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.diagram .d-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.diagram .d-title::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.15); }
 
 /* 节点 */
 .d-node {
@@ -1092,7 +1114,7 @@ img, video { display: block; max-width: 100%; }
 .fav-insight p { font-size: 14px; color: #23545A; margin: 0; }
 .fav-insight a { font-weight: 600; }
 
-/* 偏爱中卡 */
+/* 常驻中卡 */
 .like-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1100,20 +1122,27 @@ img, video { display: block; max-width: 100%; }
 }
 .like-card {
   background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 22px 24px;
+  border: 1px solid var(--ink);
   transition: border-color 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
-.like-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-.like-card h4 { font-size: 17px; font-weight: 700; }
+.like-card:hover { border-color: var(--ak-cyan); transform: translateY(-3px); }
+.like-card .lk-top {
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  padding: 14px 20px 12px;
+  border-bottom: 3px solid var(--ak-cyan);
+}
+.like-card h4 { font-size: 17px; font-weight: 700; color: #fff; }
 .like-card .en {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.15em;
-  color: var(--gray-2);
+  color: var(--ak-cyan);
   display: block;
-  margin: 2px 0 10px;
+  margin: 2px 0 0;
 }
+.like-card .lk-body { padding: 14px 20px 18px; }
 .like-card .hrs {
   font-family: var(--font-mono);
   font-size: 14px;
@@ -1361,7 +1390,7 @@ img, video { display: block; max-width: 100%; }
 }
 .work-block {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--ink);
   padding: 24px 26px;
 }
 .work-block.full { grid-column: 1 / -1; }
@@ -1369,8 +1398,13 @@ img, video { display: block; max-width: 100%; }
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.18em;
-  color: var(--accent-deep);
-  margin-bottom: 12px;
+  color: var(--ak-cyan);
+  margin: -24px -26px 16px;
+  padding: 12px 26px;
+  background:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--ak-black);
+  border-bottom: 3px solid var(--ak-cyan);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1378,7 +1412,7 @@ img, video { display: block; max-width: 100%; }
 .work-block .bk::before {
   content: "";
   width: 6px; height: 6px;
-  background: var(--accent);
+  background: var(--ak-cyan);
   transform: rotate(45deg);
 }
 .work-block p, .work-block li { font-size: 14.5px; color: #2C3134; }
@@ -1720,18 +1754,26 @@ img, video { display: block; max-width: 100%; }
     <div class="section">
       <div class="tag-index"><span class="cn">教育背景</span>EDUCATION / 01</div>
       <div class="entry chamfer">
-        <div class="entry-head">
-          <h3>北京邮电大学 · 数字媒体设计（硕士在读）</h3>
-          <span class="date">2024 // 09 — 至今</span>
+        <div class="entry-top">
+          <div class="entry-head">
+            <h3>北京邮电大学 · 数字媒体设计（硕士在读）</h3>
+            <span class="date">2024 // 09 — 至今</span>
+          </div>
         </div>
-        <p>主修课程：游戏创作（100）、新媒体交互技术（94）、镜头语言研究（92）、高级计算机图形学（91）、设计符号学（90）。</p>
+        <div class="entry-body">
+          <p>主修课程：游戏创作（100）、新媒体交互技术（94）、镜头语言研究（92）、高级计算机图形学（91）、设计符号学（90）。</p>
+        </div>
       </div>
       <div class="entry chamfer">
-        <div class="entry-head">
-          <h3>苏州工学院 · 数字媒体技术（本科）</h3>
-          <span class="date">2020 // 09 — 2024 // 07</span>
+        <div class="entry-top">
+          <div class="entry-head">
+            <h3>苏州工学院 · 数字媒体技术（本科）</h3>
+            <span class="date">2020 // 09 — 2024 // 07</span>
+          </div>
         </div>
-        <p>主修课程：C 语言、离散数学、概率论、计算机图形学、色彩与构成、多媒体技术。</p>
+        <div class="entry-body">
+          <p>主修课程：C 语言、离散数学、概率论、计算机图形学、色彩与构成、多媒体技术。</p>
+        </div>
       </div>
     </div>
 
@@ -1739,21 +1781,29 @@ img, video { display: block; max-width: 100%; }
       <div class="tag-index"><span class="cn">实习经历</span>EXPERIENCE / 02</div>
 
       <div class="entry chamfer">
-        <div class="entry-head">
-          <h3>SNK 中国</h3>
-          <span class="date">2026 // 06 — 至今</span>
+        <div class="entry-top">
+          <div class="entry-head">
+            <h3>SNK 中国</h3>
+            <span class="date">2026 // 06 — 至今</span>
+          </div>
+          <div class="entry-role">游戏系统策划（实习）· 在研拳皇 IP 卡牌</div>
         </div>
-        <div class="entry-role">游戏系统策划（实习）· 在研拳皇 IP 卡牌</div>
-        <p>为在研拳皇 IP 卡牌设计玩法方案，累计撰写十份以上 XMind 参考案与功能文档，并创建网页原型验证玩法交互；设计并上线两个小游戏玩法与多个游戏功能，覆盖赛季养成与休闲互动方向；制作十张以上配置表，修改上千条配置数据；跑测游戏，依据内部与玩家测试反馈对接美术、程序，持续优化对应功能。</p>
+        <div class="entry-body">
+          <p>为在研拳皇 IP 卡牌设计玩法方案，累计撰写十份以上 XMind 参考案与功能文档，并创建网页原型验证玩法交互；设计并上线两个小游戏玩法与多个游戏功能，覆盖赛季养成与休闲互动方向；制作十张以上配置表，修改上千条配置数据；跑测游戏，依据内部与玩家测试反馈对接美术、程序，持续优化对应功能。</p>
+        </div>
       </div>
 
       <div class="entry chamfer">
-        <div class="entry-head">
-          <h3>苏州红鲸动画</h3>
-          <span class="date">2025 // 07 — 2025 // 08</span>
+        <div class="entry-top">
+          <div class="entry-head">
+            <h3>苏州红鲸动画</h3>
+            <span class="date">2025 // 07 — 2025 // 08</span>
+          </div>
+          <div class="entry-role">3D 动画场景组（实习）</div>
         </div>
-        <div class="entry-role">3D 动画场景组（实习）</div>
-        <p>负责三维 MAYA 场景与环境搭建、PBR 道具模型制作；根据分镜寻找场景参考，完成 MAYA 内远景搭建与部分 PBR 场景道具。</p>
+        <div class="entry-body">
+          <p>负责三维 MAYA 场景与环境搭建、PBR 道具模型制作；根据分镜寻找场景参考，完成 MAYA 内远景搭建与部分 PBR 场景道具。</p>
+        </div>
       </div>
     </div>
 
@@ -1761,24 +1811,40 @@ img, video { display: block; max-width: 100%; }
       <div class="tag-index"><span class="cn">专业技能</span>SKILLS / 03</div>
       <div class="skill-grid">
         <div class="skill-card chamfer">
-          <div class="k">DESIGN — 设计能力</div>
-          <h4>体验与交互设计</h4>
-          <p>熟悉设计心理学与人机交互原理，能把体验意图落到界面布局、信息层级与交互流程的细节；软件技能：Figma、Photoshop。</p>
+          <div class="sk-top">
+            <div class="k">DESIGN — 设计能力</div>
+            <h4>体验与交互设计</h4>
+          </div>
+          <div class="sk-body">
+            <p>熟悉设计心理学与人机交互原理，能把体验意图落到界面布局、信息层级与交互流程的细节；软件技能：Figma、Photoshop。</p>
+          </div>
         </div>
         <div class="skill-card chamfer">
-          <div class="k">ENGINE & ART — 引擎与美术工具链</div>
-          <h4>从引擎到建模</h4>
-          <p>Unity / Unreal / Godot 引擎实操；MAYA / Blender / ZBrush 建模与 PBR 流程。</p>
+          <div class="sk-top">
+            <div class="k">ENGINE & ART — 引擎与美术工具链</div>
+            <h4>从引擎到建模</h4>
+          </div>
+          <div class="sk-body">
+            <p>Unity / Unreal / Godot 引擎实操；MAYA / Blender / ZBrush 建模与 PBR 流程。</p>
+          </div>
         </div>
         <div class="skill-card chamfer">
-          <div class="k">AI WORKFLOW — AI 工作流</div>
-          <h4>AI 全流程制作</h4>
-          <p>AI 视频大赛国家奖项；使用 AI 工具链全程制作多款可玩 Demo，覆盖策划、程序到美术的完整管线。</p>
+          <div class="sk-top">
+            <div class="k">AI WORKFLOW — AI 工作流</div>
+            <h4>AI 全流程制作</h4>
+          </div>
+          <div class="sk-body">
+            <p>AI 视频大赛国家奖项；使用 AI 工具链全程制作多款可玩 Demo，覆盖策划、程序到美术的完整管线。</p>
+          </div>
         </div>
         <div class="skill-card chamfer">
-          <div class="k">LANGUAGE & CS — 语言与工程基础</div>
-          <h4>英语与编程基础</h4>
-          <p>英语六级 550 分，可常态化阅读英文文献；高中 NOIP、大学 ACM 均获省级荣誉，编程基础扎实，与程序对接无障碍。</p>
+          <div class="sk-top">
+            <div class="k">LANGUAGE & CS — 语言与工程基础</div>
+            <h4>英语与编程基础</h4>
+          </div>
+          <div class="sk-body">
+            <p>英语六级 550 分，可常态化阅读英文文献；高中 NOIP、大学 ACM 均获省级荣誉，编程基础扎实，与程序对接无障碍。</p>
+          </div>
         </div>
       </div>
 
@@ -1885,29 +1951,49 @@ img, video { display: block; max-width: 100%; }
       </div>
       <div class="like-grid">
         <div class="like-card chamfer" data-reveal>
-          <h4>明日方舟</h4><span class="en">ARKNIGHTS</span>
-          <span class="hrs">6 年 · 120 级</span>
-          <p>长期关注抽卡与养成系统的保底机制、资源投放节奏，以及角色设计如何驱动情感投入。</p>
+          <div class="lk-top">
+            <h4>明日方舟</h4><span class="en">ARKNIGHTS</span>
+          </div>
+          <div class="lk-body">
+            <span class="hrs">6 年 · 120 级</span>
+            <p>长期关注抽卡与养成系统的保底机制、资源投放节奏，以及角色设计如何驱动情感投入。</p>
+          </div>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <h4>英雄联盟</h4><span class="en">LEAGUE OF LEGENDS</span>
-          <span class="hrs">800+ 小时 · 白金 2</span>
-          <p>关注 MOBA 的英雄设计与装备系统、英雄技能之间的交互可能性。</p>
+          <div class="lk-top">
+            <h4>英雄联盟</h4><span class="en">LEAGUE OF LEGENDS</span>
+          </div>
+          <div class="lk-body">
+            <span class="hrs">800+ 小时 · 白金 2</span>
+            <p>关注 MOBA 的英雄设计与装备系统、英雄技能之间的交互可能性。</p>
+          </div>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <h4>星露谷物语</h4><span class="en">STARDEW VALLEY</span>
-          <span class="hrs">493 小时</span>
-          <p>作息循环与心流管理的样本：每日体力限制如何被转化为目标引导而非挫败。</p>
+          <div class="lk-top">
+            <h4>星露谷物语</h4><span class="en">STARDEW VALLEY</span>
+          </div>
+          <div class="lk-body">
+            <span class="hrs">493 小时</span>
+            <p>作息循环与心流管理的样本：每日体力限制如何被转化为目标引导而非挫败。</p>
+          </div>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <h4>APEX 英雄</h4><span class="en">APEX LEGENDS</span>
-          <span class="hrs">200+ 小时 · 白金 3</span>
-          <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
+          <div class="lk-top">
+            <h4>APEX 英雄</h4><span class="en">APEX LEGENDS</span>
+          </div>
+          <div class="lk-body">
+            <span class="hrs">200+ 小时 · 白金 3</span>
+            <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
+          </div>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <h4>博德之门3</h4><span class="en">BALDUR'S GATE 3</span>
-          <span class="hrs">40 小时</span>
-          <p>CRPG 标杆样本：关注属性检定、对话分支与环境交互如何让同一目标存在多种解法，以及网状叙事的后果反馈设计。</p>
+          <div class="lk-top">
+            <h4>博德之门3</h4><span class="en">BALDUR'S GATE 3</span>
+          </div>
+          <div class="lk-body">
+            <span class="hrs">40 小时</span>
+            <p>CRPG 标杆样本：关注属性检定、对话分支与环境交互如何让同一目标存在多种解法，以及网状叙事的后果反馈设计。</p>
+          </div>
         </div>
       </div>
 
