@@ -13,7 +13,7 @@
 | 外部依赖 | 仅两个 CDN（均 jsDelivr，国内可达）：GSAP 3.12.5（页签转场）、Oswald 字体（@fontsource，英文展示字体）。挂了都能优雅回退 |
 | 资源目录 | `assets/img/`（证件照、视频封面、demo 截图）、`assets/video/`（压缩后 mp4）、`resume.pdf`（对外简历副本，改简历后需与本地 `简历.pdf` 手动同步） |
 | 验证脚本 | `_shot.py`：Playwright 截图走查（用系统 Edge，`channel='msedge'`，无需下载 Chromium），输出到 `%TEMP%\shots\` |
-| 页面结构 | 4 个页签：首页 PROFILE / 游戏经历 ARCHIVE / 拆解案 TEARDOWN / Demo WORKS |
+| 页面结构 | 4 个页签：首页 PROFILE / 游戏经历 ARCHIVE / Demo WORKS / 拆解案 TEARDOWN（2026-08-21 起 Demo 提到第三位） |
 
 定位代码时不要记行号（会漂），用注释锚点搜索，例如 `=========== 顶部导航`、`FIG.04`、`字号下限·统一`、`滚动揭示`。
 

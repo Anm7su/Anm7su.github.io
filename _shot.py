@@ -29,7 +29,7 @@ URL = "file:///" + os.path.join(ROOT, "index.html").replace(os.sep, "/")
 OUT_DIR = os.path.join(tempfile.gettempdir(), "shots")
 
 MIN_FONT_PX = 14.0
-PAGES = ["profile", "archive", "teardown", "works"]
+PAGES = ["profile", "archive", "works", "teardown"]  # 与导航顺序一致
 
 # 收集所有「直接包含文本节点且可见」的元素，断言 computed font-size ≥ 14px。
 # 不检查 opacity（滚动揭示中的元素 opacity=0 但仍受字号铁律约束）；

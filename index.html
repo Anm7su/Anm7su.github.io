@@ -1687,8 +1687,8 @@ img, video { display: block; max-width: 100%; }
     <nav class="nav-tabs" role="tablist" aria-label="页面导航">
       <button class="nav-tab active" data-page="profile" role="tab" aria-selected="true">首页<span class="en">PROFILE</span></button>
       <button class="nav-tab" data-page="archive" role="tab" aria-selected="false">游戏经历<span class="en">ARCHIVE</span></button>
-      <button class="nav-tab" data-page="teardown" role="tab" aria-selected="false">拆解案<span class="en">TEARDOWN</span></button>
       <button class="nav-tab" data-page="works" role="tab" aria-selected="false">Demo<span class="en">WORKS</span></button>
+      <button class="nav-tab" data-page="teardown" role="tab" aria-selected="false">拆解案<span class="en">TEARDOWN</span></button>
     </nav>
   </div>
 </header>
@@ -2065,7 +2065,7 @@ img, video { display: block; max-width: 100%; }
 </section>
 
 <!-- ============ 拆解案 TEARDOWN ============ -->
-<section class="page" id="page-teardown" data-code="TEARDOWN / 02">
+<section class="page" id="page-teardown" data-code="TEARDOWN / 03">
   <div class="wrap">
     <div class="section" style="padding-top: 128px;" data-bgword="TEARDOWN">
       <div class="tag-index"><span class="cn">拆解案</span>TEARDOWN / 最终幻想14</div>
@@ -2763,7 +2763,7 @@ img, video { display: block; max-width: 100%; }
 </section>
 
 <!-- ============ DEMO WORKS ============ -->
-<section class="page" id="page-works" data-code="WORKS / 03">
+<section class="page" id="page-works" data-code="WORKS / 02">
   <div class="wrap">
     <div class="section" style="padding-top: 128px;" data-bgword="WORKS">
       <h2 class="page-title">Demo 展示<span class="sub">PLAYABLE WORKS — 左右滑动切换</span></h2>
@@ -2819,13 +2819,14 @@ img, video { display: block; max-width: 100%; }
                   <ul>
                     <li>NPC 对话与 9 类氛围文本（工作小结 / 周会腹稿 / 评审意见 / 面试点评等）由 AI 实时生成，并做了全链路预算控制；</li>
                     <li>开发过程采用多窗口 AI 分工：策划、程序、美术各有独立日志与任务看板，由「指挥日志」统一调度；</li>
-                    <li>收获与踩坑：待补充。</li>
+                    <li>收获：运行时 AI 生成的关键不在模型能力，而在约束设计——预算控制 + 模板收口 + 兜底文本，让生成内容可控、可测；多窗口分工的本质是把「单一事实来源」用到协作上：日志即契约，冲突在指挥日志里收敛。</li>
                   </ul>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
                   <ul>
-                    <li>待补充：遇到的问题 → 解决方案。</li>
+                    <li><strong>问题：真实时钟驱动下，多系统状态互相污染。</strong>工作 / 摸鱼 / 社交等系统共用一天的时间轴。解法：时间推进收口为唯一入口，各系统只订阅「时间段变更」事件，不直接改彼此状态；</li>
+                    <li><strong>问题：AI 实时生成文本的成本与延迟不可控。</strong>解法：全链路预算控制 + 模板化收口，生成失败自动回退到兜底文本，玩家侧无感知。</li>
                   </ul>
                 </div>
               </div>
@@ -2867,13 +2868,19 @@ img, video { display: block; max-width: 100%; }
                   <ul>
                     <li>全程使用 AI 工具链制作：Kimi K3 / Claude Opus 参与系统与数值迭代，GPT image2 负责美术资产生成；</li>
                     <li>设计文档体系先行（世界 / 玩法 / 卡牌 / 平衡共 15 篇），让 AI 在明确约束下产出，而非边做边想；</li>
-                    <li>收获与踩坑：待补充。</li>
+                    <li>多代理并行审计 + 逐条人工复核：六个子系统并行排查出的 25 处缺陷，逐条对照代码与数据复核确认——AI 负责并行扫面，判定权始终在<strong>人</strong>；</li>
+                    <li>批量仿真替代手感调平衡：策略优化器 headless 跑 720 局量化卡牌强度，平衡迭代从"拍脑袋"变成"看数据"；</li>
+                    <li>用项目级约束（CLAUDE.md + 架构 Skill）把不可违反的规则写死——分层边界、内容优先改数据、每次变更必跑门禁；约束前置比事后 review 可靠得多。</li>
                   </ul>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
                   <ul>
-                    <li>待补充：遇到的问题 → 解决方案。</li>
+                    <li><strong>契约先行，而不是文档先行</strong>：先写一页纸架构契约（分层边界 + 数据归属 + 门禁清单），再用最脏的代码跑通核心循环验证玩法，成立后才重构进分层——本项目世界观中途才补、卡牌经历 6 轮平衡重做，若一开始就写全量设计文档，这些全是返工；</li>
+                    <li><strong>分层的价值是控制变更成本</strong>：表现 / 应用 / 领域 / 状态 / 数据 / 测试六层，依赖单向向下，规则与表现分离、状态只走 API——之后每一次内容膨胀都不动骨架；</li>
+                    <li><strong>内容是数据，代码只写规则</strong>：数值与文本进数据文件，走"数据源 → 生成器 → 运行时资源"链路，校验器守门——"改数据不炸游戏"是纪律，不是运气；</li>
+                    <li><strong>问题：战斗引擎随卡数膨胀。</strong>18+ 个卡牌效果按 ID 硬编码进战斗系统，单文件涨到 1600+ 行。解法：效果优先数据驱动（效果表 + type 分发），必须的特判集中到一处登记——这条债源于原型期"先跑起来再说"，应在原型转入契约的重构点一次性收编；</li>
+                    <li><strong>问题：门禁一度是假的。</strong>"战斗能结束就算过"的零断言、随机数导致的误报、release 下恒过的 assert()。解法：真实断言（统计攻击 / 伤亡 / 胜负信号）+ 固定种子 + 显式失败退出码；自检标准只有一句——"它能失败吗？"</li>
                   </ul>
                 </div>
               </div>
@@ -2918,13 +2925,15 @@ img, video { display: block; max-width: 100%; }
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
                     <li>AI 辅助素材产出与开发提速，获本届 Gamejam「最佳 AI 应用奖」；</li>
-                    <li>具体分工与收获：待补充。</li>
+                    <li>AI 承担美术素材与文案的初稿产出，人负责定方向与收敛——Gamejam 时限下，AI 是「加速器」而不是「决策者」；</li>
+                    <li>收获：AI 提效的前提是需求已经足够清晰；策划案先行的 48 小时里，省下的不是「想」的时间，是「等」的时间。</li>
                   </ul>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
                   <ul>
-                    <li>待补充：遇到的问题 → 解决方案。</li>
+                    <li><strong>问题：消消乐的慢思考与竞速的紧张感天然打架。</strong>解法：把消除结果转化为推进动力与技能资源，让竞速压力反过来给消除决策加上时限权重——两套系统靠「资源转化率」耦合，而不是简单拼接；</li>
+                    <li><strong>问题：四人小组 48 小时，数值没有迭代余量。</strong>解法：先用纸面模型搭数值框架（推进力曲线、技能费用），把可调参数全部外露成配置表，现场只调参、不改逻辑。</li>
                   </ul>
                 </div>
               </div>
@@ -2973,7 +2982,8 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
                   <ul>
-                    <li>待补充：遇到的问题 → 解决方案。</li>
+                    <li><strong>问题：卡牌效果围绕「梗」设计，趣味优先容易强度失控。</strong>解法：每个效果先折算成数值当量（伤害 / 过牌 / 防御的费用价值）再做梗的包装，趣味层不碰数值骨架，配合宝石强化做多轮平衡测试；</li>
+                    <li><strong>问题：地图塌陷倒计时与自由探索的目标冲突。</strong>解法：把塌陷步数做成始终可见的倒计时，让「贪资源」与「赶 BOSS」成为每一步的显性取舍——压力本身就是路线规划的决策来源。</li>
                   </ul>
                 </div>
               </div>
@@ -3022,13 +3032,14 @@ img, video { display: block; max-width: 100%; }
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
                     <li>AIGC 游戏创作课程作业：角色立绘、弹幕视觉、场景美术全部由 AI 生成；</li>
-                    <li>具体工具链与收获：待补充。</li>
+                    <li>收获：AIGC 美术量产的关键是先立「风格宪法」——色彩、笔触、题材约束定死之后再批量生成；单张抽卡式生成只会让画面风格散掉。</li>
                   </ul>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
                   <ul>
-                    <li>待补充：遇到的问题 → 解决方案。</li>
+                    <li><strong>问题：弹幕密度与可躲避性的平衡无法靠目测判断。</strong>解法：弹幕 pattern 参数化（弹速 / 密度 / 角度窗口），以残机与 Bomb 的资源消耗为难度标尺逐关校准；</li>
+                    <li><strong>问题：AI 生成素材的风格漂移。</strong>解法：同一套提示词模板 + 固定风格关键词批量产出，人工只负责筛选与二次修正。</li>
                   </ul>
                 </div>
               </div>
