@@ -563,24 +563,20 @@ img, video { display: block; max-width: 100%; }
 }
 .skill-card {
   background: var(--surface);
-  border: 1px solid var(--ink);
-}
-.skill-card .sk-top {
-  background:
-    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
-    var(--ak-black);
-  padding: 16px 24px 14px;
-  border-bottom: 3px solid var(--ak-cyan);
+  border: 1px solid var(--line);
+  padding: 22px 24px;
 }
 .skill-card .k {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.18em;
   color: var(--ak-cyan);
-  margin-bottom: 6px;
-  display: flex;
+  background: var(--ak-black);
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 5px 12px;
+  margin-bottom: 12px;
 }
 .skill-card .k::before {
   content: "";
@@ -588,9 +584,8 @@ img, video { display: block; max-width: 100%; }
   background: var(--ak-cyan);
   transform: rotate(45deg);
 }
-.skill-card h4 { font-size: 17px; font-weight: 700; color: #fff; margin: 0; }
-.skill-card .sk-body { padding: 16px 24px 20px; }
-.skill-card .sk-body p { font-size: 14px; color: var(--gray-1); line-height: 1.8; margin: 0; }
+.skill-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.skill-card p { font-size: 14px; color: var(--gray-1); line-height: 1.8; margin: 0; }
 
 /* ============ 拆解案 TEARDOWN ============ */
 .td-subtabs {
@@ -654,18 +649,15 @@ img, video { display: block; max-width: 100%; }
 }
 .td-quick .qc {
   background: var(--surface);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--line);
   padding: 18px 20px;
 }
 .td-quick .qc .q {
   font-size: 14px;
   font-family: var(--font-mono);
   letter-spacing: 0.1em;
-  color: var(--ak-cyan);
-  margin: -18px -20px 10px;
-  padding: 8px 20px;
-  background: var(--ak-black);
-  border-bottom: 2px solid var(--ak-cyan);
+  color: var(--gray-2);
+  margin-bottom: 6px;
 }
 .td-quick .qc .a {
   font-size: 15px;
@@ -1114,7 +1106,7 @@ img, video { display: block; max-width: 100%; }
 .fav-insight p { font-size: 14px; color: #23545A; margin: 0; }
 .fav-insight a { font-weight: 600; }
 
-/* 常驻中卡 */
+/* 常驻中卡：左侧黑色粗竖条 + 白底（比本命大卡轻一级） */
 .like-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1122,27 +1114,21 @@ img, video { display: block; max-width: 100%; }
 }
 .like-card {
   background: var(--surface);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--ak-black);
+  padding: 18px 22px;
   transition: border-color 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
-.like-card:hover { border-color: var(--ak-cyan); transform: translateY(-3px); }
-.like-card .lk-top {
-  background:
-    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
-    var(--ak-black);
-  padding: 14px 20px 12px;
-  border-bottom: 3px solid var(--ak-cyan);
-}
-.like-card h4 { font-size: 17px; font-weight: 700; color: #fff; }
+.like-card:hover { border-color: var(--ak-black); transform: translateY(-3px); }
+.like-card h4 { font-size: 17px; font-weight: 700; color: var(--ink); }
 .like-card .en {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.15em;
-  color: var(--ak-cyan);
+  color: var(--accent-deep);
   display: block;
-  margin: 2px 0 0;
+  margin: 2px 0 10px;
 }
-.like-card .lk-body { padding: 14px 20px 18px; }
 .like-card .hrs {
   font-family: var(--font-mono);
   font-size: 14px;
@@ -1210,10 +1196,23 @@ img, video { display: block; max-width: 100%; }
 .works-track.dragging { transition: none; }
 
 .work-panel {
-  flex: 0 0 100%;
+  flex: 0 0 88%;                 /* 两侧各露 6% 相邻面板（peek），提示可横滑 */
   min-width: 0;
   padding: 4px;
+  opacity: 0.45;
+  transition: opacity 480ms var(--ease-out);
 }
+.work-panel.active { opacity: 1; }
+.work-panel:not(.active) { pointer-events: none; }   /* 露出的边缘不可点，防误触 */
+.work-no {
+  margin-left: auto;
+  font-family: var(--font-en-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.work-no i { font-style: normal; font-size: 16px; color: var(--gray-2); }
 .work-head {
   display: flex;
   align-items: baseline;
@@ -1360,18 +1359,20 @@ img, video { display: block; max-width: 100%; }
   gap: 16px;
   margin-bottom: 28px;
 }
-.works-dots { display: flex; gap: 10px; align-items: center; }
+.works-dots { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .works-dot {
   font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: 0.1em;
   color: var(--gray-2);
-  padding: 6px 4px;
-  border-bottom: 2px solid transparent;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
   transition: all 220ms var(--ease-out);
   white-space: nowrap;
+  cursor: pointer;
 }
-.works-dot.on { color: var(--accent-deep); border-bottom-color: var(--accent); font-weight: 700; }
+.works-dot.on { color: #fff; background: var(--ak-black); border-color: var(--ak-black); font-weight: 700; }
 .works-arrows { display: flex; gap: 8px; }
 .works-arrow {
   width: 44px; height: 44px;
@@ -1390,7 +1391,7 @@ img, video { display: block; max-width: 100%; }
 }
 .work-block {
   background: var(--surface);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--line);
   padding: 24px 26px;
 }
 .work-block.full { grid-column: 1 / -1; }
@@ -1399,15 +1400,12 @@ img, video { display: block; max-width: 100%; }
   font-size: 14px;
   letter-spacing: 0.18em;
   color: var(--ak-cyan);
-  margin: -24px -26px 16px;
-  padding: 12px 26px;
-  background:
-    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px) 0 0 / 22px 22px,
-    var(--ak-black);
-  border-bottom: 3px solid var(--ak-cyan);
-  display: flex;
+  background: var(--ak-black);
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 5px 12px;
+  margin-bottom: 14px;
 }
 .work-block .bk::before {
   content: "";
@@ -1811,40 +1809,24 @@ img, video { display: block; max-width: 100%; }
       <div class="tag-index"><span class="cn">专业技能</span>SKILLS / 03</div>
       <div class="skill-grid">
         <div class="skill-card chamfer">
-          <div class="sk-top">
-            <div class="k">DESIGN — 设计能力</div>
-            <h4>体验与交互设计</h4>
-          </div>
-          <div class="sk-body">
-            <p>熟悉设计心理学与人机交互原理，能把体验意图落到界面布局、信息层级与交互流程的细节；软件技能：Figma、Photoshop。</p>
-          </div>
+          <div class="k">DESIGN — 设计能力</div>
+          <h4>体验与交互设计</h4>
+          <p>熟悉设计心理学与人机交互原理，能把体验意图落到界面布局、信息层级与交互流程的细节；软件技能：Figma、Photoshop。</p>
         </div>
         <div class="skill-card chamfer">
-          <div class="sk-top">
-            <div class="k">ENGINE & ART — 引擎与美术工具链</div>
-            <h4>从引擎到建模</h4>
-          </div>
-          <div class="sk-body">
-            <p>Unity / Unreal / Godot 引擎实操；MAYA / Blender / ZBrush 建模与 PBR 流程。</p>
-          </div>
+          <div class="k">ENGINE & ART — 引擎与美术工具链</div>
+          <h4>从引擎到建模</h4>
+          <p>Unity / Unreal / Godot 引擎实操；MAYA / Blender / ZBrush 建模与 PBR 流程。</p>
         </div>
         <div class="skill-card chamfer">
-          <div class="sk-top">
-            <div class="k">AI WORKFLOW — AI 工作流</div>
-            <h4>AI 全流程制作</h4>
-          </div>
-          <div class="sk-body">
-            <p>AI 视频大赛国家奖项；使用 AI 工具链全程制作多款可玩 Demo，覆盖策划、程序到美术的完整管线。</p>
-          </div>
+          <div class="k">AI WORKFLOW — AI 工作流</div>
+          <h4>AI 全流程制作</h4>
+          <p>AI 视频大赛国家奖项；使用 AI 工具链全程制作多款可玩 Demo，覆盖策划、程序到美术的完整管线。</p>
         </div>
         <div class="skill-card chamfer">
-          <div class="sk-top">
-            <div class="k">LANGUAGE & CS — 语言与工程基础</div>
-            <h4>英语与编程基础</h4>
-          </div>
-          <div class="sk-body">
-            <p>英语六级 550 分，可常态化阅读英文文献；高中 NOIP、大学 ACM 均获省级荣誉，编程基础扎实，与程序对接无障碍。</p>
-          </div>
+          <div class="k">LANGUAGE & CS — 语言与工程基础</div>
+          <h4>英语与编程基础</h4>
+          <p>英语六级 550 分，可常态化阅读英文文献；高中 NOIP、大学 ACM 均获省级荣誉，编程基础扎实，与程序对接无障碍。</p>
         </div>
       </div>
 
@@ -1951,49 +1933,29 @@ img, video { display: block; max-width: 100%; }
       </div>
       <div class="like-grid">
         <div class="like-card chamfer" data-reveal>
-          <div class="lk-top">
-            <h4>明日方舟</h4><span class="en">ARKNIGHTS</span>
-          </div>
-          <div class="lk-body">
-            <span class="hrs">6 年 · 120 级</span>
-            <p>长期关注抽卡与养成系统的保底机制、资源投放节奏，以及角色设计如何驱动情感投入。</p>
-          </div>
+          <h4>明日方舟</h4><span class="en">ARKNIGHTS</span>
+          <span class="hrs">6 年 · 120 级</span>
+          <p>长期关注抽卡与养成系统的保底机制、资源投放节奏，以及角色设计如何驱动情感投入。</p>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <div class="lk-top">
-            <h4>英雄联盟</h4><span class="en">LEAGUE OF LEGENDS</span>
-          </div>
-          <div class="lk-body">
-            <span class="hrs">800+ 小时 · 白金 2</span>
-            <p>关注 MOBA 的英雄设计与装备系统、英雄技能之间的交互可能性。</p>
-          </div>
+          <h4>英雄联盟</h4><span class="en">LEAGUE OF LEGENDS</span>
+          <span class="hrs">800+ 小时 · 白金 2</span>
+          <p>关注 MOBA 的英雄设计与装备系统、英雄技能之间的交互可能性。</p>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <div class="lk-top">
-            <h4>星露谷物语</h4><span class="en">STARDEW VALLEY</span>
-          </div>
-          <div class="lk-body">
-            <span class="hrs">493 小时</span>
-            <p>作息循环与心流管理的样本：每日体力限制如何被转化为目标引导而非挫败。</p>
-          </div>
+          <h4>星露谷物语</h4><span class="en">STARDEW VALLEY</span>
+          <span class="hrs">493 小时</span>
+          <p>作息循环与心流管理的样本：每日体力限制如何被转化为目标引导而非挫败。</p>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <div class="lk-top">
-            <h4>APEX 英雄</h4><span class="en">APEX LEGENDS</span>
-          </div>
-          <div class="lk-body">
-            <span class="hrs">200+ 小时 · 白金 3</span>
-            <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
-          </div>
+          <h4>APEX 英雄</h4><span class="en">APEX LEGENDS</span>
+          <span class="hrs">200+ 小时 · 白金 3</span>
+          <p>英雄技能与射击手感的融合设计；大逃杀缩圈节奏与经济系统的耦合。</p>
         </div>
         <div class="like-card chamfer" data-reveal>
-          <div class="lk-top">
-            <h4>博德之门3</h4><span class="en">BALDUR'S GATE 3</span>
-          </div>
-          <div class="lk-body">
-            <span class="hrs">40 小时</span>
-            <p>CRPG 标杆样本：关注属性检定、对话分支与环境交互如何让同一目标存在多种解法，以及网状叙事的后果反馈设计。</p>
-          </div>
+          <h4>博德之门3</h4><span class="en">BALDUR'S GATE 3</span>
+          <span class="hrs">40 小时</span>
+          <p>CRPG 标杆样本：关注属性检定、对话分支与环境交互如何让同一目标存在多种解法，以及网状叙事的后果反馈设计。</p>
         </div>
       </div>
 
@@ -2782,7 +2744,7 @@ img, video { display: block; max-width: 100%; }
 
             <!-- ===== 01 GameIntern ===== -->
             <div class="work-panel" data-work="gameintern">
-              <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span></div>
+              <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span><span class="work-no">01<i> / 05</i></span></div>
               <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · PC</div>
 
               <div class="media-carousel" data-carousel>
@@ -2834,7 +2796,7 @@ img, video { display: block; max-width: 100%; }
 
             <!-- ===== 02 Loomfall ===== -->
             <div class="work-panel" data-work="loomfall">
-              <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span></div>
+              <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span><span class="work-no">02<i> / 05</i></span></div>
               <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT · 个人项目 · PC / 安卓</div>
 
               <div class="media-carousel" data-carousel>
@@ -2888,7 +2850,7 @@ img, video { display: block; max-width: 100%; }
 
             <!-- ===== 03 龙舟消消乐 ===== -->
             <div class="work-panel" data-work="longzhouxiaoxiaole">
-              <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span></div>
+              <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span><span class="work-no">03<i> / 05</i></span></div>
               <div class="work-meta">2026 // 01 · 途游游戏 GAMEJAM · 四人小组：策划（系统 + 数值）· 安卓</div>
               <div class="work-awards">
                 <span class="fav-badge">最佳玩法奖</span>
@@ -2941,7 +2903,7 @@ img, video { display: block; max-width: 100%; }
 
             <!-- ===== 04 梗纪元 ===== -->
             <div class="work-panel" data-work="gengjiyuan">
-              <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span></div>
+              <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span><span class="work-no">04<i> / 05</i></span></div>
               <div class="work-meta">2025 · UNREAL ENGINE 5 · 团队项目：策划 / 卡牌设计 · PC</div>
 
               <div class="media-carousel" data-carousel>
@@ -2991,7 +2953,7 @@ img, video { display: block; max-width: 100%; }
 
             <!-- ===== 05 永夜轮回 ===== -->
             <div class="work-panel" data-work="yongyelunhui">
-              <div class="work-head"><h3>永夜轮回</h3><span class="en">东方风 STG 弹幕射击</span></div>
+              <div class="work-head"><h3>永夜轮回</h3><span class="en">东方风 STG 弹幕射击</span><span class="work-no">05<i> / 05</i></span></div>
               <div class="work-meta">2024 · GAMEMAKER · 个人项目（AIGC 课程作业）· PC</div>
 
               <div class="media-carousel" data-carousel>
@@ -3196,14 +3158,17 @@ img, video { display: block; max-width: 100%; }
   });
   var wDots = Array.prototype.slice.call(wDotsBox.children);
 
+  function wOffset() { return 'calc(' + (6 - wIndex * 88) + '%)'; }  /* 面板 88% 宽，两侧各露 6% */
   function wGo(i) {
     wIndex = Math.max(0, Math.min(wPanels.length - 1, i));
-    wTrack.style.transform = 'translateX(-' + wIndex * 100 + '%)';
+    wTrack.style.transform = 'translateX(' + wOffset() + ')';
     wDots.forEach(function (d, k) { d.classList.toggle('on', k === wIndex); });
+    wPanels.forEach(function (p, k) { p.classList.toggle('active', k === wIndex); });
     stopAllVideos();
   }
   document.getElementById('worksPrev').addEventListener('click', function () { wGo(wIndex - 1); });
   document.getElementById('worksNext').addEventListener('click', function () { wGo(wIndex + 1); });
+  wGo(0);
 
   /* 拖拽 */
   var dragX = null, dragDX = 0;
@@ -3216,13 +3181,13 @@ img, video { display: block; max-width: 100%; }
   wViewport.addEventListener('pointermove', function (e) {
     if (dragX === null) return;
     dragDX = e.clientX - dragX;
-    wTrack.style.transform = 'translateX(calc(-' + wIndex * 100 + '% + ' + dragDX + 'px))';
+    wTrack.style.transform = 'translateX(calc(' + (6 - wIndex * 88) + '% + ' + dragDX + 'px))';
   });
   function dragEnd() {
     if (dragX === null) return;
     wTrack.classList.remove('dragging');
     if (Math.abs(dragDX) > 60) wGo(wIndex + (dragDX < 0 ? 1 : -1));
-    else wTrack.style.transform = 'translateX(-' + wIndex * 100 + '%)';
+    else wTrack.style.transform = 'translateX(' + wOffset() + ')';
     dragX = null;
   }
   wViewport.addEventListener('pointerup', dragEnd);
@@ -3290,6 +3255,7 @@ img, video { display: block; max-width: 100%; }
 
   /* ---------- 滚动揭示（踏浪式：同区域同向，区域间交替） ---------- */
   document.querySelectorAll('.entry, .skill-card, .td-lead, .td-quick .qc, .td-body > *, .work-block, .media-carousel, .stat-band, .works-nav, .work-head, .work-meta, .work-awards').forEach(function (el) {
+    if (el.closest('#worksTrack')) return;   // works 面板横滑会反复进出视口，揭示重播表现为一闪一闪的残影；面板内元素直出
     el.setAttribute('data-reveal', '');
   });
 

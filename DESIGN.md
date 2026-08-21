@@ -108,6 +108,7 @@
 - 日期格式：`2024 // 09 — 至今`（官网 `//` 风格）
 - 按钮语言：`.dl-btn` 黑底白字 hover 变青底黑字；`.td-next a` 描边款 hover 变黑；`.works-arrow` 同
 - 细分隔线 `.rule` 带 `+` 端点
+- **卡片层级（2026-08-21 定，勿铺满同级）**：黑框头部 = 本命大卡 / 教育实习条目 / FIG 图题；左侧 6px 黑竖条 = 常驻中卡；黑 chip 小标签 = 技能卡 / work-block；速查卡 qc = 素白卡。黑框头部是最高级，全站只有这三处用
 
 ### 4.5 页签转场（wipe）
 GSAP 时间线：`.wipe-panel.p1`（墨黑）→ `.p2`（**官网青**）双斜板扫过 + 中央 Oswald 页码（`data-code`）。`activate()` 时停所有视频、滚回顶。无 GSAP/reduced-motion 时直接切换。
@@ -157,6 +158,7 @@ GSAP 时间线：`.wipe-panel.p1`（墨黑）→ `.p2`（**官网青**）双斜�
   - 其他页：按容器分组交替（`.like-grid / .skill-grid / .cat-list / .work-panel / .section`）
 - **可重播**：元素离开视口即移除 `revealed`，再次进入重新切入（上下滚动都触发）
 - 同批 stagger 65ms（上限 320ms）；`prefers-reduced-motion` 时全部直出
+- **works 面板内元素不参与揭示**（横滑反复进出视口，重播会闪成残影）；面板 88% 宽、两侧各露 6% 相邻面板（peek），非激活面板 opacity .45 + 不可点；标题行带大计数 `0x / 05`
 
 ### 媒体轮播
 - 4.5s 自动轮播；**视频播放时停止轮播**；视频封面点击→播放（controls 出现），暂停/结束→恢复封面
