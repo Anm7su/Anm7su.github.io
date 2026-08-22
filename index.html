@@ -1258,6 +1258,27 @@ img, video { display: block; max-width: 100%; }
   letter-spacing: 0.16em;
   color: var(--gray-2);
 }
+
+/* 信息卡：面试官 30 秒扫读区（职责/核心问题/方案/结果/试玩） */
+.work-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin: 14px 0 20px;
+}
+.work-info .wi { background: var(--surface); padding: 14px 18px; flex: 1 1 200px; }
+.work-info .wk {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--accent-deep);
+  margin-bottom: 4px;
+}
+.work-info .wv { font-size: 14.5px; color: #2C3134; line-height: 1.6; }
+.work-info .wv a { color: var(--accent-deep); font-weight: 600; }
 .work-meta {
   font-family: var(--font-mono);
   font-size: 14px;
@@ -2812,7 +2833,15 @@ img, video { display: block; max-width: 100%; }
             <!-- ===== 01 Loomfall ===== -->
             <div class="work-panel" data-work="loomfall">
               <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span><span class="work-no">01<i> / 05</i></span></div>
-              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT · 个人项目 · PC / 安卓</div>
+              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT · 个人项目 · 完成版 · PC / 安卓</div>
+
+              <div class="work-info chamfer">
+                <div class="wi"><span class="wk">我的职责</span><span class="wv">个人项目 · 系统 / 数值 / 程序</span></div>
+                <div class="wi"><span class="wk">核心问题</span><span class="wv">卡牌合成怎么做到「有惊喜但可控」</span></div>
+                <div class="wi"><span class="wk">我的方案</span><span class="wv">理论曲线建模 + AI 拟合系数 + 仿真验证</span></div>
+                <div class="wi"><span class="wk">结果</span><span class="wv">完成版双端可玩；720 局仿真下六个流派打到最终 BOSS 的比例 56%–100%</span></div>
+                <div class="wi"><span class="wk">试玩</span><span class="wv"><a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/Loomfall-Windows.zip">Windows</a> · <a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/Loomfall-Android.apk">安卓 APK</a></span></div>
+              </div>
 
               <div class="media-carousel" data-carousel>
                 <div class="media-viewport">
@@ -2847,6 +2876,7 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
+                    <li><strong>分工原则：AI 负责出草稿、跑量、拟合系数、扫缺陷；定方向、拍板、验证都我来。</strong></li>
                     <li>代码和数值迭代主要跟 Kimi K3、Claude Opus 结对做，美术资产用 GPT image2 生成；</li>
                     <li>先写文档再动手：世界、玩法、卡牌、平衡共 15 篇设计文档，AI 在文档划好的边界里产出，不边做边想；</li>
                     <li>查缺陷用「并行扫 + 人复核」：AI 分头排查六个子系统，扫出 25 处可疑点，我逐条对着代码和数据复核确认——AI 负责找，算不算缺陷由人判；</li>
@@ -2874,7 +2904,15 @@ img, video { display: block; max-width: 100%; }
             <!-- ===== 02 龙舟消消乐 ===== -->
             <div class="work-panel" data-work="longzhouxiaoxiaole">
               <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span><span class="work-no">02<i> / 05</i></span></div>
-              <div class="work-meta">2026 // 01 · 途游游戏 GAMEJAM · 四人小组：策划（系统 + 数值）· 安卓</div>
+              <div class="work-meta">2026 // 01 · 途游游戏训练营 GAMEJAM · 四人小组：策划（系统 + 数值）· 完成版 · 安卓</div>
+
+              <div class="work-info chamfer">
+                <div class="wi"><span class="wk">我的职责</span><span class="wv">四人小组 · 策划（系统 + 数值）+ 部分美术</span></div>
+                <div class="wi"><span class="wk">核心问题</span><span class="wv">消除的慢思考和竞速的紧张感怎么共存</span></div>
+                <div class="wi"><span class="wk">我的方案</span><span class="wv">消除 → 推进力 / 士气技能的转化率耦合；连消节奏标定（保底 1 次 / 上限 5 次）</span></div>
+                <div class="wi"><span class="wk">结果</span><span class="wv">途游游戏训练营 Gamejam「最佳玩法奖」「最佳 AI 应用奖」</span></div>
+                <div class="wi"><span class="wk">试玩</span><span class="wv"><a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/DragonBoat-Android.apk">安卓 APK</a></span></div>
+              </div>
               <div class="work-awards">
                 <span class="fav-badge">最佳玩法奖</span>
                 <span class="fav-badge">最佳 AI 应用奖</span>
@@ -2912,6 +2950,7 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
+                    <li><strong>分工原则：AI 出素材和文案初稿；方向、取舍和最终拍板都我来。</strong></li>
                     <li>AI 负责美术素材和文案的初稿产出，获本届 Gamejam「最佳 AI 应用奖」；</li>
                     <li>人负责定方向和取舍，AI 负责出草稿——48 小时里，AI 是加速器，不是决策者；</li>
                     <li>收获：AI 提效的前提是需求已经想清楚。策划案先行的 48 小时里，省下的不是「想」的时间，是「等」的时间。</li>
@@ -2931,7 +2970,15 @@ img, video { display: block; max-width: 100%; }
             <!-- ===== 03 梗纪元 ===== -->
             <div class="work-panel" data-work="gengjiyuan">
               <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span><span class="work-no">03<i> / 05</i></span></div>
-              <div class="work-meta">2025 · UNREAL ENGINE 5 · 团队项目：策划 / 卡牌设计 · PC</div>
+              <div class="work-meta">2025 · UNREAL ENGINE 5 · 六人团队：策划 / 卡牌设计 · 完成版 · PC</div>
+
+              <div class="work-info chamfer">
+                <div class="wi"><span class="wk">我的职责</span><span class="wv">六人团队 · 策划 / 卡牌设计（设计卡牌 10–20 张）</span></div>
+                <div class="wi"><span class="wk">核心问题</span><span class="wv">散落的梗点子怎么变成能跑的卡牌</span></div>
+                <div class="wi"><span class="wk">我的方案</span><span class="wv">点子折算成「机制 + 数值」规格，挂进统一结算规则</span></div>
+                <div class="wi"><span class="wk">结果</span><span class="wv">完成版（Windows）</span></div>
+                <div class="wi"><span class="wk">试玩</span><span class="wv"><a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/GengJiYuan-Windows.rar">Windows / RAR</a></span></div>
+              </div>
 
               <div class="media-carousel" data-carousel>
                 <div class="media-viewport">
@@ -2985,7 +3032,15 @@ img, video { display: block; max-width: 100%; }
             <!-- ===== 04 GameIntern ===== -->
             <div class="work-panel" data-work="gameintern">
               <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span><span class="work-no">04<i> / 05</i></span></div>
-              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · PC</div>
+              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · 可玩版本 · 持续迭代 · PC</div>
+
+              <div class="work-info chamfer">
+                <div class="wi"><span class="wk">我的职责</span><span class="wv">个人项目 · 策划 / 程序（AI 协作开发）</span></div>
+                <div class="wi"><span class="wk">核心问题</span><span class="wv">怎么把策划实习的日常变成可玩循环</span></div>
+                <div class="wi"><span class="wk">我的方案</span><span class="wv">工单—执行—验收—返工—成长闭环 + 真实时钟驱动</span></div>
+                <div class="wi"><span class="wk">结果</span><span class="wv">可玩版本，持续迭代中</span></div>
+                <div class="wi"><span class="wk">试玩</span><span class="wv"><a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/GameIntern-Windows-v0.2.zip">Windows / ZIP</a></span></div>
+              </div>
 
               <div class="media-carousel" data-carousel>
                 <div class="media-viewport">
@@ -3022,6 +3077,7 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
+                    <li><strong>分工原则：AI 生成氛围文本、辅助开发；系统规则、数值和内容方向都我定。</strong></li>
                     <li>NPC 对话和 9 类氛围文本（工作小结、周会腹稿、评审意见、面试点评等）都由 AI 实时生成，全部走每日预算控制，超了静默跳过；</li>
                     <li>开发用多窗口 AI 分工：策划、程序、美术各开各的窗口，各有独立日志和任务看板，由一份「指挥日志」统一调度；</li>
                     <li>收获：AI 实时生成文本，难的从来不是生成，是约束——预算、模板、兜底文案，缺一样都会出事。多窗口分工说白了就是把「单一事实来源」用到协作上：所有窗口只看日志，不靠口头同步。</li>
@@ -3041,7 +3097,15 @@ img, video { display: block; max-width: 100%; }
             <!-- ===== 05 永夜轮回 ===== -->
             <div class="work-panel" data-work="yongyelunhui">
               <div class="work-head"><h3>永夜轮回</h3><span class="en">东方风 STG 弹幕射击</span><span class="work-no">05<i> / 05</i></span></div>
-              <div class="work-meta">2024 · GAMEMAKER · 个人项目（AIGC 课程作业）· PC</div>
+              <div class="work-meta">2024 · GAMEMAKER · 个人项目（AIGC 课程作业）· 完成版 · PC</div>
+
+              <div class="work-info chamfer">
+                <div class="wi"><span class="wk">我的职责</span><span class="wv">个人项目（AIGC 课程作业）· 弹幕 / 节奏设计</span></div>
+                <div class="wi"><span class="wk">核心问题</span><span class="wv">难度节奏和弹幕美观怎么兼顾</span></div>
+                <div class="wi"><span class="wk">我的方案</span><span class="wv">压力曲线排布 + 函数化弹幕 pattern</span></div>
+                <div class="wi"><span class="wk">结果</span><span class="wv">完成版（Windows）</span></div>
+                <div class="wi"><span class="wk">试玩</span><span class="wv"><a href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/YongYeLunHui-Windows.zip">Windows / ZIP</a></span></div>
+              </div>
 
               <div class="media-carousel" data-carousel>
                 <div class="media-viewport">
@@ -3083,6 +3147,7 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
                   <ul>
+                    <li><strong>分工原则：AI 只负责美术素材生成；弹幕 pattern、关卡节奏和难度调校全部我设计。</strong></li>
                     <li>AIGC 游戏创作课程作业：角色立绘、弹幕视觉、场景美术全部由 AI 生成；</li>
                     <li>最大的收获是「先立风格再量产」：色调、笔触、题材关键词写死在提示词模板里再批量出图，人只负责挑和修；一张一张抽卡式地生成，拼起来一定不像同一个游戏。</li>
                   </ul>
