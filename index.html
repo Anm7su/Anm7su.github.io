@@ -1383,6 +1383,27 @@ img, video { display: block; max-width: 100%; }
 }
 .works-arrow:hover { background: var(--ak-black); border-color: var(--ak-black); color: #fff; }
 
+/* 宽屏：屏幕左右两侧中央的固定切换箭头（挂在 #page-works 内，切页签自动隐藏） */
+.works-side {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: 48px;
+  height: 64px;
+  border: 1px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 18px;
+  cursor: pointer;
+  display: none;
+  transition: background 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+.works-side:hover { background: var(--ak-black); border-color: var(--ak-black); color: #fff; }
+.works-side.prev { left: 18px; }
+.works-side.next { right: 18px; }
+@media (min-width: 1340px) { .works-side { display: block; } }
+
 /* 信息块 */
 .work-cols {
   display: grid;
@@ -2742,61 +2763,9 @@ img, video { display: block; max-width: 100%; }
         <div class="works-viewport" id="worksViewport">
           <div class="works-track" id="worksTrack">
 
-            <!-- ===== 01 GameIntern ===== -->
-            <div class="work-panel" data-work="gameintern">
-              <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span><span class="work-no">01<i> / 05</i></span></div>
-              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · PC</div>
-
-              <div class="media-carousel" data-carousel>
-                <div class="media-viewport">
-                  <div class="media-track">
-                    <div class="media-slide"><img src="assets/img/gameintern-1.png" alt="GameIntern 截图 — 家中场景" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-2.png" alt="GameIntern 截图 — 地铁场景" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-3.png" alt="GameIntern 截图 — 游戏界面 1" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-4.png" alt="GameIntern 截图 — 游戏界面 2" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-5.png" alt="GameIntern 截图 — 游戏界面 3" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-6.png" alt="GameIntern 截图 — 游戏界面 4" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-7.png" alt="GameIntern 截图 — 游戏界面 5" loading="lazy"></div>
-                    <div class="media-slide"><img src="assets/img/gameintern-8.png" alt="GameIntern 截图 — 游戏界面 6" loading="lazy"></div>
-                  </div>
-                </div>
-                <button class="media-ctrl prev" aria-label="上一张">←</button>
-                <button class="media-ctrl next" aria-label="下一张">→</button>
-                <div class="media-dots"></div>
-              </div>
-
-              <div class="work-cols">
-                <div class="work-block chamfer">
-                  <div class="bk">玩法介绍 — GAMEPLAY</div>
-                  <p>类《逃脱者2》的 2D 俯视职场沙盒：扮演一名游戏策划实习生，在真实时钟驱动的小公司世界里管理「钱 / 能力 / 人脉 / 体力 / 心情」五维资源。无胜负、目标自设——攒钱、练技能、或跳槽进大厂。核心循环：入职 → 每天上班（工作 / 摸鱼 / 问同事 / 食堂）→ 下班扣费存档 → 离职 → 面试 → 下一家公司。6 个月任期制 + 主动离职跳槽；线上面试必须躲进私密房间，被同事看到就算暴露。工作内容还原策划日常：配置表工单、QA 审核、BUG 任务、转正答辩，外加三款包装成工单的工作小游戏。</p>
-                </div>
-                <div class="work-block chamfer">
-                  <div class="bk">下载 — DOWNLOAD</div>
-                  <p style="margin-bottom:16px;">Windows 完整包（约 51MB）。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
-                </div>
-                <div class="work-block full chamfer">
-                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
-                  <ul>
-                    <li>NPC 对话与 9 类氛围文本（工作小结 / 周会腹稿 / 评审意见 / 面试点评等）由 AI 实时生成，并做了全链路预算控制；</li>
-                    <li>开发过程采用多窗口 AI 分工：策划、程序、美术各有独立日志与任务看板，由「指挥日志」统一调度；</li>
-                    <li>收获：运行时 AI 生成的关键不在模型能力，而在约束设计——预算控制 + 模板收口 + 兜底文本，让生成内容可控、可测；多窗口分工的本质是把「单一事实来源」用到协作上：日志即契约，冲突在指挥日志里收敛。</li>
-                  </ul>
-                </div>
-                <div class="work-block full chamfer">
-                  <div class="bk">制作心得 — DEV NOTES</div>
-                  <ul>
-                    <li><strong>问题：真实时钟驱动下，多系统状态互相污染。</strong>工作 / 摸鱼 / 社交等系统共用一天的时间轴。解法：时间推进收口为唯一入口，各系统只订阅「时间段变更」事件，不直接改彼此状态；</li>
-                    <li><strong>问题：AI 实时生成文本的成本与延迟不可控。</strong>解法：全链路预算控制 + 模板化收口，生成失败自动回退到兜底文本，玩家侧无感知。</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- ===== 02 Loomfall ===== -->
+            <!-- ===== 01 Loomfall ===== -->
             <div class="work-panel" data-work="loomfall">
-              <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span><span class="work-no">02<i> / 05</i></span></div>
+              <div class="work-head"><h3>Loomfall</h3><span class="en">涌现式自走棋卡牌 · ROUGUELIKE</span><span class="work-no">01<i> / 05</i></span></div>
               <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT · 个人项目 · PC / 安卓</div>
 
               <div class="media-carousel" data-carousel>
@@ -2848,9 +2817,9 @@ img, video { display: block; max-width: 100%; }
               </div>
             </div>
 
-            <!-- ===== 03 龙舟消消乐 ===== -->
+            <!-- ===== 02 龙舟消消乐 ===== -->
             <div class="work-panel" data-work="longzhouxiaoxiaole">
-              <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span><span class="work-no">03<i> / 05</i></span></div>
+              <div class="work-head"><h3>龙舟消消乐</h3><span class="en">三国 × 龙舟 · 消除竞速</span><span class="work-no">02<i> / 05</i></span></div>
               <div class="work-meta">2026 // 01 · 途游游戏 GAMEJAM · 四人小组：策划（系统 + 数值）· 安卓</div>
               <div class="work-awards">
                 <span class="fav-badge">最佳玩法奖</span>
@@ -2901,9 +2870,9 @@ img, video { display: block; max-width: 100%; }
               </div>
             </div>
 
-            <!-- ===== 04 梗纪元 ===== -->
+            <!-- ===== 03 梗纪元 ===== -->
             <div class="work-panel" data-work="gengjiyuan">
-              <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span><span class="work-no">04<i> / 05</i></span></div>
+              <div class="work-head"><h3>梗纪元</h3><span class="en">梗文化 ROUGUELIKE 卡牌 · 卡牌战争</span><span class="work-no">03<i> / 05</i></span></div>
               <div class="work-meta">2025 · UNREAL ENGINE 5 · 团队项目：策划 / 卡牌设计 · PC</div>
 
               <div class="media-carousel" data-carousel>
@@ -2946,6 +2915,58 @@ img, video { display: block; max-width: 100%; }
                   <ul>
                     <li><strong>问题：卡牌效果围绕「梗」设计，趣味优先容易强度失控。</strong>解法：每个效果先折算成数值当量（伤害 / 过牌 / 防御的费用价值）再做梗的包装，趣味层不碰数值骨架，配合宝石强化做多轮平衡测试；</li>
                     <li><strong>问题：地图塌陷倒计时与自由探索的目标冲突。</strong>解法：把塌陷步数做成始终可见的倒计时，让「贪资源」与「赶 BOSS」成为每一步的显性取舍——压力本身就是路线规划的决策来源。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 04 GameIntern ===== -->
+            <div class="work-panel" data-work="gameintern">
+              <div class="work-head"><h3>GameIntern</h3><span class="en">2D 俯视职场沙盒 · 游戏策划实习生模拟器</span><span class="work-no">04<i> / 05</i></span></div>
+              <div class="work-meta">2026 // 07 — 2026 // 08 · GODOT 4 · 个人项目 · PC</div>
+
+              <div class="media-carousel" data-carousel>
+                <div class="media-viewport">
+                  <div class="media-track">
+                    <div class="media-slide"><img src="assets/img/gameintern-1.png" alt="GameIntern 截图 — 家中场景" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-2.png" alt="GameIntern 截图 — 地铁场景" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-3.png" alt="GameIntern 截图 — 游戏界面 1" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-4.png" alt="GameIntern 截图 — 游戏界面 2" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-5.png" alt="GameIntern 截图 — 游戏界面 3" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-6.png" alt="GameIntern 截图 — 游戏界面 4" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-7.png" alt="GameIntern 截图 — 游戏界面 5" loading="lazy"></div>
+                    <div class="media-slide"><img src="assets/img/gameintern-8.png" alt="GameIntern 截图 — 游戏界面 6" loading="lazy"></div>
+                  </div>
+                </div>
+                <button class="media-ctrl prev" aria-label="上一张">←</button>
+                <button class="media-ctrl next" aria-label="下一张">→</button>
+                <div class="media-dots"></div>
+              </div>
+
+              <div class="work-cols">
+                <div class="work-block chamfer">
+                  <div class="bk">玩法介绍 — GAMEPLAY</div>
+                  <p>类《逃脱者2》的 2D 俯视职场沙盒：扮演一名游戏策划实习生，在真实时钟驱动的小公司世界里管理「钱 / 能力 / 人脉 / 体力 / 心情」五维资源。无胜负、目标自设——攒钱、练技能、或跳槽进大厂。核心循环：入职 → 每天上班（工作 / 摸鱼 / 问同事 / 食堂）→ 下班扣费存档 → 离职 → 面试 → 下一家公司。6 个月任期制 + 主动离职跳槽；线上面试必须躲进私密房间，被同事看到就算暴露。工作内容还原策划日常：配置表工单、QA 审核、BUG 任务、转正答辩，外加三款包装成工单的工作小游戏。</p>
+                </div>
+                <div class="work-block chamfer">
+                  <div class="bk">下载 — DOWNLOAD</div>
+                  <p style="margin-bottom:16px;">Windows 完整包（约 51MB）。</p>
+                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
+                  <span class="dl-pending">网盘链接待补</span>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
+                  <ul>
+                    <li>NPC 对话与 9 类氛围文本（工作小结 / 周会腹稿 / 评审意见 / 面试点评等）由 AI 实时生成，并做了全链路预算控制；</li>
+                    <li>开发过程采用多窗口 AI 分工：策划、程序、美术各有独立日志与任务看板，由「指挥日志」统一调度；</li>
+                    <li>收获：运行时 AI 生成的关键不在模型能力，而在约束设计——预算控制 + 模板收口 + 兜底文本，让生成内容可控、可测；多窗口分工的本质是把「单一事实来源」用到协作上：日志即契约，冲突在指挥日志里收敛。</li>
+                  </ul>
+                </div>
+                <div class="work-block full chamfer">
+                  <div class="bk">制作心得 — DEV NOTES</div>
+                  <ul>
+                    <li><strong>问题：真实时钟驱动下，多系统状态互相污染。</strong>工作 / 摸鱼 / 社交等系统共用一天的时间轴。解法：时间推进收口为唯一入口，各系统只订阅「时间段变更」事件，不直接改彼此状态；</li>
+                    <li><strong>问题：AI 实时生成文本的成本与延迟不可控。</strong>解法：全链路预算控制 + 模板化收口，生成失败自动回退到兜底文本，玩家侧无感知。</li>
                   </ul>
                 </div>
               </div>
@@ -3012,6 +3033,9 @@ img, video { display: block; max-width: 100%; }
       </div>
     </div>
   </div>
+
+  <button class="works-side prev" id="worksPrevSide" aria-label="上一个 Demo">←</button>
+  <button class="works-side next" id="worksNextSide" aria-label="下一个 Demo">→</button>
 </section>
 
 </main>
@@ -3146,7 +3170,7 @@ img, video { display: block; max-width: 100%; }
   var wViewport = document.getElementById('worksViewport');
   var wDotsBox = document.getElementById('worksDots');
   var wPanels = Array.prototype.slice.call(wTrack.children);
-  var wNames = ['GameIntern', 'Loomfall', '龙舟消消乐', '梗纪元', '永夜轮回'];
+  var wNames = ['Loomfall', '龙舟消消乐', '梗纪元', 'GameIntern', '永夜轮回'];
   var wIndex = 0;
 
   wPanels.forEach(function (_, i) {
@@ -3168,6 +3192,9 @@ img, video { display: block; max-width: 100%; }
   }
   document.getElementById('worksPrev').addEventListener('click', function () { wGo(wIndex - 1); });
   document.getElementById('worksNext').addEventListener('click', function () { wGo(wIndex + 1); });
+  /* 宽屏两侧固定箭头 */
+  document.getElementById('worksPrevSide').addEventListener('click', function () { wGo(wIndex - 1); });
+  document.getElementById('worksNextSide').addEventListener('click', function () { wGo(wIndex + 1); });
   wGo(0);
 
   /* 拖拽 */
