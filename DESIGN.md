@@ -183,7 +183,7 @@ GSAP 时间线：`.wipe-panel.p1`（墨黑）→ `.p2`（**官网青**）双斜�
 ## 8. 待补素材（用户侧）
 
 1. ~~每个 demo 五张运行截图~~ **已完成**（2026-08-18）：`assets/img/<demo拼音>-N.jpg|png`，大体积 PNG 已压成 JPG（≤1920 宽，q85）。命名：`gameintern-1..8.png`、`loomfall-1..5.jpg`、`longzhouxiaoxiaole-1..5.jpg`、`gengjiyuan-1..6.jpg`、`yongyelunhui-1..5.jpg`；原始截图仍在 `demo/<游戏>/截图/`
-2. 网盘分享链接 ×5 → 替换 `.dl-btn` 的 `href="#"` 和"网盘链接待补"
+2. ~~网盘分享链接 ×5~~ **已完成**（2026-08-23）：安装包传到本仓库 GitHub Release `demo-v1`（共 6 个文件，含 Loomfall 双端），`.dl-btn` 已填真实链接；后续更新安装包重新上传 Release 即可
 3. 各 demo 制作心得（问题→方案）+ 4 个 AI demo 的 AI 使用细节 → 填 `.work-block` 里的"待补充"
 4. ~~GitHub 用户名 → GitHub Pages 部署~~ **已完成**（2026-08-18）：`Anm7su/Anm7su.github.io`，线上地址 **https://anm7su.github.io/**（链接已写入 README.md）；`demo/`、`.venv/`、`简历.pdf` 不进仓库（见 `.gitignore`）
 

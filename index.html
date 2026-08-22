@@ -358,6 +358,33 @@ img, video { display: block; max-width: 100%; }
 }
 .hero-intro strong { color: #fff; font-weight: 600; }
 
+/* 首屏关键证据卡：数字用官网青，标签用灰白 */
+.hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -16px 0 32px;
+}
+.hero-proof .pf {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 8px 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.hero-proof .pf b {
+  font-family: var(--font-en-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ak-cyan);
+}
+.hero-proof .pf span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.04em;
+}
+
 .hero-contact {
   display: flex;
   flex-wrap: wrap;
@@ -377,6 +404,8 @@ img, video { display: block; max-width: 100%; }
   letter-spacing: 0.03em;
   color: #fff;
 }
+.contact-item .v a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 200ms var(--ease-out), color 200ms var(--ease-out); }
+.contact-item .v a:hover { color: var(--ak-cyan); border-bottom-color: var(--ak-cyan); }
 
 /* Hero 简历下载按钮（黑底上的描边款，hover 变青底黑字） */
 .hero-dl {
@@ -510,6 +539,8 @@ img, video { display: block; max-width: 100%; }
   margin-right: 10px;
 }
 .footer-contacts .fv { font-size: 14px; color: rgba(255,255,255,0.85); letter-spacing: 0.03em; }
+.footer-contacts .fv a { color: inherit; text-decoration: none; }
+.footer-contacts .fv a:hover { color: var(--ak-cyan); }
 .footer-note {
   font-size: 14px;
   color: rgba(255,255,255,0.4);
@@ -1751,16 +1782,24 @@ img, video { display: block; max-width: 100%; }
         <div class="hero-name-en">ZHOU ZIQI</div>
         <div class="hero-role">求职意向 · 游戏系统策划</div>
         <p class="hero-intro">
-          北京邮电大学数字媒体设计硕士在读，本科毕业于苏州工学院数字媒体技术专业，设计与技术复合背景。十余年游戏体验，累计体验百余款作品，覆盖主机 / PC / 手游与开放世界、动作、卡牌、竞技等核心品类；其中《炉石传说》《最终幻想14》均超千小时，最高美服前 50、国服 ADPS 第一。拥有 <strong>SNK 中国系统策划实习经历</strong>，在拳皇 IP 在研卡牌项目中负责赛季养成与玩法设计，熟知并热爱系统策划的完整工作流程。先后参与 5 款可玩 Demo 制作，其中 2 款为独立 AI 全流程开发；独立撰写 FF14 系统拆解四篇，覆盖整体架构、经济、社交与养成。
+          北京邮电大学数字媒体设计硕士在读，求职方向为游戏系统策划——擅长养成、功能设计与竞品分析，能用原型验证设计，具备出色的沟通能力。<br><br>
+          曾在 <strong>SNK 中国</strong>参与拳皇 IP 卡牌在研项目，负责赛季养成与休闲玩法设计，从文档、原型到配置表和测试反馈全程参与。<br><br>
+          独立撰写 FF14 系统拆解四篇（整体架构 / 经济 / 社交 / 养成），并以 5 个可玩 Demo 验证自己的设计——「Demo」页签可直接下载试玩。
         </p>
+        <div class="hero-proof">
+          <div class="pf"><b>美服 TOP 50</b><span>炉石传说</span></div>
+          <div class="pf"><b>国服 ADPS 第 1</b><span>最终幻想14</span></div>
+          <div class="pf"><b>10+ 年 · 100+ 款</b><span>游戏阅历</span></div>
+          <div class="pf"><b>最佳玩法奖</b><span>途游 Gamejam</span></div>
+        </div>
         <div class="hero-contact">
           <div class="contact-item">
             <span class="k">TEL</span>
-            <span class="v">18021276625</span>
+            <span class="v"><a href="tel:18021276625">18021276625</a></span>
           </div>
           <div class="contact-item">
             <span class="k">MAIL</span>
-            <span class="v">3357373852@qq.com</span>
+            <span class="v"><a href="mailto:3357373852@qq.com">3357373852@qq.com</a></span>
           </div>
           <div class="contact-item">
             <span class="k">BASE</span>
@@ -1793,7 +1832,7 @@ img, video { display: block; max-width: 100%; }
         <div class="entry-top">
           <div class="entry-head">
             <h3>北京邮电大学 · 数字媒体设计（硕士在读）</h3>
-            <span class="date">2024 // 09 — 至今</span>
+            <span class="date">2024 // 09 — 2027 // 06（预计）</span>
           </div>
         </div>
         <div class="entry-body">
@@ -2811,9 +2850,9 @@ img, video { display: block; max-width: 100%; }
                 </div>
                 <div class="work-block chamfer">
                   <div class="bk">下载 — DOWNLOAD</div>
-                  <p style="margin-bottom:16px;">Windows 版 / 安卓 APK。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / APK</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
+                  <p style="margin-bottom:16px;">Windows 版（约 92MB）/ 安卓 APK（约 123MB）。</p>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/Loomfall-Windows.zip">下载 DEMO<span class="mono">WIN / ZIP</span></a>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/Loomfall-Android.apk" style="margin-left:12px;">下载 DEMO<span class="mono">APK</span></a>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
@@ -2877,9 +2916,8 @@ img, video { display: block; max-width: 100%; }
                 </div>
                 <div class="work-block chamfer">
                   <div class="bk">下载 — DOWNLOAD</div>
-                  <p style="margin-bottom:16px;">安卓 APK（附完整玩法策划案）。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">APK</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
+                  <p style="margin-bottom:16px;">安卓 APK（约 504MB，附完整玩法策划案）。</p>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/DragonBoat-Android.apk">下载 DEMO<span class="mono">APK</span></a>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
@@ -2940,9 +2978,8 @@ img, video { display: block; max-width: 100%; }
                 </div>
                 <div class="work-block chamfer">
                   <div class="bk">下载 — DOWNLOAD</div>
-                  <p style="margin-bottom:16px;">Windows 完整包。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
+                  <p style="margin-bottom:16px;">Windows 完整包（约 468MB，RAR 压缩）。</p>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/GengJiYuan-Windows.rar">下载 DEMO<span class="mono">WIN / RAR</span></a>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">制作心得 — DEV NOTES</div>
@@ -2990,8 +3027,7 @@ img, video { display: block; max-width: 100%; }
                 <div class="work-block chamfer">
                   <div class="bk">下载 — DOWNLOAD</div>
                   <p style="margin-bottom:16px;">Windows 完整包（约 51MB）。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/GameIntern-Windows-v0.2.zip">下载 DEMO<span class="mono">WIN / ZIP</span></a>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
@@ -3051,9 +3087,8 @@ img, video { display: block; max-width: 100%; }
                 </div>
                 <div class="work-block chamfer">
                   <div class="bk">下载 — DOWNLOAD</div>
-                  <p style="margin-bottom:16px;">Windows 完整包。</p>
-                  <a class="dl-btn chamfer" href="#" onclick="return false;">下载 DEMO<span class="mono">WIN / ZIP</span></a>
-                  <span class="dl-pending">网盘链接待补</span>
+                  <p style="margin-bottom:16px;">Windows 完整包（约 26MB）。</p>
+                  <a class="dl-btn chamfer" href="https://github.com/Anm7su/Anm7su.github.io/releases/download/demo-v1/YongYeLunHui-Windows.zip">下载 DEMO<span class="mono">WIN / ZIP</span></a>
                 </div>
                 <div class="work-block full chamfer">
                   <div class="bk">AI 使用与收获 — AI WORKFLOW</div>
@@ -3103,8 +3138,8 @@ img, video { display: block; max-width: 100%; }
     <div class="footer-name">ZHOU <b>ZIQI</b></div>
     <div class="footer-role">GAME SYSTEM DESIGNER — 求职作品集</div>
     <div class="footer-contacts">
-      <span><span class="fk">TEL</span><span class="fv">18021276625</span></span>
-      <span><span class="fk">MAIL</span><span class="fv">3357373852@qq.com</span></span>
+      <span><span class="fk">TEL</span><span class="fv"><a href="tel:18021276625">18021276625</a></span></span>
+      <span><span class="fk">MAIL</span><span class="fv"><a href="mailto:3357373852@qq.com">3357373852@qq.com</a></span></span>
       <span><span class="fk">BASE</span><span class="fv">江苏苏州 · 北京在读</span></span>
     </div>
     <div class="footer-note">© 2026 ZHOU ZIQI // GAME SYSTEM DESIGN — 本页面为个人作品集，内容持续补充中</div>
