@@ -671,6 +671,38 @@ img, video { display: block; max-width: 100%; }
   margin-bottom: 8px;
 }
 
+/* 拆解案速读摘要（3 分钟速读） */
+.td-brief {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.td-brief .tb-head {
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--ak-cyan);
+  background: var(--ak-black);
+  padding: 5px 12px;
+  margin-bottom: 12px;
+}
+.td-brief .tb-row {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 4px 14px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--line);
+}
+.td-brief .tb-k {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--accent-deep);
+}
+.td-brief .tb-v { font-size: 14.5px; color: #2C3134; line-height: 1.7; }
+
 /* 问题→解法 速查卡 */
 .td-quick {
   display: grid;
@@ -872,6 +904,9 @@ img, video { display: block; max-width: 100%; }
   transform: translateX(-50%);
 }
 .fork-arms { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; }
+/* 三臂分叉（决策树用），隐藏为双臂对齐的连接线 */
+.fork-arms.three { grid-template-columns: 1fr 1fr 1fr; }
+.fork-arms.three::before, .fork-arms.three::after { display: none; }
 .fork-arms::before, .fork-arms::after {
   content: "";
   position: absolute;
@@ -935,6 +970,7 @@ img, video { display: block; max-width: 100%; }
 @media (max-width: 700px) {
   .net .span2 { width: 100%; }
   .fork-head { width: 100%; }
+  .fork-arms, .fork-arms.three { grid-template-columns: 1fr; }
   .cyc { grid-template-columns: 1fr; }
   .cyc .cyc-mid { grid-template-columns: 1fr; }
   .map-row { grid-template-columns: 1fr; gap: 8px; }
@@ -2135,6 +2171,14 @@ img, video { display: block; max-width: 100%; }
           本文讲清 FF14 面对了什么问题、又是怎么解决的。前一半是四个抽象解法，后一半是四个系统的具体落地。细节深挖见对应篇章。
         </div>
 
+        <div class="td-brief chamfer">
+          <div class="tb-head">3 分钟速读 — TL;DR</div>
+          <div class="tb-row"><span class="tb-k">问题</span><span class="tb-v">传统 MMO 的四个劝退点：强社交压力、爆肝分层、随机挫败、长线通胀</span></div>
+          <div class="tb-row"><span class="tb-k">核心解法</span><span class="tb-v">弱社交强社区 / 周上限收敛 / 三通道保底 / 货币双轨软重置</span></div>
+          <div class="tb-row"><span class="tb-k">关键代价</span><span class="tb-v">「低压力」在碎片化时代异化为打卡义务，8.0 正在整体重构</span></div>
+          <div class="tb-row"><span class="tb-k">我的结论</span><span class="tb-v">四个解法的共同内核是把选择权还给玩家；没有永恒的好设计，只有适配时代的设计</span></div>
+        </div>
+
         <div class="td-quick">
           <div class="qc chamfer"><div class="q">劝退点 01</div><div class="a">强社交压力 → 弱社交强社区</div></div>
           <div class="qc chamfer"><div class="q">劝退点 02</div><div class="a">爆肝分层 → 周上限收敛</div></div>
@@ -2286,6 +2330,14 @@ img, video { display: block; max-width: 100%; }
         <div class="td-lead">
           <span class="scope">SCOPE — 锚定 7.5x（神典石现行）+ 8.0 废除神典石刷取前瞻</span>
           神典石（亚拉戈神典石）是 FF14 战斗向核心代币，是「货币双轨 + 软重置」架构最完整的样本。本篇从架构下钻到设计批判与横向对比，回答：这个模式好在哪、为什么必须改、是设计自带缺陷还是时代变了。
+        </div>
+
+        <div class="td-brief chamfer">
+          <div class="tb-head">3 分钟速读 — TL;DR</div>
+          <div class="tb-row"><span class="tb-k">问题</span><span class="tb-v">终局货币怎么做到既不通胀失控、又不让回归玩家掉队</span></div>
+          <div class="tb-row"><span class="tb-k">核心解法</span><span class="tb-v">双轨货币 + 周上限 + 版本软重置（旧币降级兑换）</span></div>
+          <div class="tb-row"><span class="tb-k">关键代价</span><span class="tb-v">周上限本质是 FOMO——13 年后打卡感压过了获得感</span></div>
+          <div class="tb-row"><span class="tb-k">我的结论</span><span class="tb-v">时间门槛是双刃剑，设计时要预设「从固定打卡到自由时间」的退路</span></div>
         </div>
 
         <div class="td-quick">
@@ -2488,6 +2540,16 @@ img, video { display: block; max-width: 100%; }
             <li><strong>减负不是砍内容，是「把选择权还给玩家」</strong>：8.0 的改动本质不是「减少内容」，而是「把『每天固定打卡』改成『一周内自由安排』、把『单一刷随机』改成『殊途同归』」。玩家要的不是更少的内容，而是对自己时间的控制权。</li>
           </ol>
 
+          <h2>十二、如果让我重新设计</h2>
+          <p>站在系统策划的角度，如果我接手神典石的下一次迭代，我会这样改：</p>
+          <ul>
+            <li><strong>具体方案</strong>：① 每日制改每周制——活跃度清单按周结算，错过的周奖励可回溯一周（8.0 已在这个方向上，我赞同）；② 殊途同归——神典石不再只从随机副本产出，生产、狩猎、PvP 给等效进度，让玩家用自己喜欢的玩法毕业；③ 旧币不贬值、改「折算累积」——版本更迭时旧神典石按比例折成新材料点数，而不是降级兑换变相清空，把「被清空焦虑」降成「折旧」。</li>
+            <li><strong>预期收益</strong>：打卡义务感下降，回归玩家追赶成本可控，活跃度从「每天 30 分钟」变成「每周弹性安排」。</li>
+            <li><strong>潜在风险</strong>：① 每周制可能把「每日粘性」换成「周初爆肝、周末摆烂」的节奏空洞；② 殊途同归会稀释随机副本的匹配池——社交篇讲的「老玩家时间反哺新人」循环会受冲击，需要给日随奖励单独补权重；③ 折算比例如果太厚道，通胀压力会回来。</li>
+            <li><strong>验证指标</strong>：周活 / 日活比、随机本新人匹配时长、回归玩家两周追平率、相关玩法的流失率。</li>
+            <li><strong>灰度方案</strong>：先在非最高档货币（通用石）上试每周制，观察一个版本的数据，再推广到核心币。</li>
+          </ul>
+
           <div class="td-next"><a href="#" data-goto="social">下一篇 — 社交系统 · 日随 →</a></div>
 </div>
 </article>
@@ -2497,6 +2559,14 @@ img, video { display: block; max-width: 100%; }
         <div class="td-lead">
           <span class="scope">SCOPE — 锚定 7.5x（当前线上）+ 8.0 前瞻</span>
           日随（每日随机任务）是 FF14 用一套奖励设计，把「老玩家时间」自动转化为「新人匹配供给」的跨层循环架构。本篇从架构下钻到「冲突补偿」与「参与平衡调研」，层层深入。
+        </div>
+
+        <div class="td-brief chamfer">
+          <div class="tb-head">3 分钟速读 — TL;DR</div>
+          <div class="tb-row"><span class="tb-k">问题</span><span class="tb-v">MMO 新手匹配荒——老玩家没有理由陪新人打旧本</span></div>
+          <div class="tb-row"><span class="tb-k">核心解法</span><span class="tb-v">日随随机匹配 + 奖励分流，把老玩家时间转化为新人匹配供给</span></div>
+          <div class="tb-row"><span class="tb-k">关键代价</span><span class="tb-v">奖励太高逼打卡、太低池子空——平衡是区间问题</span></div>
+          <div class="tb-row"><span class="tb-k">我的结论</span><span class="tb-v">分离优于调和；参与平衡有一套可复用的五问框架（见文末）</span></div>
         </div>
 
         <div class="td-quick">
@@ -2701,6 +2771,16 @@ img, video { display: block; max-width: 100%; }
           </ol>
           <blockquote>系统策划的价值不在于「能描述系统」，而在于「能回答这些平衡问题」。这套框架也是我做任何游戏拆解时的默认追问。</blockquote>
 
+          <h2>十二、适用范围与迁移</h2>
+          <p>这套「奖励换时间」的架构能搬到哪、不能搬到哪，我的判断：</p>
+          <ul>
+            <li><strong>适用</strong>：有多人内容分层（日常 / 高难）的在线游戏——匹配池需要持续供给的 MMO、共斗手游，都可以参考「奖励分流 + 随机匹配」的组合。</li>
+            <li><strong>不能照搬</strong>：① 「每日首次大额奖励」在碎片化时代就是打卡源（8.0 自己都在改）；② 指导者 / 皇冠这类身份激励依赖大社区基数，小 DAU 游戏撑不起；③ 初见奖励在内容量小的游戏里很快就会耗完。</li>
+            <li><strong>手游怎么改</strong>：每日制改每周活跃度 + 跨服匹配，低峰时段用 AI 队友兜底匹配池。</li>
+            <li><strong>买断 / 单机不适用</strong>：没有匹配池，这套架构无从谈起；对应物是「异步互助」——魂类留言、死亡搁浅的共享建筑。</li>
+            <li><strong>怎么验证社交压力真的降了</strong>：新手首日匹配时长、新人次留 / 七留、日随参与率与「义务感」问卷、高难招募板的供给量——指标要同时看「池子有没有空」和「玩家有没有被逼」。</li>
+          </ul>
+
           <div class="td-next"><a href="#" data-goto="growth">下一篇 — 养成系统 · 魔晶石 →</a></div>
 </div>
 </article>
@@ -2710,6 +2790,14 @@ img, video { display: block; max-width: 100%; }
         <div class="td-lead">
           <span class="scope">SCOPE — 锚定 7.5x（当前线上）+ 8.0 前瞻</span>
           魔晶石镶嵌（Materia Melding）是 FF14 在「装等」之上提供的一层「属性定制」，是「确定性 + 分层投入」架构的典型案例。
+        </div>
+
+        <div class="td-brief chamfer">
+          <div class="tb-head">3 分钟速读 — TL;DR</div>
+          <div class="tb-row"><span class="tb-k">问题</span><span class="tb-v">属性定制怎么做到硬核有深度、休闲不被强迫</span></div>
+          <div class="tb-row"><span class="tb-k">核心解法</span><span class="tb-v">安全孔 100% 确定性 + 禁断孔递减投入 + 属性上限硬封顶</span></div>
+          <div class="tb-row"><span class="tb-k">关键代价</span><span class="tb-v">禁断带赌博性；「溢出无收益」的认知成本高</span></div>
+          <div class="tb-row"><span class="tb-k">我的结论</span><span class="tb-v">「确定性 + 赌博性」分层，让不同玩家各取所需而不互相绑架</span></div>
         </div>
 
         <div class="td-quick">
@@ -2804,6 +2892,36 @@ img, video { display: block; max-width: 100%; }
             <li><strong>双边风险</strong>：禁断太值钱（逼人赌博 → 付费反感）vs 太弱（没人投入 → 系统闲置）。</li>
             <li><strong>失效信号</strong>：溢出无收益的挫败、赌博反感、配装工具成为刚需（认知成本过高）。</li>
           </ul>
+
+          <h2>七、一个具体的玩家决策</h2>
+          <p>与其继续抽象描述，不如看一个具体情境：一名准备开荒零式的玩家，拿到一件生产制作的毕业装（3 个安全孔、可禁断）之后，面对的是什么选择：</p>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.09 — 玩家决策树：拿到一件可禁断毕业装之后</div>
+            <div class="fork-head d-node hub">
+              <span class="nk">情境</span>
+              <span class="nv">零式开荒玩家 · 生产制作毕业装</span>
+              <span class="nd">3 个安全孔 · 可禁断</span>
+            </div>
+            <div class="d-arr"><span class="al">三种选择</span><span class="ln"></span><span class="hd"></span></div>
+            <div class="fork-arms three">
+              <div class="d-node">
+                <span class="nk">选择 A — 只打安全孔</span>
+                <span class="nv">成本≈0 · 收益约九成</span>
+                <span class="nd">几分钟 + 少量金币，副属性达标；适合绝大多数玩家</span>
+              </div>
+              <div class="d-node key">
+                <span class="nk">选择 B — 禁断拉满</span>
+                <span class="nv">高成本 · 再挤约 5%</span>
+                <span class="nd">期望消耗数百颗石头、数百万金币，且被属性上限封顶；适合冲榜与速刷</span>
+              </div>
+              <div class="d-node">
+                <span class="nk">选择 C — 完全不碰</span>
+                <span class="nv">零参与</span>
+                <span class="nd">装等够了照样过本——系统不强迫任何人，这就是分层的意义</span>
+              </div>
+            </div>
+          </div>
+          <p>这张决策树回答了「为什么没有强迫所有人参与」：选择的收益曲线被刻意做成前陡后平——安全孔拿走大部分收益，禁断只给愿意付费的硬核玩家留极限空间，而选择 C 的存在保证了「不参与」永远是一个合法选项。好的分层设计，不是让每个人都走到终点，而是让每个人在自己的终点停下。</p>
 
           <div class="td-next"><a href="#" data-goto="overall">← 回到整体拆解</a></div>
 </div>
@@ -3231,6 +3349,7 @@ img, video { display: block; max-width: 100%; }
     if (typeof stopAllVideos === 'function') stopAllVideos();
     window.scrollTo(0, 0);
     current = name;
+    if (typeof pushHash === 'function') pushHash();
   }
 
   function switchTo(name) {
@@ -3286,6 +3405,8 @@ img, video { display: block; max-width: 100%; }
       t.classList.toggle('active', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
+    tdCurrent = key;
+    if (current === 'teardown' && typeof replaceHash === 'function') replaceHash();
   }
 
   tdTabs.forEach(function (t) {
@@ -3336,6 +3457,7 @@ img, video { display: block; max-width: 100%; }
     wDots.forEach(function (d, k) { d.classList.toggle('on', k === wIndex); });
     wPanels.forEach(function (p, k) { p.classList.toggle('active', k === wIndex); });
     stopAllVideos();
+    if (current === 'works' && typeof replaceHash === 'function') replaceHash();
   }
   document.getElementById('worksPrev').addEventListener('click', function () { wGo(wIndex - 1); });
   document.getElementById('worksNext').addEventListener('click', function () { wGo(wIndex + 1); });
@@ -3426,6 +3548,46 @@ img, video { display: block; max-width: 100%; }
     }
     restart();
   });
+
+  /* ---------- URL hash 路由（可分享链接，刷新/前进后退恢复状态） ---------- */
+  var tdCurrent = 'overall';
+  var hashQuiet = false;          /* 深链接恢复时不回写 hash */
+  function hashNow() {
+    if (current === 'works') return '#works/' + wPanels[wIndex].dataset.work;
+    if (current === 'teardown') return '#teardown/' + tdCurrent;
+    return '#' + current;
+  }
+  function pushHash() {           /* 页签切换：进历史 */
+    if (hashQuiet) return;
+    var h = hashNow();
+    if (location.hash !== h) history.pushState(null, '', h);
+  }
+  function replaceHash() {        /* 页内状态（面板/子篇）：替换当前条目，不刷屏历史 */
+    if (hashQuiet) return;
+    var h = hashNow();
+    if (location.hash !== h) history.replaceState(null, '', h);
+  }
+  function applyHash(initial) {
+    var parts = location.hash.replace(/^#\/?/, '').split('/');
+    var page = parts[0], sub = parts[1];
+    if (!pages[page]) return;
+    hashQuiet = true;
+    if (page === 'works') {
+      var wi = wPanels.findIndex(function (p) { return p.dataset.work === sub; });
+      if (initial) activate('works'); else switchTo('works');
+      if (wi >= 0) wGo(wi);
+    } else if (page === 'teardown') {
+      if (initial) activate('teardown'); else switchTo('teardown');
+      if (sub && tdArticles[sub]) tdActivate(sub);
+    } else if (initial) {
+      activate(page);
+    } else {
+      switchTo(page);
+    }
+    hashQuiet = false;
+  }
+  window.addEventListener('popstate', function () { applyHash(false); });
+  applyHash(true);
 
   /* ---------- 滚动揭示（踏浪式：同区域同向，区域间交替） ---------- */
   document.querySelectorAll('.entry, .skill-card, .td-lead, .td-quick .qc, .td-body > *, .work-block, .media-carousel, .stat-band, .works-nav, .work-head, .work-meta, .work-awards').forEach(function (el) {
