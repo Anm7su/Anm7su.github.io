@@ -680,6 +680,24 @@ img, video { display: block; max-width: 100%; }
   margin-bottom: 8px;
 }
 
+/* 篇目标题：移动端子页签只剩序号，篇名在文首直给 */
+.td-art-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin: 0 0 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.td-art-title .no {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--accent-deep);
+  letter-spacing: 0.12em;
+}
+
 /* 拆解案速读摘要（3 分钟速读） */
 .td-brief {
   background: var(--surface);
@@ -2192,6 +2210,7 @@ img, video { display: block; max-width: 100%; }
 
       <!-- ===== 01 整体拆解 ===== -->
       <article class="td-article current" data-td="overall">
+        <h2 class="td-art-title"><span class="no">01</span>整体拆解</h2>
         <div class="td-lead">
           <span class="scope">版本参考：7.5x + 8.0前瞻</span>
           本文讲清 FF14 面对了什么问题、又是怎么解决的。前一半是四个抽象解法，后一半是四个系统的具体落地。细节深挖见对应篇章。
@@ -2353,6 +2372,7 @@ img, video { display: block; max-width: 100%; }
 
       <!-- ===== 02 经济系统·神典石 ===== -->
       <article class="td-article" data-td="economy">
+        <h2 class="td-art-title"><span class="no">02</span>经济系统 · 神典石</h2>
         <div class="td-lead">
           <span class="scope">版本参考：7.5x + 8.0前瞻</span>
           神典石（亚拉戈神典石）是 FF14 战斗向核心代币，是货币双轨 + 软重置架构最完整的样本。本篇从架构下钻到设计批判与横向对比，回答：这个模式好在哪、为什么必须改、是设计自带缺陷还是时代变了。
@@ -2582,6 +2602,7 @@ img, video { display: block; max-width: 100%; }
 
       <!-- ===== 03 社交系统·日随 ===== -->
       <article class="td-article" data-td="social">
+        <h2 class="td-art-title"><span class="no">03</span>社交系统 · 日随</h2>
         <div class="td-lead">
           <span class="scope">版本参考：7.5x + 8.0前瞻</span>
           日随（每日随机任务）是 FF14 用一套奖励设计，把老玩家时间自动转化为新人匹配供给的跨层循环架构。本篇从架构下钻到冲突补偿与参与平衡调研，层层深入。
@@ -2813,6 +2834,7 @@ img, video { display: block; max-width: 100%; }
 
       <!-- ===== 04 养成系统·魔晶石 ===== -->
       <article class="td-article" data-td="growth">
+        <h2 class="td-art-title"><span class="no">04</span>养成系统 · 魔晶石</h2>
         <div class="td-lead">
           <span class="scope">版本参考：7.5x + 8.0前瞻</span>
           魔晶石镶嵌（Materia Melding）是 FF14 在装等之上提供的一层属性定制，是确定性 + 分层投入架构的典型案例。
