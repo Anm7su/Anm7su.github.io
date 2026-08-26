@@ -810,6 +810,13 @@ img, video { display: block; max-width: 100%; }
   gap: 10px;
 }
 .diagram .d-title::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.15); }
+.diagram .d-title .d-zoom { order: 2; color: rgba(255, 255, 255, 0.5); letter-spacing: 0.1em; white-space: nowrap; }
+.diagram .d-img { display: block; width: 100%; height: auto; cursor: zoom-in; background: #fff; }
+
+/* 图片放大查看 */
+.imgzoom { position: fixed; inset: 0; z-index: 9999; background: rgba(10, 12, 14, 0.92); display: none; align-items: center; justify-content: center; padding: 18px; }
+.imgzoom.show { display: flex; }
+.imgzoom img { max-width: 96vw; max-height: 92vh; object-fit: contain; cursor: zoom-out; }
 
 /* 节点 */
 .d-node {
@@ -2296,55 +2303,13 @@ img, video { display: block; max-width: 100%; }
           <p>四个系统不是各自为战，而是架在一个三层循环的时间尺度架构上：</p>
 
           <div class="diagram chamfer">
-            <div class="d-title">FIG.01 — 三层循环时间尺度架构</div>
-            <div class="loop-layer">
-              <div class="lk">情感循环<span>年尺度</span></div>
-              <div class="lv">为什么入坑、为什么留下</div>
-              <div class="ld">主线剧情 → 角色认同 → 情感触点 → 社交传播 → 再投入</div>
-              <div class="loop-nest">
-                <div class="d-arr"><span class="al">驱动</span><span class="ln"></span><span class="hd"></span></div>
-                <div class="loop-layer">
-                  <div class="lk">战斗循环<span>日尺度</span></div>
-                  <div class="lv">每天做什么、反复打本的动力</div>
-                  <div class="ld">副本挑战 → 机制学习 → 装备获取 → 难度解锁</div>
-                  <div class="loop-nest">
-                    <div class="d-arr"><span class="al">驱动</span><span class="ln"></span><span class="hd"></span></div>
-                    <div class="loop-layer">
-                      <div class="lk">赛季循环<span>版本尺度</span></div>
-                      <div class="lv">长期活力</div>
-                      <div class="ld">版本重置 → 内容消耗 → 毕业等待 → 新版本</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="loop-back"><span class="lb-ar">↑</span>赛季反哺情感（身份、装备、社区），三层构成闭合驱动链</div>
+            <div class="d-title">FIG.01 — 三层循环时间尺度架构<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/loop-3layer.png" alt="三层循环时间尺度架构：情感循环（年尺度）驱动战斗循环（日尺度），战斗循环驱动赛季循环（版本尺度），赛季再反哺情感" loading="lazy">
           </div>
 
           <div class="diagram chamfer">
-            <div class="d-title">FIG.02 — 四系统支撑网络</div>
-            <div class="net">
-              <div class="d-node hub span2">
-                <span class="nk">核心玩法 · 时间消费主场景</span>
-                <span class="nv">战斗系统</span>
-              </div>
-              <div class="arr-cell"><span class="elbl">产出神典石</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
-              <div class="arr-cell"><span class="elbl">掉落装备</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
-              <div class="d-node">
-                <span class="nk">货币 / 神典石 / 市场</span>
-                <span class="nv">经济系统</span>
-              </div>
-              <div class="d-node">
-                <span class="nk">装等 / 三通道</span>
-                <span class="nv">养成系统</span>
-              </div>
-              <div class="arr-cell"><span class="elbl">周上限 / 兑换</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
-              <div class="arr-cell"><span class="elbl">装等门槛</span><div class="d-arr"><span class="ln"></span><span class="hd"></span></div></div>
-              <div class="d-node key span2">
-                <span class="nk">匹配、老带新、固定队</span>
-                <span class="nv">社交系统</span>
-              </div>
-            </div>
+            <div class="d-title">FIG.02 — 四系统支撑网络<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/net-4systems.png" alt="四系统支撑网络：战斗系统产出神典石、掉落装备，经济系统以周上限调控，养成系统设装等门槛，社交系统承接匹配与老带新" loading="lazy">
           </div>
 
           <p>没有任何一个系统是终点，系统之间持续互相支撑——战斗产出神典石，经济调控兑换节奏，养成转化为装等门槛，社交反哺匹配生态。这套互相支撑的网络，是它能够长期运转的重要架构基础。</p>
@@ -2397,24 +2362,8 @@ img, video { display: block; max-width: 100%; }
           <h2>一、定位与架构</h2>
           <p>神典石是 FF14 战斗玩家变强的确定性货币，它连接战斗（产出）、经济（货币）、养成（装等兑换）三个系统。其架构核心是<strong>双轨</strong>：</p>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.03 — 货币双轨架构</div>
-            <div class="fork-head d-node hub">
-              <span class="nk">亚拉戈神典石</span>
-              <span class="nv">双轨并行</span>
-            </div>
-            <div class="fork-lines"></div>
-            <div class="fork-arms">
-              <div class="d-node key">
-                <span class="nk">诗学神典石 — 永久轨</span>
-                <span class="nv">追赶 / 补漏</span>
-                <span class="nd">永久存在 · 无周上限 · 换旧内容装备</span>
-              </div>
-              <div class="d-node">
-                <span class="nk">当期神典石 — 轮换轨</span>
-                <span class="nv">节奏 / 毕业</span>
-                <span class="nd">每 2 个小版本退役一代 · 按 4:1 软兑换 · 换当前毕业装</span>
-              </div>
-            </div>
+            <div class="d-title">FIG.03 — 货币双轨架构<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/stone-dual-track.png" alt="亚拉戈神典石双轨并行：诗学永久轨负责追赶与补漏，当期轮换轨按版本轮换、存在周上限，通向毕业装备" loading="lazy">
           </div>
           <ul>
             <li><strong>永久轨</strong>解决回归玩家如何快速赶上旧内容——用通用币换历史装备；</li>
@@ -2434,30 +2383,8 @@ img, video { display: block; max-width: 100%; }
           <h2>三、系统关系 / 循环图</h2>
           <p>神典石把战斗 → 经济 → 养成 → 战斗串成一个闭环：</p>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.04 — 神典石终局循环</div>
-            <div class="cyc">
-              <div class="d-node hub">
-                <span class="nk">日随 / 副本 / 讨伐 / 狩猎 / 蛮族</span>
-                <span class="nv">战斗玩法</span>
-              </div>
-              <div class="d-arr-r"><span class="al">产出</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node key">
-                <span class="nk">受周上限约束</span>
-                <span class="nv">神典石</span>
-              </div>
-              <div class="d-arr up"><span class="al">回到战斗</span><span class="hd"></span><span class="ln"></span></div>
-              <div class="cyc-center">CLOSED LOOP<br>周上限把节奏拉长到整个版本周期</div>
-              <div class="d-arr"><span class="al">兑换</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node">
-                <span class="nk">零式 / 绝本</span>
-                <span class="nv">高难内容准入</span>
-              </div>
-              <div class="d-arr-r rev"><span class="al">装等达标</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node">
-                <span class="nk">兑换毕业装备</span>
-                <span class="nv">养成</span>
-              </div>
-            </div>
+            <div class="d-title">FIG.04 — 神典石终局循环<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/stone-loop.png" alt="神典石终局循环：日随、副本、讨伐、狩猎、蛮族等战斗玩法产出神典石，兑换毕业装备，装等达标后回到战斗，周上限把节奏拉长到整个版本周期" loading="lazy">
           </div>
           <ul>
             <li><strong>周上限</strong>是这条闭环的节奏手段：它让每周投入和毕业进度挂钩，玩家无法靠爆肝一次性追平，从而把终局内容节奏拉长到整个版本周期；</li>
@@ -2466,13 +2393,9 @@ img, video { display: block; max-width: 100%; }
 
           <h2>四、演进史</h2>
           <p>神典石从 2.0 起就是战斗养成核心代币，十余年里诗学 + 当期轮换的架构<strong>结构稳定不变</strong>，变的只是当期币的名称与对应装等：</p>
-          <div class="timeline">
-            <div class="tl-node"><span class="tl-v">2.0 新生</span><span class="tl-c">哲学 → 神话</span><span class="tl-n">确立诗学+当期双轨</span></div>
-            <div class="tl-node"><span class="tl-v">3.0 苍穹</span><span class="tl-c">法典 → 传承</span><span class="tl-n"></span></div>
-            <div class="tl-node"><span class="tl-v">4.0 红莲</span><span class="tl-c">创世</span><span class="tl-n"></span></div>
-            <div class="tl-node"><span class="tl-v">5.0 暗影</span><span class="tl-c">寓言 → 幻想 → 战利品</span><span class="tl-n"></span></div>
-            <div class="tl-node"><span class="tl-v">6.0 晓月</span><span class="tl-c">无言 → 天文 → 因果 → 神曲</span><span class="tl-n">6.57 周上限放宽</span></div>
-            <div class="tl-node"><span class="tl-v">7.0 金曦</span><span class="tl-c">美学 → 天道 → 数理 → 新一代</span><span class="tl-n">装等 700 → 780 逐版抬升</span></div>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.05 — 神典石演进史<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/stone-timeline.png" alt="神典石演进史：2.0 新生确立诗学与当期双轨，历经苍穹、红莲、暗影、晓月、金曦逐代更换当期神典石，8.0 重做改版" loading="lazy">
           </div>
           <p><strong>关键洞察</strong>：演进史揭示的是<strong>架构稳定、参数滚动</strong>——轮换机制本身十余年不变，但每 2 个版本换一次当期币，用改名 + 改兑换装等完成一次温和的经济重置。这种以不变应万变正是它能长期运转的原因。</p>
 
@@ -2525,43 +2448,9 @@ img, video { display: block; max-width: 100%; }
           </ul>
 
           <h2>九、横向对比：其他游戏的同类系统</h2>
-          <div class="cmp-grid">
-            <div class="cmp-card cmp-self chamfer">
-              <h4>FF14 · 神典石（旧）</h4>
-              <div class="cmp-row"><span>机制</span>每周 450 上限 + 每日随机</div>
-              <div class="cmp-row"><span>上限</span>周上限，纯时间投入</div>
-              <div class="cmp-row"><span>差异</span>谁都能换，纯靠时间</div>
-            </div>
-            <div class="cmp-card cmp-self chamfer">
-              <h4>FF14 8.0 · 活跃度</h4>
-              <div class="cmp-row"><span>机制</span>每周活跃度清单 + 赛季</div>
-              <div class="cmp-row"><span>上限</span>无日上限、错过可回溯</div>
-              <div class="cmp-row"><span>差异</span>自由时间、殊途同归</div>
-            </div>
-            <div class="cmp-card chamfer">
-              <h4>WoW · 勇气点数</h4>
-              <div class="cmp-row"><span>机制</span>升级大秘境装备</div>
-              <div class="cmp-row"><span>上限</span>周上限 750 + 携带上限 1500</div>
-              <div class="cmp-row"><span>差异</span>用限时成就解锁升级资格</div>
-            </div>
-            <div class="cmp-card chamfer">
-              <h4>WoW · 宏伟宝库（低保）</h4>
-              <div class="cmp-row"><span>机制</span>每周开箱，按上周最高层数</div>
-              <div class="cmp-row"><span>上限</span>周重置</div>
-              <div class="cmp-row"><span>差异</span>确定性保底，绑定实力</div>
-            </div>
-            <div class="cmp-card chamfer">
-              <h4>命运方舟 2.0</h4>
-              <div class="cmp-row"><span>机制</span>周常整合 + 赛季制</div>
-              <div class="cmp-row"><span>上限</span>一周三天拿满</div>
-              <div class="cmp-row"><span>差异</span>砍日常、合并周常</div>
-            </div>
-            <div class="cmp-card chamfer">
-              <h4>逆水寒手游</h4>
-              <div class="cmp-row"><span>机制</span>殊途同归 + 赛季制</div>
-              <div class="cmp-row"><span>上限</span>资源获取上限</div>
-              <div class="cmp-row"><span>差异</span>每天 5 分钟、不同玩法同收益</div>
-            </div>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.06 — 同类终局系统横向对比<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/stone-compare.png" alt="同类终局系统横向对比：FF14 神典石旧版、FF14 8.0 活跃度、WoW 勇气点数、WoW 宏伟宝库低保、命运方舟 2.0、逆水寒手游的机制、上限与差异" loading="lazy">
           </div>
 
           <h3>三个关键对比洞察</h3>
@@ -2639,27 +2528,8 @@ img, video { display: block; max-width: 100%; }
 
           <h2>三、系统关系 / 循环图</h2>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.05 — 奖励换时间的跨层匹配循环</div>
-            <div class="reflow">
-              <span class="rf-tag">反哺匹配池 · 循环闭合</span>
-              <div class="d-node hub">
-                <span class="nk">有奖励需求：神典石 / 金币 / 经验</span>
-                <span class="nv">老玩家</span>
-              </div>
-              <div class="d-arr"><span class="al">为了奖励，排入低级副本</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node key">
-                <span class="nv">匹配池：低级副本有人排队</span>
-              </div>
-              <div class="d-arr"><span class="al">新人排主线副本，立刻有队友</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node">
-                <span class="nv">新人首次体验 = 队里有经验老玩家</span>
-                <span class="nd">偶遇式陪伴 → 体验好 → 留存</span>
-              </div>
-              <div class="d-arr"><span class="al">新人长大</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node">
-                <span class="nv">成为新的老玩家</span>
-              </div>
-            </div>
+            <div class="d-title">FIG.07 — 奖励换时间的跨层匹配循环<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/roul-loop.png" alt="奖励换时间的跨层匹配循环：老玩家带着神典石、金币、经验的奖励需求排日随，分配入各个副本匹配池，新人匹配提速、过本概率提高，留存后反哺匹配池" loading="lazy">
           </div>
           <p>这条循环横跨三个系统：<strong>社交</strong>（老带新、偶遇式陪伴）、<strong>战斗</strong>（匹配池、副本供给）、<strong>经济</strong>（奖励是循环的动力）。</p>
 
@@ -2679,34 +2549,9 @@ img, video { display: block; max-width: 100%; }
 
           <h2>六、冲突补偿：不是一个冲突，是三个</h2>
           <p>速刷 vs 慢体验听起来是一个矛盾，但它其实是三个<strong>可分离</strong>的子冲突，各自有不同的伤害方式和补偿方式：</p>
-          <div class="conf-grid">
-            <div class="conf-card chamfer">
-              <h4>剧情冲突</h4>
-              <div class="conf-sides">
-                <div class="conf-side"><span class="who">老玩家</span>跳过动画、快点打完</div>
-                <div class="conf-vs">VS</div>
-                <div class="conf-side"><span class="who">新人</span>完整看完剧情与演出</div>
-              </div>
-              <div class="conf-essence">时间效率 vs 内容体验</div>
-            </div>
-            <div class="conf-card chamfer">
-              <h4>教学冲突</h4>
-              <div class="conf-sides">
-                <div class="conf-side"><span class="who">老玩家</span>用最优解速刷、不等你看机制</div>
-                <div class="conf-vs">VS</div>
-                <div class="conf-side"><span class="who">新人</span>想看清机制、慢慢学</div>
-              </div>
-              <div class="conf-essence">熟练者 vs 学习者</div>
-            </div>
-            <div class="conf-card chamfer">
-              <h4>社交压力冲突</h4>
-              <div class="conf-sides">
-                <div class="conf-side"><span class="who">老玩家</span>希望你别拖后腿</div>
-                <div class="conf-vs">VS</div>
-                <div class="conf-side"><span class="who">新人</span>不想被催促、被嘲讽</div>
-              </div>
-              <div class="conf-essence">效率优先 vs 感受优先</div>
-            </div>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.08 — 新手与老玩家的三层冲突<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/roul-conflict3.png" alt="新手与老玩家的三层冲突：剧情冲突是时间效率对内容体验，教学冲突是熟练者对学习者，社交压力冲突是效率优先对感受优先" loading="lazy">
           </div>
           <p>关键认知：<strong>这三个冲突不是同一个问题，所以不能用同一个手段解决。</strong>FF14 的高明之处，正是它针对每个子冲突，用了不同的补偿层。</p>
 
@@ -2729,32 +2574,8 @@ img, video { display: block; max-width: 100%; }
 
           <h2>八、三层冲突 → 五层补偿的对应关系</h2>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.06 — 三层冲突 → 五层补偿 对应关系</div>
-            <div class="map-row">
-              <div class="map-src">剧情冲突<span>想跳 vs 想看</span></div>
-              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
-              <div class="map-tgts">
-                <span class="d-chip key"><b>空间分离</b><span class="cs">亲信战友</span></span>
-                <span class="d-chip"><b>机制强制</b><span class="cs">不可跳过动画</span></span>
-              </div>
-            </div>
-            <div class="map-row">
-              <div class="map-src">教学冲突<span>速刷 vs 学习</span></div>
-              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
-              <div class="map-tgts">
-                <span class="d-chip key"><b>空间分离</b><span class="cs">亲信战友单人教学</span></span>
-                <span class="d-chip"><b>能力约束</b><span class="cs">等级同步</span></span>
-              </div>
-            </div>
-            <div class="map-row">
-              <div class="map-src">社交压力冲突<span>催促 / 嘲讽 vs 想慢慢打</span></div>
-              <div class="d-arr-r"><span class="ln"></span><span class="hd"></span></div>
-              <div class="map-tgts">
-                <span class="d-chip"><b>激励对齐</b><span class="cs">初见奖励</span></span>
-                <span class="d-chip"><b>软性规范</b><span class="cs">豆芽 + GM 治理</span></span>
-              </div>
-            </div>
-            <div class="loop-back" style="margin-top:16px;"><span class="lb-ar">★</span>空间分离（亲信战友）是唯一同时覆盖三个子冲突的补偿——它直接把慢体验从快池里拿走，釜底抽薪</div>
+            <div class="d-title">FIG.09 — 三层冲突与五层补偿的对应关系<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/roul-conflict-map.png" alt="三层冲突与五层补偿的对应关系：亲信战友的空间分离同时覆盖剧情、教学、社交压力三个子冲突，机制强制、能力约束、软性规范各有对应" loading="lazy">
           </div>
           <p>可以看到：<strong>空间分离（亲信战友）是唯一一个同时覆盖三个子冲突的补偿</strong>——因为它是釜底抽薪，直接把慢体验从快池里拿走了。</p>
 
@@ -2771,23 +2592,9 @@ img, video { display: block; max-width: 100%; }
           <h2>十、参与平衡调研：打日随 vs 不打日随的差距</h2>
           <h3>先问：每个老玩家都必须打日随吗？</h3>
           <p><strong>答案：没有一个人必须打。这是刻意的设计，不是遗漏。</strong>但必须和倾向是两回事：</p>
-          <div class="aud-list">
-            <div class="aud-row">
-              <div class="aud-who"><b>练副职业的</b><span>日随经验效率高</span></div>
-              <div class="aud-bar full"><i style="width:88%"></i><em>强倾向</em></div>
-            </div>
-            <div class="aud-row">
-              <div class="aud-who"><b>追当前毕业装的</b><span>日随刷神典石效率高</span></div>
-              <div class="aud-bar full"><i style="width:88%"></i><em>强倾向</em></div>
-            </div>
-            <div class="aud-row">
-              <div class="aud-who"><b>休闲 / 剧情向</b><span>想打就打，不打也行</span></div>
-              <div class="aud-bar"><i style="width:34%"></i><em>弱</em></div>
-            </div>
-            <div class="aud-row">
-              <div class="aud-who"><b>已毕业的</b><span>无动机</span></div>
-              <div class="aud-bar"><i style="width:5%"></i><em>不打</em></div>
-            </div>
+          <div class="diagram chamfer">
+            <div class="d-title">FIG.10 — 日随参与倾向分层<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/roul-audience.png" alt="日随参与倾向分层：练副职业与追当前毕业装的玩家强倾向打日随，休闲与剧情向玩家想打就打，已毕业的玩家不打" loading="lazy">
           </div>
           <p>所以日随的设计目标是：它应该是一个高性价比选项，而不是一个每日义务。有没有人必须打，是判断这个系统是否健康的第一个指标——一旦出现必须，就说明平衡开始失衡。</p>
 
@@ -2859,24 +2666,8 @@ img, video { display: block; max-width: 100%; }
           <h2>一、定位与架构</h2>
           <p>在 FF14 的养成架构里，装等是统一节奏器（决定你能进什么本），而<strong>魔晶石镶嵌是装等之上的深度定制层</strong>——装等相同的情况下，玩家通过镶嵌不同魔晶石微调副属性，实现装备的差异化。其关键架构特征是<strong>双层</strong>：</p>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.07 — 魔晶石双层结构</div>
-            <div class="fork-head d-node hub">
-              <span class="nk">魔晶石镶嵌</span>
-              <span class="nv">确定性 + 分层投入</span>
-            </div>
-            <div class="fork-lines"></div>
-            <div class="fork-arms">
-              <div class="d-node key">
-                <span class="nk">安全孔（绿）— 确定性层</span>
-                <span class="nv">100% 成功</span>
-                <span class="nd">装备自带孔 · 人人可做 · 确定的基础强化</span>
-              </div>
-              <div class="d-node">
-                <span class="nk">禁断孔（红）— 投入层</span>
-                <span class="nv">成功率逐孔递减</span>
-                <span class="nd">仅生产制作装备可禁断 · 追求极限才需要</span>
-              </div>
-            </div>
+            <div class="d-title">FIG.11 — 魔晶石双层结构<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/materia-2layer.png" alt="魔晶石镶嵌双层结构：安全孔是 100% 成功的确定性层，装备自带孔、人人可做；禁断孔是成功率逐渐降低的投入层，仅生产制作装可禁断，追求极限数值" loading="lazy">
           </div>
 
           <h2>二、架构模式提炼：确定性 + 分层投入</h2>
@@ -2891,26 +2682,8 @@ img, video { display: block; max-width: 100%; }
           <h2>三、系统关系 / 循环图</h2>
           <p>魔晶石把生产/狩猎/经济三线拉进养成系统：</p>
           <div class="diagram chamfer">
-            <div class="d-title">FIG.08 — 生产 / 狩猎 / 经济 三线汇入养成</div>
-            <div class="funnel">
-              <div class="f-col">
-                <span class="d-chip"><b>狩猎</b><span class="cs">A怪 / 战利品兑换</span></span>
-                <span class="d-chip"><b>生产</b><span class="cs">橙票 / 紫票</span></span>
-                <span class="d-chip"><b>分解装备</b></span>
-                <span class="d-chip"><b>市场</b><span class="cs">可交易</span></span>
-              </div>
-              <div class="d-arr-r"><span class="al">产出</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="d-node hub f-hub">
-                <span class="nv">魔晶石</span>
-              </div>
-              <div class="d-arr-r"><span class="al">消耗</span><span class="ln"></span><span class="hd"></span></div>
-              <div class="f-col">
-                <span class="d-chip key"><b>安全孔镶嵌</b><span class="cs">100% 成功</span></span>
-                <span class="d-chip"><b>禁断孔镶嵌</b><span class="cs">成功率逐孔递减</span></span>
-                <span class="d-chip"><b>镶嵌失败</b><span class="cs">石头消失</span></span>
-              </div>
-              <div class="loop-back" style="grid-column: 1 / -1; margin-top: 6px;"><span class="lb-ar">↓</span>属性 +N（受装备属性上限约束，溢出显示红色 +0、无收益）</div>
-            </div>
+            <div class="d-title">FIG.12 — 生产 / 狩猎 / 经济 三线汇入养成<span class="d-zoom">点击放大</span></div>
+            <img class="d-img" src="assets/img/teardown/materia-funnel.png" alt="生产、狩猎、经济三线汇入养成：狩猎、生产、分解装备、市场产出魔晶石，消耗于安全孔镶嵌、禁断孔镶嵌与镶嵌失败" loading="lazy">
           </div>
           <ul>
             <li><strong>来源</strong>：魔晶石主要通过狩猎掉落与战利品兑换获取，把材料产出绑定到玩家参与的玩法上，而非挂机分解；</li>
@@ -2943,33 +2716,12 @@ img, video { display: block; max-width: 100%; }
 
           <h2>七、一个具体的玩家决策</h2>
           <p>与其继续抽象描述，不如看一个具体情境：一名准备开荒零式的玩家，拿到一件生产制作的毕业装（3 个安全孔、可禁断）之后，面对的是什么选择：</p>
-          <div class="diagram chamfer">
-            <div class="d-title">FIG.09 — 玩家决策树：拿到一件可禁断毕业装之后</div>
-            <div class="fork-head d-node hub">
-              <span class="nk">情境</span>
-              <span class="nv">零式开荒玩家 · 生产制作毕业装</span>
-              <span class="nd">3 个安全孔 · 可禁断</span>
-            </div>
-            <div class="d-arr"><span class="al">三种选择</span><span class="ln"></span><span class="hd"></span></div>
-            <div class="fork-arms three">
-              <div class="d-node">
-                <span class="nk">选择 A — 只打安全孔</span>
-                <span class="nv">成本≈0 · 收益约九成</span>
-                <span class="nd">几分钟 + 少量金币，副属性达标；适合绝大多数玩家</span>
-              </div>
-              <div class="d-node key">
-                <span class="nk">选择 B — 禁断拉满</span>
-                <span class="nv">高成本 · 再挤约 5%</span>
-                <span class="nd">期望消耗数百颗石头、数百万金币，且被属性上限封顶；适合冲榜与速刷</span>
-              </div>
-              <div class="d-node">
-                <span class="nk">选择 C — 完全不碰</span>
-                <span class="nv">零参与</span>
-                <span class="nd">装等够了照样过本——系统不强迫任何人，这就是分层的意义</span>
-              </div>
-            </div>
-          </div>
-          <p>这张决策树回答了为什么没有强迫所有人参与：选择的收益曲线被刻意做成前陡后平——安全孔拿走大部分收益，禁断只给愿意投入金币和资源的硬核玩家留极限空间，而选择 C 的存在保证了不参与仍然是一个合法选项。好的分层设计，不是让每个人都走到终点，而是让每个人在自己的终点停下。</p>
+          <ul>
+            <li><strong>选择 A — 只打安全孔</strong>：成本约等于零，几分钟加少量金币，副属性达标，约能拿到九成收益，适合绝大多数玩家。</li>
+            <li><strong>选择 B — 禁断拉满</strong>：期望消耗数百颗石头、数百万金币，在九成之上再挤约 5% 的属性，且被属性上限封顶，适合冲榜与速刷玩家。</li>
+            <li><strong>选择 C — 完全不碰</strong>：零参与。装等够了照样过本，系统不强迫任何人，这就是分层的意义。</li>
+          </ul>
+          <p>这三种选择回答了为什么没有强迫所有人参与：选择的收益曲线被刻意做成前陡后平——安全孔拿走大部分收益，禁断只给愿意投入金币和资源的硬核玩家留极限空间，而选择 C 的存在保证了不参与仍然是一个合法选项。好的分层设计，不是让每个人都走到终点，而是让每个人在自己的终点停下。</p>
 
           <div class="td-next"><a href="#" data-goto="overall">← 回到整体拆解</a></div>
 </div>
@@ -3721,6 +3473,24 @@ img, video { display: block; max-width: 100%; }
   } else {
     revealEls.forEach(function (el) { el.classList.add('revealed'); });
   }
+})();
+</script>
+<div class="imgzoom" id="imgZoom" role="dialog" aria-label="图片放大查看"><img alt=""></div>
+<script>
+(function () {
+  var ov = document.getElementById('imgZoom');
+  var ovImg = ov.querySelector('img');
+  document.querySelectorAll('.d-img').forEach(function (img) {
+    img.addEventListener('click', function () {
+      ovImg.src = img.src;
+      ovImg.alt = img.alt;
+      ov.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function close() { ov.classList.remove('show'); document.body.style.overflow = ''; }
+  ov.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 })();
 </script>
 </body>
