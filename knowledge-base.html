@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="面向游戏系统策划笔面试的个人知识库">
+  <title>System Lab · 系统策划知识库</title>
+  <link rel="stylesheet" href="knowledge-base.css">
+  <script src="knowledge-base-data.js" defer></script>
+  <script src="knowledge-base-content.js" defer></script>
+  <script src="knowledge-base-batch-01.js" defer></script>
+  <script src="knowledge-base-batch-02.js" defer></script>
+  <script src="knowledge-base-batch-03.js" defer></script>
+  <script src="knowledge-base-batch-04.js" defer></script>
+  <script src="knowledge-base-batch-05.js" defer></script>
+  <script src="knowledge-base-batch-06.js" defer></script>
+  <script src="knowledge-base-batch-07.js" defer></script>
+  <script src="knowledge-base-batch-08.js" defer></script>
+  <script src="knowledge-base-batch-09.js" defer></script>
+  <script src="knowledge-base-backup.js" defer></script>
+  <script src="knowledge-base.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">S</span><div><strong>SYSTEM LAB</strong><span>系统策划知识库</span></div></div>
+      <div class="nav-caption">学习空间</div>
+      <nav class="side-tabs" role="tablist" aria-label="学习页签" aria-orientation="vertical">
+        <button id="questionsNav" class="side-tab active" data-tab="questions" role="tab" aria-selected="true" aria-controls="questionsTab" tabindex="0"><span class="nav-icon" aria-hidden="true">01</span><span>题库</span><span class="nav-count" id="questionCount">—</span></button>
+        <button id="knowledgeNav" class="side-tab" data-tab="knowledge" role="tab" aria-selected="false" aria-controls="knowledgeTab" tabindex="-1"><span class="nav-icon" aria-hidden="true">02</span><span>知识卡</span><span class="nav-count" id="knowledgeCount">—</span></button>
+      </nav>
+      <div class="sidebar-foot"><span class="local-dot" aria-hidden="true"></span><span>个人学习空间<br><small>答案保存在本机浏览器</small></span></div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div><p class="breadcrumb">我的学习空间 <span>/</span> <span id="currentSection">题库</span></p><h1 id="pageTitle">题目训练</h1><p id="pageDescription" class="page-description">选一道题，先理清思路，再完善自己的答案。</p></div>
+        <div class="header-actions"><button class="text-size" id="textSizeBtn" aria-label="切换大字号阅读" aria-pressed="false">Aa <span>大字号</span></button><span id="saveStatus" class="save-status" role="status" aria-live="polite">本地保存</span></div>
+      </header>
+
+      <details class="backup-panel quiet-details" id="backupPanel"><summary>答案备份与恢复</summary><div class="details-body">
+        <p>换浏览器或清理数据前导出一份。包含已保存答案、当前草稿、知识缺口与复核记录；文件不会上传。网页源码不包含你在浏览器里改的答案。</p>
+        <div class="edit-actions"><button class="secondary" id="exportBackup">导出个人备份</button><button class="text-button" id="exportRecovery">下载上次导入前快照</button></div>
+        <label for="importFile">选择备份文件（JSON，最多 2 MB）</label><input id="importFile" type="file" accept=".json,application/json">
+        <label for="backupText">或粘贴备份文本</label><textarea id="backupText" rows="4" spellcheck="false" placeholder="导出时也会在这里显示可复制的备份"></textarea>
+        <label for="importPolicy">遇到不同的已保存答案</label><select id="importPolicy"><option value="keep">保留本机版本（推荐）</option><option value="replace">采用备份版本（先查看预览）</option></select>
+        <button class="secondary" id="previewImport">检查并预览</button><p class="helper" id="importPreview" role="status" aria-live="polite">预览不会修改答案；当前未保存的草稿始终优先保留。</p><button class="primary" id="confirmImport" hidden>确认合并这份备份</button>
+      </div></details>
+
+      <section id="questionsTab" class="view" role="tabpanel" aria-labelledby="questionsNav">
+        <div class="question-layout">
+          <aside class="catalog">
+            <div class="catalog-heading"><h2>题目目录</h2><span id="questionResultCount" class="muted">加载中</span></div>
+            <label class="sr-only" for="questionSearch">搜索题目或知识点</label><input class="search" id="questionSearch" type="search" placeholder="搜索题目或知识点">
+            <label class="search-scope"><input id="questionFullSearch" type="checkbox" aria-describedby="questionSearchHelp">包含正文和已保存答案</label><p class="helper search-help" id="questionSearchHelp" hidden>含审题、思路、原参考答案、已保存改稿、避坑与参考说明；不搜索未保存草稿。</p>
+            <div class="filter-row"><label class="sr-only" for="importanceFilter">重要程度</label><select id="importanceFilter"><option value="all">全部星级</option><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select><label class="sr-only" for="typeFilter">题目类型</label><select id="typeFilter"><option value="all">全部题型</option><option value="面试">面试</option><option value="笔试">笔试</option></select></div>
+            <label class="sr-only" for="topicFilter">主题</label><select id="topicFilter" class="topic-filter"><option value="all">全部主题</option></select>
+            <details class="quiet-details catalog-tools"><summary>排序与题源</summary><div class="details-body">
+              <label for="questionSort">目录顺序</label><select id="questionSort"><option value="number">题号顺序</option><option value="priority">星级优先</option><option value="newest">新题优先</option></select>
+              <label for="sourceFilter">题源平台</label><select id="sourceFilter"><option value="all">全部题源</option></select>
+              <p class="helper">只筛题目出处，不含拆解参考。新题按收录题号排序，不指原帖日期；排序不改变当前阅读或改稿，星级不是出题概率。</p>
+            </div></details>
+            <button class="text-button" id="resetQuestionFilters" hidden>清除题目筛选</button><p class="helper" id="catalogHint" role="status" aria-live="polite" hidden></p>
+            <div class="question-list" id="questionList"></div>
+            <details class="quiet-details star-guide"><summary>星级怎么理解？</summary><ul><li>5 星：优先掌握，适用面广</li><li>4 星：高价值，建议熟练</li><li>3 星：常规补充</li><li>2 星：特定项目或岗位相关</li><li>1 星：拓展了解</li></ul><p>星级是准备优先级，不是难度或真实出题概率。</p></details>
+            <details class="quiet-details new-question"><summary>遇到一道新题？</summary><div class="details-body"><label for="newQuestionInput">先找可以复用的知识</label><textarea id="newQuestionInput" rows="3" placeholder="输入题目，例如：如何设计新手引导？"></textarea><button class="secondary" id="analyzeBtn">匹配知识卡</button><p class="helper">仅做关键词初筛，不代表知识已足够回答。</p><div id="analysisResult" aria-live="polite"></div></div></details>
+            <details class="quiet-details"><summary>待扩充 <span id="gapCount">0</span></summary><div class="details-body">
+              <p class="helper">补齐知识后先完整试答，再关联一道覆盖题并确认复核；关键词命中不等于已解决。原问题不会删除。</p>
+              <ul id="gapList" class="gap-list"></ul>
+              <details class="quiet-details"><summary>已复核归档 <span id="gapClosedCount">0</span></summary><ul id="gapClosedList" class="gap-list"></ul></details>
+              <section id="gapReviewPanel" class="gap-review" hidden aria-labelledby="gapReviewTitle">
+                <h3 id="gapReviewTitle">复核知识覆盖</h3><p id="gapReviewQuestion"></p>
+                <label for="gapReviewTarget">选择支撑试答的题目</label><select id="gapReviewTarget"><option value="">请选择</option></select>
+                <button id="gapReviewRead" class="text-button">查看所选题与关联知识</button>
+                <label class="review-confirm"><input type="checkbox" id="gapReviewConfirm">我已完整试答，所选题及关联知识足以覆盖原问题</label>
+                <div class="edit-actions"><button id="gapReviewSave" class="secondary">确认归档</button><button id="gapReviewCancel" class="text-button">取消</button></div>
+              </section>
+              <p class="helper" id="gapReviewStatus" role="status" aria-live="polite"></p>
+            </div></details>
+          </aside>
+
+          <article class="reading-surface answer-surface" aria-label="题目和答案">
+            <header class="answer-heading"><div class="article-meta" id="questionMeta"></div><h2 id="questionTitle"></h2></header>
+            <div class="answer-body">
+              <details class="source-details"><summary>题源与改编说明</summary><div id="questionSources" class="source-strip"></div></details>
+              <p id="priorityReason" class="helper"></p>
+              <div class="reading-toolbar"><p id="readingStatus" class="helper" role="status" aria-live="polite">一步一步读，不必一次看完。</p><button class="text-button" id="fullReading" aria-pressed="false">阅读全文</button></div>
+              <nav id="readingSteps" class="reading-steps" aria-label="本题阅读步骤"></nav>
+              <section class="guide-section" id="analysisSection"><h3>01 · 先读懂题目</h3><div id="questionAnalysis" class="answer-prose"></div></section>
+              <section id="reasoningSection"><div class="section-label">回答思路</div><ol class="answer-outline" id="answerOutline"></ol><details class="study-details" id="reasoningDetails" open><summary>02 · 怎样一步步解题</summary><div id="solutionSteps"></div><div id="questionDiagram"></div></details></section>
+              <section class="answer-section" id="answerSection" aria-labelledby="answerLabel">
+                <div class="section-toolbar"><h3 id="answerLabel">03 · 参考答案（可编辑）</h3><button class="secondary" id="editAnswer">编辑答案</button></div>
+                <p class="helper answer-note" id="answerNote"></p>
+                <div class="answer-prose" id="answerPreview"></div>
+                <div class="answer-edit" id="answerEdit" hidden>
+                  <label class="sr-only" for="answerEditor">编辑标准答案</label><textarea id="answerEditor" spellcheck="false"></textarea>
+                  <div class="edit-actions"><button class="primary" id="saveAnswer">保存答案</button><button class="secondary" id="cancelAnswer">取消修改</button><button class="text-button" id="resetAnswer">填入新版参考答案</button></div>
+                  <p class="helper" id="draftStatus">切换页签不会丢失草稿；关闭前请保存。</p>
+                </div>
+              </section>
+              <details class="study-details" id="latestAnswerBox" hidden><summary>查看新版参考答案（不覆盖我的编辑）</summary><div id="latestAnswer" class="answer-prose"></div></details>
+              <details class="study-details" id="pitfallsSection"><summary>04 · 不能怎么答，为什么</summary><div id="answerPitfalls"></div></details>
+              <details class="study-details" id="referencesSection"><summary>05 · 看别人怎么拆游戏</summary><div id="answerReferences"></div></details>
+              <div class="reading-pagination" id="readingPagination"><button class="secondary" id="previousStep">上一步</button><button class="primary" id="nextStep">下一步</button></div>
+              <div class="answer-links"><h3>需要时，回看这些知识</h3><div class="link-row" id="answerKnowledge"></div></div>
+              <div class="answer-links"><h3>本题名词 · 点开解释</h3><div class="link-row" id="answerTerms"></div></div>
+              <p class="helper" id="coverageNote"></p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="knowledgeTab" class="view" role="tabpanel" aria-labelledby="knowledgeNav" hidden>
+        <div class="knowledge-layout">
+          <aside class="catalog knowledge-catalog">
+            <div class="catalog-heading"><h2>知识目录</h2><span class="muted" id="knowledgeResultCount">加载中</span></div>
+            <label class="sr-only" for="knowledgeSearch">搜索知识卡</label><input class="search" id="knowledgeSearch" type="search" placeholder="查概念、方法或卡片ID">
+            <label class="search-scope"><input id="knowledgeFullSearch" type="checkbox" aria-describedby="knowledgeSearchHelp">包含卡片正文</label><p class="helper search-help" id="knowledgeSearchHelp" hidden>含流程、要点、适用边界及参考说明；搜索命中不代表已经覆盖问题。</p>
+            <label class="sr-only" for="knowledgeKind">知识卡类型</label><select id="knowledgeKind" class="kind-filter"><option value="all">全部知识</option><option value="method">方法卡</option><option value="term">名词卡</option></select>
+            <label class="sr-only" for="knowledgeFamily">按所属方法查知识卡</label><select id="knowledgeFamily" class="kind-filter"><option value="all">全部方法主题</option></select>
+            <button class="text-button" id="resetKnowledgeFilters" hidden>清除知识筛选</button><p class="helper" id="knowledgeCatalogHint" role="status" aria-live="polite" hidden></p>
+            <div class="knowledge-list" id="knowledgeList"></div>
+            <p class="catalog-note">先看结构，再看解释。<br>每张卡可以服务于多道题。</p>
+          </aside>
+          <article class="reading-surface knowledge-reader" id="knowledgeReader" aria-label="知识卡阅读区"></article>
+        </div>
+      </section>
+      <noscript><p class="empty-state">请启用 JavaScript，以使用页签和本地答案编辑。</p></noscript>
+    </main>
+  </div>
+</body>
+</html>
