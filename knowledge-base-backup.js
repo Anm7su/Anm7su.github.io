@@ -18,11 +18,18 @@
     if (!object(data) || data.format !== format || data.schemaVersion !== 1 || !object(data.record)) throw new Error('备份格式或版本不受支持');
     var record = data.record;
     map(record.answers, '答案'); map(record.defaults || {}, '参考稿'); map(data.drafts || {}, '草稿');
+    reviewQueue(record.reviewQueue);
     if (!Array.isArray(record.gaps) || record.gaps.some(function (v) { return typeof v !== 'string'; })) throw new Error('知识缺口格式无效');
     var reviews = reviewList(record.gapReviews);
     if (reviews.some(function (r) { return record.gaps.indexOf(r.text) === -1; })) throw new Error('复核记录缺少对应原问题');
     // 只返回可恢复字段；其他元数据保存在下载文件中，不用来覆盖本机设置。
-    return { answers: record.answers, defaults: record.defaults || {}, gaps: record.gaps, gapReviews: reviews, drafts: data.drafts || {}, exportedAt: data.exportedAt || '' };
+    return { answers: record.answers, defaults: record.defaults || {}, gaps: record.gaps, gapReviews: reviews, reviewQueue: reviewQueue(record.reviewQueue), drafts: data.drafts || {}, exportedAt: data.exportedAt || '' };
+  }
+  function reviewQueue(value) {
+    if (value === undefined) return {};
+    if (!object(value)) throw new Error('待处理清单格式无效');
+    Object.keys(value).forEach(function (id) { var r = value[id]; if (!/^q\d+$/.test(id) || !object(r) || typeof r.remove !== 'boolean' || typeof r.change !== 'boolean' || typeof r.note !== 'string') throw new Error('待处理项无效'); });
+    return value;
   }
   function reviewList(value) {
     if (value === undefined) return [];
@@ -66,5 +73,5 @@
     });
     return { updates: updates, drafts: restoreDrafts, conflicts: conflicts, protectedDrafts: protectedDrafts, unchanged: unchanged, unknown: unknown };
   }
-  window.SystemLabBackup = { parse: parse, encode: encode, plan: plan, effective: effective, maxBytes: maxBytes, reviewList: reviewList, mergeReviews: mergeReviews };
+  window.SystemLabBackup = { parse: parse, encode: encode, plan: plan, effective: effective, maxBytes: maxBytes, reviewList: reviewList, reviewQueue: reviewQueue, mergeReviews: mergeReviews };
 })();

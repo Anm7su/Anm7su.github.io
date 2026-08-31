@@ -35,7 +35,7 @@
     <main class="main">
       <header class="page-header">
         <div><p class="breadcrumb">我的学习空间 <span>/</span> <span id="currentSection">题库</span></p><h1 id="pageTitle">题目训练</h1><p id="pageDescription" class="page-description">选一道题，先理清思路，再完善自己的答案。</p></div>
-        <div class="header-actions"><button class="text-size" id="textSizeBtn" aria-label="切换大字号阅读" aria-pressed="false">Aa <span>大字号</span></button><span id="saveStatus" class="save-status" role="status" aria-live="polite">本地保存</span></div>
+        <div class="header-actions"><button class="secondary review-export-button" id="exportReview">导出待处理 <span id="reviewCount">0</span></button><button class="text-size" id="textSizeBtn" aria-label="切换大字号阅读" aria-pressed="false">Aa <span>大字号</span></button><span id="saveStatus" class="save-status" role="status" aria-live="polite">本地保存</span></div>
       </header>
 
       <details class="backup-panel quiet-details" id="backupPanel"><summary>答案备份与恢复</summary><div class="details-body">
@@ -86,6 +86,7 @@
               <p id="priorityReason" class="helper"></p>
               <div class="reading-toolbar"><p id="readingStatus" class="helper" role="status" aria-live="polite">一步一步读，不必一次看完。</p><button class="text-button" id="fullReading" aria-pressed="false">阅读全文</button></div>
               <nav id="readingSteps" class="reading-steps" aria-label="本题阅读步骤"></nav>
+              <section class="review-panel" aria-labelledby="reviewPanelTitle"><div class="review-panel-heading"><div><h3 id="reviewPanelTitle">快速标记</h3><p>在手机上勾选，导出清单后发给我处理。</p></div><span class="helper" id="reviewStatus" role="status" aria-live="polite">未标记</span></div><div class="review-options"><label><input type="checkbox" id="reviewChange">答案需要修改</label><label><input type="checkbox" id="reviewDelete">建议删除题目</label></div><label class="review-note" for="reviewNote">给我的备注（可选）</label><textarea id="reviewNote" rows="2" placeholder="例如：答案太泛，请补一个具体的游戏拆解"></textarea></section>
               <section class="guide-section" id="analysisSection"><h3>01 · 先读懂题目</h3><div id="questionAnalysis" class="answer-prose"></div></section>
               <section id="reasoningSection"><div class="section-label">回答思路</div><ol class="answer-outline" id="answerOutline"></ol><details class="study-details" id="reasoningDetails" open><summary>02 · 怎样一步步解题</summary><div id="solutionSteps"></div><div id="questionDiagram"></div></details></section>
               <section class="answer-section" id="answerSection" aria-labelledby="answerLabel">

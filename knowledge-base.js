@@ -5,7 +5,7 @@
   var knowledge = seed.knowledge;
   var questions = seed.questions.map(function (q) { return Object.assign({}, q); });
   var originals = Object.fromEntries(seed.questions.map(function (q) { return [q.id, q.answer]; }));
-  var state = { tab: 'questions', question: 'q1', knowledge: 'loop', search: '', kSearch: '', qFullSearch: false, kFullSearch: false, kKind: 'all', kFamily: 'all', stars: 'all', type: 'all', topic: 'all', source: 'all', sort: 'number', gaps: [], drafts: {}, editing: false, largeText: false, fullReading: false, readStep: 0, readSteps: {} };
+  var state = { tab: 'questions', question: 'q1', knowledge: 'loop', search: '', kSearch: '', qFullSearch: false, kFullSearch: false, kKind: 'all', kFamily: 'all', stars: 'all', type: 'all', topic: 'all', source: 'all', sort: 'number', gaps: [], reviewQueue: {}, drafts: {}, editing: false, largeText: false, fullReading: false, readStep: 0, readSteps: {} };
   var storageOK = true;
   var backup = window.SystemLabBackup;
   var baseline = {};
@@ -30,6 +30,13 @@
         if (['__proto__', 'constructor', 'prototype'].indexOf(id) !== -1 || typeof record[name][id] !== 'string') throw new Error('Invalid answer');
       });
     });
+    if (record.reviewQueue !== undefined) {
+      if (!record.reviewQueue || typeof record.reviewQueue !== 'object' || Array.isArray(record.reviewQueue)) throw new Error('Invalid review queue');
+      Object.keys(record.reviewQueue).forEach(function (id) {
+        var item = record.reviewQueue[id];
+        if (!/^q\d+$/.test(id) || !item || typeof item !== 'object' || Array.isArray(item) || typeof item.remove !== 'boolean' || typeof item.change !== 'boolean' || typeof item.note !== 'string') throw new Error('Invalid review item');
+      });
+    }
     backup.reviewList(record.gapReviews);
     return record;
   }
@@ -47,6 +54,7 @@
     });
     if (Array.isArray(record.gaps)) state.gaps = record.gaps.filter(function (gap) { return typeof gap === 'string'; });
     gapReviews = backup.reviewList(record.gapReviews);
+    state.reviewQueue = record.reviewQueue || {};
   }
 
   // 继续使用第一版的保存键和题目 ID，不清除已有答案。
@@ -69,7 +77,7 @@
         defaults[questionId] = originals[questionId];
       }
       var gaps = Array.from(new Set((Array.isArray(existing.gaps) ? existing.gaps : []).concat(state.gaps)));
-      var next = Object.assign({}, existing, { answers: answers, gaps: gaps, defaults: defaults, contentVersion: seed.version });
+      var next = Object.assign({}, existing, { answers: answers, gaps: gaps, defaults: defaults, reviewQueue: state.reviewQueue, contentVersion: seed.version });
       localStorage.setItem(storageKey, JSON.stringify(next));
       acceptRecord(next, questionId);
       status('已保存 · ' + new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
@@ -91,6 +99,21 @@
     $('gapCount').textContent = open.length; $('gapClosedCount').textContent = closed.length;
     $('gapList').innerHTML = open.join('') || '<li>暂时没有待扩充问题。</li>';
     $('gapClosedList').innerHTML = closed.join('') || '<li>尚无人工复核记录。</li>';
+    updateReviewCount();
+  }
+  function updateReviewCount() { $('reviewCount').textContent = Object.keys(state.reviewQueue).filter(function (id) { var r = state.reviewQueue[id]; return r && (r.remove || r.change || r.note); }).length; }
+  function renderReviewControls() {
+    var item = state.reviewQueue[state.question] || { remove: false, change: false, note: '' };
+    $('reviewChange').checked = Boolean(item.change); $('reviewDelete').checked = Boolean(item.remove); $('reviewNote').value = item.note || '';
+    $('reviewStatus').textContent = item.remove || item.change || item.note ? '已保存本机 · 等待导出' : '未标记';
+    updateReviewCount();
+  }
+  function saveReviewField(field, value) {
+    var id = state.question, previous = state.reviewQueue[id] ? Object.assign({}, state.reviewQueue[id]) : undefined;
+    var item = Object.assign({ remove: false, change: false, note: '' }, state.reviewQueue[id] || {}); item[field] = value;
+    if (!item.remove && !item.change && !item.note.trim()) delete state.reviewQueue[id]; else state.reviewQueue[id] = item;
+    if (!persist()) { if (previous) state.reviewQueue[id] = previous; else delete state.reviewQueue[id]; renderReviewControls(); return; }
+    $('reviewStatus').textContent = '已保存本机 · 等待导出'; updateReviewCount();
   }
   function beginGapReview(index) {
     if (!/^\d+$/.test(String(index)) || !state.gaps[Number(index)]) return;
@@ -232,6 +255,7 @@
     $('editAnswer').hidden = state.editing;
     $('answerEditor').value = Object.prototype.hasOwnProperty.call(state.drafts, q.id) ? state.drafts[q.id] : q.answer;
     $('draftStatus').textContent = Object.prototype.hasOwnProperty.call(state.drafts, q.id) ? '有未保存修改；切换页签或题目会保留草稿。' : '切换页签不会丢失草稿；关闭前请保存。';
+    renderReviewControls();
     renderReading();
   }
   function renderReading() {
@@ -384,6 +408,18 @@
       $('importPreview').textContent = '已发起下载；请确认文件已保存。若下载受阻，可复制上方全部文本。备份包含未保存草稿。';
     } catch (error) { $('importPreview').textContent = '无法生成完整备份：' + error.message + '。请先复制正在编辑的答案，不要清理浏览器。'; }
   }
+  function exportReviewQueue() {
+    try {
+      var items = Object.keys(state.reviewQueue).map(function (id) {
+        var q = questions.find(function (item) { return item.id === id; }), r = state.reviewQueue[id];
+        return q && r && (r.remove || r.change || r.note.trim()) ? { questionId: id, title: q.title, stars: q.stars, delete: Boolean(r.remove), changeAnswer: Boolean(r.change), note: r.note || '' } : null;
+      }).filter(Boolean);
+      if (!items.length) { status('还没有待处理标记'); return; }
+      var text = JSON.stringify({ format: 'system-lab-review-queue', schemaVersion: 1, exportedAt: new Date().toISOString(), contentVersion: seed.version, items: items }, null, 2);
+      downloadText(text, 'system-lab-review-queue-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json');
+      status('已导出 ' + items.length + ' 项待处理清单');
+    } catch (error) { status('清单导出失败，请先复制题目标记', true); }
+  }
   function previewImport() {
     invalidateImport();
     if (importFileReading) { $('importPreview').textContent = '文件仍在读取；也可以直接粘贴文本取消本次读取。尚未修改答案。'; return; }
@@ -405,7 +441,7 @@
       if (state.editing) captureDraft();
       if (localStorage.getItem(storageKey) !== pending.raw || JSON.stringify(state.drafts) !== pending.draftState || $('backupText').value !== pending.text || $('importPolicy').value !== pending.policy) throw new Error('记录或草稿已变化，请重新预览');
       var existing = readRecord();
-      var next = Object.assign({}, existing, { answers: Object.assign({}, existing.answers || {}, pending.plan.updates), defaults: Object.assign({}, existing.defaults || {}), gaps: Array.from(new Set((existing.gaps || []).concat(state.gaps, pending.incoming.gaps))), contentVersion: seed.version });
+      var next = Object.assign({}, existing, { answers: Object.assign({}, existing.answers || {}, pending.plan.updates), defaults: Object.assign({}, existing.defaults || {}), gaps: Array.from(new Set((existing.gaps || []).concat(state.gaps, pending.incoming.gaps))), reviewQueue: Object.assign({}, existing.reviewQueue || {}, pending.incoming.reviewQueue || {}), contentVersion: seed.version });
       next.gapReviews = backup.mergeReviews(existing.gapReviews, pending.incoming.gapReviews);
       Object.keys(pending.plan.updates).forEach(function (id) {
         if (Object.prototype.hasOwnProperty.call(originals, id)) next.defaults[id] = originals[id];
@@ -476,6 +512,9 @@
   $('saveAnswer').addEventListener('click', saveAnswer);
   $('cancelAnswer').addEventListener('click', function () { delete state.drafts[state.question]; state.editing = false; renderAnswer(); });
   $('resetAnswer').addEventListener('click', function () { $('answerEditor').value = originals[state.question]; captureDraft(); });
+  $('reviewChange').addEventListener('change', function (event) { saveReviewField('change', Boolean(event.target.checked)); });
+  $('reviewDelete').addEventListener('change', function (event) { saveReviewField('remove', Boolean(event.target.checked)); });
+  $('reviewNote').addEventListener('input', function (event) { saveReviewField('note', event.target.value); });
   $('analyzeBtn').addEventListener('click', analyzeNewQuestion);
   $('gapReviewSave').addEventListener('click', function () { commitGapReview('covered'); });
   $('gapReviewCancel').addEventListener('click', function () { pendingGapReview = null; $('gapReviewPanel').hidden = true; $('gapReviewStatus').textContent = '已取消，原记录未改变。'; });
@@ -488,6 +527,7 @@
   $('nextStep').addEventListener('click', function () { selectReadingStep(state.readStep + 1); });
   $('fullReading').addEventListener('click', function () { if (state.editing) captureDraft(); state.fullReading = !state.fullReading; renderReading(); });
   $('exportBackup').addEventListener('click', exportBackup);
+  $('exportReview').addEventListener('click', exportReviewQueue);
   $('previewImport').addEventListener('click', previewImport);
   $('confirmImport').addEventListener('click', confirmImport);
   $('backupText').addEventListener('input', function () {
