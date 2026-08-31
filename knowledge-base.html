@@ -53,7 +53,7 @@
         </button>
         <div class="question-layout" id="questionLayout">
           <aside class="catalog">
-            <div class="catalog-heading"><h2>题目目录</h2><span id="questionResultCount" class="muted">加载中</span></div>
+            <div class="catalog-heading"><h2>选择题目</h2><span id="questionResultCount" class="muted">加载中</span></div>
             <label class="sr-only" for="questionSearch">搜索题目或知识点</label><input class="search" id="questionSearch" type="search" placeholder="搜索题目或知识点">
             <label class="search-scope"><input id="questionFullSearch" type="checkbox" aria-describedby="questionSearchHelp">包含正文和已保存答案</label><p class="helper search-help" id="questionSearchHelp" hidden>含审题、思路、原参考答案、已保存改稿、避坑与参考说明；不搜索未保存草稿。</p>
             <div class="filter-row"><label class="sr-only" for="importanceFilter">重要程度</label><select id="importanceFilter"><option value="all">全部星级</option><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select><label class="sr-only" for="typeFilter">题目类型</label><select id="typeFilter"><option value="all">全部题型</option><option value="面试">面试</option><option value="笔试">笔试</option></select></div>
@@ -87,13 +87,13 @@
             <div class="answer-body">
               <details class="source-details"><summary>题源与改编说明</summary><div id="questionSources" class="source-strip"></div></details>
               <p id="priorityReason" class="helper"></p>
-              <div class="reading-toolbar"><p id="readingStatus" class="helper" role="status" aria-live="polite">一步一步读，不必一次看完。</p><button class="text-button" id="fullReading" aria-pressed="false">阅读全文</button></div>
+              <div class="reading-toolbar"><p id="readingStatus" class="helper" role="status" aria-live="polite">连续阅读 · 从上往下看完本题</p><button class="text-button" id="fullReading" aria-pressed="true">分步阅读</button></div>
               <nav id="readingSteps" class="reading-steps" aria-label="本题阅读步骤"></nav>
-              <section class="review-panel" aria-labelledby="reviewPanelTitle"><div class="review-panel-heading"><div><h3 id="reviewPanelTitle">快速标记</h3><p>在手机上勾选，导出清单后发给我处理。</p></div><span class="helper" id="reviewStatus" role="status" aria-live="polite">未标记</span></div><div class="review-options"><label><input type="checkbox" id="reviewChange">答案需要修改</label><label><input type="checkbox" id="reviewDelete">建议删除题目</label></div><label class="review-note" for="reviewNote">给我的备注（可选）</label><textarea id="reviewNote" rows="2" placeholder="例如：答案太泛，请补一个具体的游戏拆解"></textarea></section>
-              <section class="guide-section" id="analysisSection"><h3>01 · 先读懂题目</h3><div id="questionAnalysis" class="answer-prose"></div></section>
-              <section id="reasoningSection"><div class="section-label">回答思路</div><ol class="answer-outline" id="answerOutline"></ol><details class="study-details" id="reasoningDetails" open><summary>02 · 怎样一步步解题</summary><div id="solutionSteps"></div><div id="questionDiagram"></div></details></section>
+              <details class="review-panel" aria-labelledby="reviewPanelTitle"><summary><span class="review-summary-title" id="reviewPanelTitle">快速标记</span><span class="helper" id="reviewStatus" role="status" aria-live="polite">未标记</span></summary><div class="review-panel-body"><p class="review-intro">在手机上勾选，导出清单后发给我处理。</p><div class="review-options"><label><input type="checkbox" id="reviewChange">答案需要修改</label><label><input type="checkbox" id="reviewDelete">建议删除题目</label></div><label class="review-note" for="reviewNote">给我的备注（可选）</label><textarea id="reviewNote" rows="2" placeholder="例如：答案太泛，请补一个具体的游戏拆解"></textarea></div></details>
+              <section class="guide-section" id="analysisSection"><h3>先读懂题目</h3><div id="questionAnalysis" class="answer-prose"></div></section>
+              <section id="reasoningSection"><div class="section-label">回答思路</div><ol class="answer-outline" id="answerOutline"></ol><details class="study-details" id="reasoningDetails" open><summary>怎样一步步解题</summary><div id="solutionSteps"></div><div id="questionDiagram"></div></details></section>
               <section class="answer-section" id="answerSection" aria-labelledby="answerLabel">
-                <div class="section-toolbar"><h3 id="answerLabel">03 · 参考答案（可编辑）</h3><button class="secondary" id="editAnswer">编辑答案</button></div>
+                <div class="section-toolbar"><h3 id="answerLabel">参考答案（可编辑）</h3><button class="secondary" id="editAnswer">编辑答案</button></div>
                 <p class="helper answer-note" id="answerNote"></p>
                 <div class="answer-prose" id="answerPreview"></div>
                 <div class="answer-edit" id="answerEdit" hidden>
@@ -103,9 +103,10 @@
                 </div>
               </section>
               <details class="study-details" id="latestAnswerBox" hidden><summary>查看新版参考答案（不覆盖我的编辑）</summary><div id="latestAnswer" class="answer-prose"></div></details>
-              <details class="study-details" id="pitfallsSection"><summary>04 · 不能怎么答，为什么</summary><div id="answerPitfalls"></div></details>
-              <details class="study-details" id="referencesSection"><summary>05 · 看别人怎么拆游戏</summary><div id="answerReferences"></div></details>
+              <details class="study-details" id="pitfallsSection"><summary>不能怎么答，为什么</summary><div id="answerPitfalls"></div></details>
+              <details class="study-details" id="referencesSection"><summary>看别人怎么拆游戏</summary><div id="answerReferences"></div></details>
               <div class="reading-pagination" id="readingPagination"><button class="secondary" id="previousStep">上一步</button><button class="primary" id="nextStep">下一步</button></div>
+              <nav class="question-pagination" id="questionPagination" aria-label="切换题目"><button class="secondary" id="previousQuestion">上一题</button><span id="questionPaginationStatus" class="helper" role="status" aria-live="polite"></span><button class="primary" id="nextQuestion">下一题</button></nav>
               <div class="answer-links"><h3>需要时，回看这些知识</h3><div class="link-row" id="answerKnowledge"></div></div>
               <div class="answer-links"><h3>本题名词 · 点开解释</h3><div class="link-row" id="answerTerms"></div></div>
               <p class="helper" id="coverageNote"></p>
@@ -120,7 +121,7 @@
         </button>
         <div class="knowledge-layout" id="knowledgeLayout">
           <aside class="catalog knowledge-catalog">
-            <div class="catalog-heading"><h2>知识目录</h2><span class="muted" id="knowledgeResultCount">加载中</span></div>
+            <div class="catalog-heading"><h2>选择知识卡</h2><span class="muted" id="knowledgeResultCount">加载中</span></div>
             <label class="sr-only" for="knowledgeSearch">搜索知识卡</label><input class="search" id="knowledgeSearch" type="search" placeholder="查概念、方法或卡片ID">
             <label class="search-scope"><input id="knowledgeFullSearch" type="checkbox" aria-describedby="knowledgeSearchHelp">包含卡片正文</label><p class="helper search-help" id="knowledgeSearchHelp" hidden>含流程、要点、适用边界及参考说明；搜索命中不代表已经覆盖问题。</p>
             <label class="sr-only" for="knowledgeKind">知识卡类型</label><select id="knowledgeKind" class="kind-filter"><option value="all">全部知识</option><option value="method">方法卡</option><option value="term">名词卡</option></select>

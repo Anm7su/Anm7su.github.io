@@ -172,6 +172,8 @@
     setMobileCatalog('questions', false);
     setMobileCatalog('knowledge', false);
   }
+  function isMobileViewport() { return typeof window.innerWidth === 'number' && window.innerWidth <= 760; }
+  function isContinuousReading() { return state.fullReading || isMobileViewport(); }
   function shortTitle(q) { return q.id === 'q4' ? '四种娃娃，平均多少次能集齐？' : q.title; }
   function rowText(rows) { return (rows || []).map(function (row) { return row.join(' '); }).join(' '); }
   function referenceText(refs) {
@@ -200,6 +202,22 @@
     $('questionList').innerHTML = shown.length ? shown.map(function (q) {
       return '<button class="question-item' + (state.question === q.id ? ' selected' : '') + '" data-question="' + q.id + '" aria-current="' + (state.question === q.id ? 'true' : 'false') + '"><span class="item-meta"><span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + q.id.toUpperCase() + ' · ' + escapeHTML(q.type) + '</span></span><span class="item-title">' + escapeHTML(shortTitle(q)) + '</span></button>';
     }).join('') : '<p class="empty-state">没有匹配的题目，试试其他关键词。</p>';
+    renderQuestionPagination(shown);
+  }
+  function renderQuestionPagination(shown) {
+    var list = shown || questions.filter(matchesQuestion).sort(function (a, b) {
+      var byNumber = Number(a.id.slice(1)) - Number(b.id.slice(1));
+      return state.sort === 'priority' ? b.stars - a.stars || byNumber : state.sort === 'newest' ? -byNumber : byNumber;
+    });
+    var index = list.findIndex(function (q) { return q.id === state.question; });
+    if (index < 0) {
+      $('previousQuestion').disabled = true; $('nextQuestion').disabled = true;
+      $('questionPaginationStatus').textContent = '当前题目不在筛选结果中';
+      return;
+    }
+    $('previousQuestion').disabled = index === 0;
+    $('nextQuestion').disabled = index === list.length - 1;
+    $('questionPaginationStatus').textContent = '第 ' + (index + 1) + ' / ' + list.length + ' 题';
   }
   function selectQuestion(id) {
     var target = questions.find(function (q) { return q.id === id; });
@@ -212,6 +230,7 @@
     if (state.question !== id) {
       state.editing = Object.prototype.hasOwnProperty.call(state.drafts, id);
       state.readStep = state.editing ? 2 : (state.readSteps[id] || 0);
+      state.fullReading = true;
     }
     state.question = id;
     activateTab('questions');
@@ -277,18 +296,22 @@
   function renderReading() {
     var sections = ['analysisSection', 'reasoningSection', 'answerSection', 'pitfallsSection', 'referencesSection'];
     var labels = ['审题', '思路', '答案', '避坑', '参考'];
-    sections.forEach(function (id, index) { $(id).hidden = !state.fullReading && state.readStep !== index; });
-    if (state.fullReading || state.readStep === 1) $('reasoningDetails').open = true;
-    if (state.fullReading || state.readStep === 3) $('pitfallsSection').open = true;
-    if (state.fullReading || state.readStep === 4) $('referencesSection').open = true;
-    $('latestAnswerBox').hidden = currentQuestion().answer === originals[state.question] || (!state.fullReading && state.readStep !== 2);
-    $('readingSteps').innerHTML = labels.map(function (label, i) { return '<button class="reading-step" data-step="' + i + '" aria-current="' + (!state.fullReading && i === state.readStep ? 'step' : 'false') + '">' + (i + 1) + ' · ' + label + '</button>'; }).join('');
-    $('readingStatus').textContent = state.fullReading ? '完整展开 · 可点步骤回到分步阅读' : '第 ' + (state.readStep + 1) + ' / 5 步 · ' + labels[state.readStep];
-    $('fullReading').textContent = state.fullReading ? '返回分步阅读' : '阅读全文';
-    $('fullReading').setAttribute('aria-pressed', String(state.fullReading));
-    $('readingPagination').hidden = state.fullReading;
+    var continuous = isContinuousReading();
+    sections.forEach(function (id, index) { $(id).hidden = !continuous && state.readStep !== index; });
+    if (continuous || state.readStep === 1) $('reasoningDetails').open = true;
+    if (continuous || state.readStep === 3) $('pitfallsSection').open = true;
+    if (continuous || state.readStep === 4) $('referencesSection').open = true;
+    $('latestAnswerBox').hidden = currentQuestion().answer === originals[state.question] || (!continuous && state.readStep !== 2);
+    $('readingSteps').innerHTML = labels.map(function (label, i) { return '<button class="reading-step" data-step="' + i + '" aria-current="' + (!continuous && i === state.readStep ? 'step' : 'false') + '">' + label + '</button>'; }).join('');
+    $('readingSteps').hidden = continuous;
+    $('readingStatus').textContent = continuous ? '连续阅读 · 从上往下看完本题' : '第 ' + (state.readStep + 1) + ' / 5 步 · ' + labels[state.readStep];
+    $('fullReading').textContent = continuous ? '分步阅读' : '连续阅读';
+    $('fullReading').setAttribute('aria-pressed', String(continuous));
+    $('readingPagination').hidden = continuous;
     $('previousStep').disabled = state.readStep === 0;
     $('nextStep').disabled = state.readStep === 4;
+    $('questionPagination').hidden = false;
+    renderQuestionPagination();
   }
   function selectReadingStep(step) {
     if (!Number.isInteger(step) || step < 0 || step > 4) return;
@@ -296,7 +319,19 @@
     state.readStep = step; state.readSteps[state.question] = step; state.fullReading = false;
     renderReading();
   }
-  function startEditing() { state.editing = true; state.readStep = 2; state.readSteps[state.question] = 2; renderAnswer(); $('answerEditor').focus(); }
+  function selectAdjacentQuestion(direction) {
+    var list = questions.filter(matchesQuestion).sort(function (a, b) {
+      var byNumber = Number(a.id.slice(1)) - Number(b.id.slice(1));
+      return state.sort === 'priority' ? b.stars - a.stars || byNumber : state.sort === 'newest' ? -byNumber : byNumber;
+    });
+    var index = list.findIndex(function (q) { return q.id === state.question; });
+    var target = index < 0 ? null : list[index + direction];
+    if (target) {
+      selectQuestion(target.id);
+      if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+    }
+  }
+  function startEditing() { state.editing = true; state.fullReading = false; state.readStep = 2; state.readSteps[state.question] = 2; renderAnswer(); $('answerEditor').focus(); }
   function captureDraft() {
     var q = currentQuestion();
     var text = $('answerEditor').value;
@@ -549,6 +584,8 @@
   $('gapReviewTarget').addEventListener('change', function () { $('gapReviewConfirm').checked = false; });
   $('previousStep').addEventListener('click', function () { selectReadingStep(state.readStep - 1); });
   $('nextStep').addEventListener('click', function () { selectReadingStep(state.readStep + 1); });
+  $('previousQuestion').addEventListener('click', function () { selectAdjacentQuestion(-1); });
+  $('nextQuestion').addEventListener('click', function () { selectAdjacentQuestion(1); });
   $('fullReading').addEventListener('click', function () { if (state.editing) captureDraft(); state.fullReading = !state.fullReading; renderReading(); });
   $('exportBackup').addEventListener('click', exportBackup);
   $('exportReview').addEventListener('click', exportReviewQueue);
