@@ -214,9 +214,60 @@ select { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius
 .reading-pagination { display: flex; justify-content: space-between; gap: 12px; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
 .reading-pagination button[disabled] { opacity: .45; cursor: default; }
 .answer-body > * { max-width: 780px; margin-left: auto; margin-right: auto; }
+.mobile-catalog-toggle { display: none; }
 @media (min-width: 941px) { .catalog { position: sticky; top: 18px; max-height: calc(100vh - 36px); max-height: calc(100dvh - 36px); overflow-y: auto; scrollbar-width: thin; padding-right: 6px; } }
 @media (min-width: 1450px) { .main { padding-left: 42px; padding-right: 42px; } .question-layout { grid-template-columns: 348px minmax(0,1fr); gap: 32px; } }
 @media (max-width: 1150px) { .app { grid-template-columns: 155px minmax(0,1fr); } .sidebar { padding-left: 10px; padding-right: 10px; } .brand { flex-wrap: wrap; } .brand div > span { white-space: normal; } .main { padding: 24px 22px 40px; } .question-layout { grid-template-columns: 262px minmax(0,1fr); gap: 18px; } .knowledge-layout { grid-template-columns: 200px minmax(0,1fr); gap: 20px; } .answer-heading { padding: 24px; } .answer-body { padding: 23px 24px; } .flow-steps { gap: 16px; } .flow-steps li:not(:last-child)::after { right: -15px; } }
 @media (max-width: 940px) { .question-layout, .knowledge-layout { grid-template-columns: minmax(0,1fr); } .question-list { max-height: 265px; overflow-y: auto; } .knowledge-list { max-height: 215px; overflow-y: auto; } .catalog-note { display: none; } .question-layout > .catalog, .knowledge-layout > .catalog { margin-bottom: 10px; } }
 @media (max-width: 680px) { .app { grid-template-columns: 73px minmax(0,1fr); } .sidebar { padding: 22px 7px 15px; } .brand { padding: 0; justify-content: center; } .brand div, .nav-caption, .nav-count, .sidebar-foot { display: none; } .side-tabs { margin-top: 34px; gap: 12px; } .side-tab { flex-direction: column; gap: 4px; padding: 10px 2px; font-size: 15px; } .nav-icon { font-size: 14px; } .main { padding: 22px 14px 36px; } .page-header { align-items: start; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; } .header-actions { flex-direction: row; align-items: center; flex-wrap: wrap; width: 100%; gap: 10px; } .review-export-button { order: 1; } .text-size { padding-left: 0; } .page-header h1 { font-size: 25px; } .page-description { font-size: 14px; } .breadcrumb { display: none; } .answer-heading { padding: 21px 18px 18px; } .answer-heading h2 { font-size: 21px; } .answer-body { padding: 20px 18px; } .knowledge-reader { padding: 23px 18px; } .knowledge-reader h2 { font-size: 24px; } .review-panel { padding: 14px; } .review-panel-heading { display: block; } .review-panel-heading .helper { display: block; margin-top: 5px; } .flow-steps { grid-template-columns: 1fr; gap: 22px; } .flow-steps li { text-align: left; padding: 10px 14px; } .flow-steps strong { display: inline; } .flow-steps span { display: inline; margin-left: 12px; } .flow-steps li:not(:last-child)::after { content: "↓"; right: auto; left: 23px; top: auto; bottom: -23px; transform: none; } .edit-actions .text-button { margin-left: 0; } .answer-edit textarea { padding: 12px; min-height: 380px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+
+/* Mobile is a focused reader: the two primary pages live in a fixed bottom nav,
+   and each page opens its catalog only when the learner asks to switch. */
+@media (max-width: 760px) {
+  body { padding-bottom: 0; }
+  .app { display: block; min-height: 100vh; }
+  .sidebar { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; top: auto; width: auto; height: auto; min-height: 68px; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid #d7e2d9; box-shadow: 0 -5px 22px #17352a14; }
+  .brand, .nav-caption, .sidebar-foot { display: none; }
+  .side-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: 430px; margin: 0 auto; }
+  .side-tab { min-height: 50px; justify-content: center; gap: 7px; padding: 8px 12px; border-radius: 10px; font-size: 15px; }
+  .side-tab.active { box-shadow: inset 0 -3px var(--accent); }
+  .nav-icon { font-size: 13px; }
+  .nav-count { display: inline; margin-left: 0; font-size: 13px; }
+  .main { max-width: none; padding: 20px 14px calc(94px + env(safe-area-inset-bottom)); }
+  .page-header { align-items: flex-start; margin-bottom: 18px; }
+  .page-header h1 { font-size: 24px; }
+  .page-description { max-width: 22em; line-height: 1.65; }
+  .header-actions { gap: 8px; }
+  .review-export-button { padding-left: 11px; padding-right: 11px; }
+  .backup-panel { margin-top: 0; margin-bottom: 15px; }
+  .mobile-catalog-toggle { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "kicker action" "label action"; align-items: center; width: 100%; margin: 0 0 12px; padding: 11px 13px; text-align: left; border: 1px solid #cfe0d4; border-radius: 11px; background: #f5faf5; color: var(--accent); }
+  .mobile-toggle-kicker { grid-area: kicker; color: var(--muted); font-size: 12px; line-height: 1.3; }
+  .mobile-catalog-toggle strong { grid-area: label; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 3px; font-size: 15px; font-weight: 650; }
+  .mobile-toggle-action { grid-area: action; padding-left: 12px; font-size: 13px; white-space: nowrap; }
+  .question-layout, .knowledge-layout { display: block; }
+  .question-layout > .catalog, .knowledge-layout > .catalog { display: none; margin: 0 0 12px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdfb; box-shadow: 0 5px 18px #17352a0b; }
+  .question-layout.catalog-open > .catalog, .knowledge-layout.catalog-open > .catalog { display: block; max-height: calc(100dvh - 185px); overflow-y: auto; }
+  .question-layout.catalog-open > .reading-surface, .knowledge-layout.catalog-open > .reading-surface { display: none; }
+  .question-list, .knowledge-list { max-height: none; overflow: visible; }
+  .question-item { padding: 13px 12px; }
+  .item-title { font-size: 15px; line-height: 1.5; }
+  .knowledge-item { padding: 12px 10px; }
+  .knowledge-item strong { font-size: 15px; }
+  .catalog-heading { margin-bottom: 11px; }
+  .question-layout > .reading-surface, .knowledge-layout > .reading-surface { width: 100%; }
+  .answer-heading { padding: 18px 16px 16px; }
+  .answer-heading h2 { font-size: 20px; line-height: 1.5; }
+  .answer-body { padding: 18px 16px 24px; }
+  .answer-prose { font-size: 16px; line-height: 1.9; }
+  .reading-toolbar { align-items: flex-start; }
+  .reading-steps { gap: 5px; margin-bottom: 18px; }
+  .reading-step { min-width: 0; padding: 8px 6px; text-align: center; font-size: 12px; }
+  .review-panel { margin-bottom: 19px; }
+  .section-toolbar { align-items: flex-start; }
+  .section-toolbar h3 { font-size: 16px; }
+  .knowledge-reader { padding: 21px 16px 25px; }
+  .knowledge-reader h2 { font-size: 22px; }
+  .flow-steps { gap: 21px; }
+  .table-scroll { margin-right: -4px; }
+}

@@ -48,7 +48,10 @@
       </div></details>
 
       <section id="questionsTab" class="view" role="tabpanel" aria-labelledby="questionsNav">
-        <div class="question-layout">
+        <button id="mobileQuestionToggle" class="mobile-catalog-toggle" type="button" aria-expanded="false" aria-controls="questionLayout">
+          <span class="mobile-toggle-kicker">当前题目</span><strong id="mobileQuestionLabel">Q1 · 题目训练</strong><span class="mobile-toggle-action" id="mobileQuestionAction">切换题目⌄</span>
+        </button>
+        <div class="question-layout" id="questionLayout">
           <aside class="catalog">
             <div class="catalog-heading"><h2>题目目录</h2><span id="questionResultCount" class="muted">加载中</span></div>
             <label class="sr-only" for="questionSearch">搜索题目或知识点</label><input class="search" id="questionSearch" type="search" placeholder="搜索题目或知识点">
@@ -112,7 +115,10 @@
       </section>
 
       <section id="knowledgeTab" class="view" role="tabpanel" aria-labelledby="knowledgeNav" hidden>
-        <div class="knowledge-layout">
+        <button id="mobileKnowledgeToggle" class="mobile-catalog-toggle" type="button" aria-expanded="false" aria-controls="knowledgeLayout">
+          <span class="mobile-toggle-kicker">当前知识卡</span><strong id="mobileKnowledgeLabel">方法卡 · 知识阅读</strong><span class="mobile-toggle-action" id="mobileKnowledgeAction">浏览目录⌄</span>
+        </button>
+        <div class="knowledge-layout" id="knowledgeLayout">
           <aside class="catalog knowledge-catalog">
             <div class="catalog-heading"><h2>知识目录</h2><span class="muted" id="knowledgeResultCount">加载中</span></div>
             <label class="sr-only" for="knowledgeSearch">搜索知识卡</label><input class="search" id="knowledgeSearch" type="search" placeholder="查概念、方法或卡片ID">

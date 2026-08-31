@@ -144,6 +144,7 @@
   function activateTab(name, focusTab) {
     if (name !== 'questions' && name !== 'knowledge') return;
     state.tab = name;
+    closeMobileCatalogs();
     document.querySelectorAll('[data-tab]').forEach(function (el) {
       var on = el.dataset.tab === name;
       el.classList.toggle('active', on);
@@ -157,6 +158,19 @@
     $('pageTitle').textContent = name === 'questions' ? '题目训练' : '知识阅读';
     $('pageDescription').textContent = name === 'questions' ? '选一道题，先理清思路，再完善自己的答案。' : '一次读懂一个概念，遇到新题时再把它们组合起来。';
     document.title = (name === 'questions' ? '题目训练' : '知识阅读') + ' · System Lab';
+  }
+  function setMobileCatalog(name, open) {
+    var layout = $(name === 'questions' ? 'questionLayout' : 'knowledgeLayout');
+    var toggle = $(name === 'questions' ? 'mobileQuestionToggle' : 'mobileKnowledgeToggle');
+    var action = $(name === 'questions' ? 'mobileQuestionAction' : 'mobileKnowledgeAction');
+    if (!layout || !toggle || !action) return;
+    layout.classList.toggle('catalog-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    action.textContent = open ? '收起目录⌃' : (name === 'questions' ? '切换题目⌄' : '浏览目录⌄');
+  }
+  function closeMobileCatalogs() {
+    setMobileCatalog('questions', false);
+    setMobileCatalog('knowledge', false);
   }
   function shortTitle(q) { return q.id === 'q4' ? '四种娃娃，平均多少次能集齐？' : q.title; }
   function rowText(rows) { return (rows || []).map(function (row) { return row.join(' '); }).join(' '); }
@@ -203,6 +217,7 @@
     activateTab('questions');
     renderQuestions(reset ? '已清除筛选以定位关联题目；你的答案和草稿未改变。' : '');
     renderAnswer();
+    setMobileCatalog('questions', false);
   }
   function paragraphs(text) {
     if (!text.trim()) return '<p class="muted">还没有答案，点击“编辑答案”开始写。</p>';
@@ -234,6 +249,7 @@
     var q = currentQuestion();
     $('questionMeta').innerHTML = '<span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + escapeHTML(q.type) + '</span><span>' + escapeHTML(q.id.toUpperCase()) + ' · 训练改编</span>';
     $('questionTitle').textContent = q.title;
+    $('mobileQuestionLabel').textContent = q.id.toUpperCase() + ' · ' + shortTitle(q);
     $('questionSources').innerHTML = q.sources.map(function (r) { var s = seed.sources[r.id]; return '<div><span class="source-tag">' + escapeHTML(s.platform) + '</span>' + sourceLink(r.id) + '<p class="source-meta">' + escapeHTML(s.author + ' · ' + s.date + ' · ' + s.kind + ' · 核对：' + (s.checkedAt || '待核对')) + '</p><p class="source-explanation">' + escapeHTML(r.note) + '</p></div>'; }).join('') + '<p class="source-meta">个人回忆和学习清单不等于官方试卷。链接失效时按标题与作者站内检索；核对日期不代表保证永久可访问。</p>';
     $('priorityReason').textContent = '为什么 ' + q.stars + ' 星：' + q.priority;
     $('questionAnalysis').innerHTML = paragraphs(q.analysis);
@@ -335,6 +351,7 @@
       (terms.length ? '<details class="quiet-details"><summary>这套方法里的名词 · ' + terms.length + '</summary><div class="link-row knowledge-family-links">' + terms.map(function (term) { return '<button class="knowledge-link term-link" data-knowledge="' + term.id + '">' + escapeHTML(term.title) + '</button>'; }).join('') + '</div></details>' : '') +
       '<details class="study-details"><summary>拆解与方法参考 · ' + (content.references || []).length + '</summary>' + referencesHTML(content.references) + '</details>' +
       '<details class="quiet-details"><summary>用这张卡练习 · ' + related.length + ' 道题</summary>' + related.map(function (q) { return '<button class="related-question" data-question="' + q.id + '"><span>' + escapeHTML(shortTitle(q)) + '</span><span aria-hidden="true">↗</span></button>'; }).join('') + '</details>';
+    $('mobileKnowledgeLabel').textContent = (k.kind === 'term' ? '名词卡' : '方法卡') + ' · ' + k.title;
   }
   function selectKnowledge(id) {
     var target = card(id);
@@ -345,6 +362,7 @@
     activateTab('knowledge');
     renderKnowledgeList(reset ? '已清除筛选以定位关联知识卡；答案和草稿未改变。' : '');
     renderKnowledgeReader();
+    setMobileCatalog('knowledge', false);
   }
   function analyzeNewQuestion() {
     var text = $('newQuestionInput').value.trim();
@@ -470,6 +488,12 @@
       else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') target = state.tab === 'questions' ? 'knowledge' : 'questions';
       if (target) { event.preventDefault(); activateTab(target, true); }
     });
+  });
+  $('mobileQuestionToggle').addEventListener('click', function () {
+    setMobileCatalog('questions', !$('questionLayout').classList.contains('catalog-open'));
+  });
+  $('mobileKnowledgeToggle').addEventListener('click', function () {
+    setMobileCatalog('knowledge', !$('knowledgeLayout').classList.contains('catalog-open'));
   });
   document.addEventListener('click', function (event) {
     var review = event.target.closest('[data-gapreview]');
