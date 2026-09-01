@@ -378,13 +378,17 @@
     var content = seed.reading[k.id];
     var related = questions.filter(function (q) { return q.knowledge.concat(q.terms).indexOf(k.id) !== -1; });
     var terms = knowledge.filter(function (other) { return other.kind === 'term' && other.parent === k.id; });
+    var detail = k.detail && k.detail !== content.gist ? '<section class="knowledge-detail"><h3>具体含义</h3><p>' + escapeHTML(k.detail) + '</p></section>' : '';
+    var examples = content.examples && content.examples.length ? '<section class="knowledge-examples"><h3>游戏里的实际例子</h3>' + content.examples.map(function (example) { return '<article><h4>' + escapeHTML(example[0]) + '</h4><p>' + escapeHTML(example[1]) + '</p></article>'; }).join('') + '</section>' : '';
     $('knowledgeReader').innerHTML = '<header><div class="article-meta"><span>' + (k.kind === 'term' ? '名词卡' : '方法卡') + ' ' + String(knowledge.indexOf(k) + 1).padStart(2, '0') + '</span><span>' + escapeHTML(k.tags.join(' · ')) + '</span></div><h2>' + escapeHTML(k.title) + '</h2><p class="knowledge-gist">' + escapeHTML(content.gist) + '</p></header>' +
-      (k.kind === 'method' ? '<section><h3>' + escapeHTML(content.flowTitle) + '</h3><ol class="flow-steps" style="--steps:' + content.flow.length + '">' + content.flow.map(function (step) { return '<li><strong>' + escapeHTML(step[0]) + '</strong><span>' + escapeHTML(step[1]) + '</span></li>'; }).join('') + '</ol></section>' : '') +
-      '<section><h3>' + (k.kind === 'term' ? '怎么使用与辨析' : '抓住三个要点') + '</h3><ol class="checkpoints">' + content.checkpoints.map(function (point, index) { return '<li><span class="checkpoint-number">0' + (index + 1) + '</span><div><h4>' + escapeHTML(point[0]) + '</h4><p>' + escapeHTML(point[1]) + '</p></div></li>'; }).join('') + '</ol></section>' +
-      '<section class="boundary"><strong>别忽略这个边界</strong><p>' + escapeHTML(content.boundary) + '</p></section>' +
+      detail +
+      (k.kind === 'method' ? '<section><h3>' + escapeHTML(content.flowTitle || '概念由哪些部分组成') + '</h3><dl class="concept-list flow-steps">' + content.flow.map(function (step) { return '<div><dt>' + escapeHTML(step[0]) + '</dt><dd>' + escapeHTML(step[1]) + '</dd></div>'; }).join('') + '</dl></section>' : '') +
+      '<section><h3>' + (k.kind === 'term' ? '怎么理解' : '关键解释') + '</h3><ol class="checkpoints">' + content.checkpoints.map(function (point, index) { return '<li><span class="checkpoint-number">0' + (index + 1) + '</span><div><h4>' + escapeHTML(point[0]) + '</h4><p>' + escapeHTML(point[1]) + '</p></div></li>'; }).join('') + '</ol></section>' +
+      examples +
+      '<section class="boundary"><strong>常见误解与边界</strong><p>' + escapeHTML(content.boundary) + '</p></section>' +
       (content.parent ? '<div class="answer-links"><button class="knowledge-link" data-knowledge="' + content.parent + '">回到方法 · ' + escapeHTML(card(content.parent).title) + ' ↗</button></div>' : '') +
       (terms.length ? '<details class="quiet-details"><summary>这套方法里的名词 · ' + terms.length + '</summary><div class="link-row knowledge-family-links">' + terms.map(function (term) { return '<button class="knowledge-link term-link" data-knowledge="' + term.id + '">' + escapeHTML(term.title) + '</button>'; }).join('') + '</div></details>' : '') +
-      '<details class="study-details"><summary>拆解与方法参考 · ' + (content.references || []).length + '</summary>' + referencesHTML(content.references) + '</details>' +
+      '<details class="study-details"><summary>来源与延伸阅读 · ' + (content.references || []).length + '</summary>' + referencesHTML(content.references) + '</details>' +
       '<details class="quiet-details"><summary>用这张卡练习 · ' + related.length + ' 道题</summary>' + related.map(function (q) { return '<button class="related-question" data-question="' + q.id + '"><span>' + escapeHTML(shortTitle(q)) + '</span><span aria-hidden="true">↗</span></button>'; }).join('') + '</details>';
     $('mobileKnowledgeLabel').textContent = (k.kind === 'term' ? '名词卡' : '方法卡') + ' · ' + k.title;
   }
