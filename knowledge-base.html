@@ -18,6 +18,8 @@
   <script src="knowledge-base-batch-08.js" defer></script>
   <script src="knowledge-base-batch-09.js" defer></script>
   <script src="knowledge-base-quality.js" defer></script>
+  <script src="knowledge-base-batch-10.js" defer></script>
+  <script src="knowledge-base-taxonomy.js" defer></script>
   <script src="knowledge-base-backup.js" defer></script>
   <script src="knowledge-base.js" defer></script>
 </head>
@@ -58,6 +60,7 @@
             <label class="sr-only" for="questionSearch">搜索题目或知识点</label><input class="search" id="questionSearch" type="search" placeholder="搜索题目或知识点">
             <label class="search-scope"><input id="questionFullSearch" type="checkbox" aria-describedby="questionSearchHelp">包含正文和已保存答案</label><p class="helper search-help" id="questionSearchHelp" hidden>含审题、思路、原参考答案、已保存改稿、避坑与参考说明；不搜索未保存草稿。</p>
             <div class="filter-row"><label class="sr-only" for="importanceFilter">重要程度</label><select id="importanceFilter"><option value="all">全部星级</option><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select><label class="sr-only" for="typeFilter">题目类型</label><select id="typeFilter"><option value="all">全部题型</option><option value="面试">面试</option><option value="笔试">笔试</option></select></div>
+            <div class="filter-row taxonomy-filters"><label class="sr-only" for="scopeFilter">问题分类</label><select id="scopeFilter"><option value="all">全部分类</option><option value="通用">通用能力</option><option value="目标品类">目标游戏品类</option></select><label class="sr-only" for="genreFilter">目标游戏品类</label><select id="genreFilter"><option value="all">全部目标品类</option></select></div>
             <label class="sr-only" for="topicFilter">主题</label><select id="topicFilter" class="topic-filter"><option value="all">全部主题</option></select>
             <details class="quiet-details catalog-tools"><summary>排序与题源</summary><div class="details-body">
               <label for="questionSort">目录顺序</label><select id="questionSort"><option value="number">题号顺序</option><option value="priority">星级优先</option><option value="newest">新题优先</option></select>

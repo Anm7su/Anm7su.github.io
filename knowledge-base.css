@@ -59,6 +59,9 @@ h1 { font-size: 28px; line-height: 1.35; font-weight: 750; letter-spacing: .015e
 .search { width: 100%; min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
 .search::placeholder, textarea::placeholder { color: var(--muted); }
 .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 18px; }
+.taxonomy-filters { margin: -8px 0 10px; }
+.item-category, .category-badge { display: inline-flex; align-items: center; width: max-content; border: 1px solid #b9c7b9; border-radius: 999px; background: #f3f7f1; color: #47624c; font-size: 11px; line-height: 1; padding: 4px 7px; }
+.item-category { margin: 6px 0 2px; }
 select { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; background: #fcfdfb; font-size: 14px; }
 .question-list, .knowledge-list { display: grid; gap: 7px; }
 .question-item { display: block; width: 100%; padding: 15px 16px; text-align: left; border: 1px solid transparent; border-radius: 9px; background: transparent; }

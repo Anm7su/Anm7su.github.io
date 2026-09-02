@@ -5,7 +5,7 @@
   var knowledge = seed.knowledge;
   var questions = seed.questions.map(function (q) { return Object.assign({}, q); });
   var originals = Object.fromEntries(seed.questions.map(function (q) { return [q.id, q.answer]; }));
-  var state = { tab: 'questions', question: 'q1', knowledge: 'loop', search: '', kSearch: '', qFullSearch: false, kFullSearch: false, kKind: 'all', kFamily: 'all', stars: 'all', type: 'all', topic: 'all', source: 'all', sort: 'number', gaps: [], reviewQueue: {}, drafts: {}, editing: false, largeText: false, fullReading: false, readStep: 0, readSteps: {} };
+  var state = { tab: 'questions', question: 'q1', knowledge: 'loop', search: '', kSearch: '', qFullSearch: false, kFullSearch: false, kKind: 'all', kFamily: 'all', stars: 'all', type: 'all', scope: 'all', genre: 'all', topic: 'all', source: 'all', sort: 'number', gaps: [], reviewQueue: {}, drafts: {}, editing: false, largeText: false, fullReading: false, readStep: 0, readSteps: {} };
   var storageOK = true;
   var backup = window.SystemLabBackup;
   var baseline = {};
@@ -181,26 +181,27 @@
   }
   function matchesQuestion(q) {
     var term = state.search.toLocaleLowerCase().trim();
-    var text = q.id + ' ' + q.title + ' ' + (q.topic || '') + ' ' + q.knowledge.concat(q.terms).map(function (id) { var k = card(id); return k ? k.title + ' ' + k.tags.join(' ') : ''; }).join(' ') + ' ' + q.sources.map(function (r) { var s = seed.sources[r.id]; return s ? s.title + ' ' + s.author + ' ' + s.platform : ''; }).join(' ');
+    var text = q.id + ' ' + q.title + ' ' + (q.topic || '') + ' ' + (q.scope || '通用') + ' ' + (q.genres || []).join(' ') + ' ' + q.knowledge.concat(q.terms).map(function (id) { var k = card(id); return k ? k.title + ' ' + k.tags.join(' ') : ''; }).join(' ') + ' ' + q.sources.map(function (r) { var s = seed.sources[r.id]; return s ? s.title + ' ' + s.author + ' ' + s.platform : ''; }).join(' ');
     if (state.qFullSearch) text += ' ' + [q.analysis, rowText(q.steps), q.answer, originals[q.id], rowText(q.pitfalls), q.coverageNote, q.table ? q.table.headers.join(' ') + ' ' + rowText(q.table.rows) : '', referenceText(q.references)].join(' ');
-    return (state.stars === 'all' || String(q.stars) === state.stars) && (state.type === 'all' || q.type.indexOf(state.type) !== -1) && (state.topic === 'all' || q.topic === state.topic) && (state.source === 'all' || q.sources.some(function (r) { return seed.sources[r.id] && seed.sources[r.id].platform === state.source; })) && (!term || text.toLocaleLowerCase().indexOf(term) !== -1);
+    return (state.stars === 'all' || String(q.stars) === state.stars) && (state.type === 'all' || q.type.indexOf(state.type) !== -1) && (state.scope === 'all' || q.scope === state.scope) && (state.genre === 'all' || (q.genres || []).indexOf(state.genre) !== -1) && (state.topic === 'all' || q.topic === state.topic) && (state.source === 'all' || q.sources.some(function (r) { return seed.sources[r.id] && seed.sources[r.id].platform === state.source; })) && (!term || text.toLocaleLowerCase().indexOf(term) !== -1);
   }
   function clearQuestionFilters() {
-    state.search = ''; state.stars = 'all'; state.type = 'all'; state.topic = 'all'; state.source = 'all';
-    $('questionSearch').value = ''; $('importanceFilter').value = 'all'; $('typeFilter').value = 'all'; $('topicFilter').value = 'all'; $('sourceFilter').value = 'all';
+    state.search = ''; state.stars = 'all'; state.type = 'all'; state.scope = 'all'; state.genre = 'all'; state.topic = 'all'; state.source = 'all';
+    $('questionSearch').value = ''; $('importanceFilter').value = 'all'; $('typeFilter').value = 'all'; $('scopeFilter').value = 'all'; $('genreFilter').value = 'all'; $('topicFilter').value = 'all'; $('sourceFilter').value = 'all';
   }
   function renderQuestions(notice) {
     var shown = questions.filter(matchesQuestion).sort(function (a, b) {
       var byNumber = Number(a.id.slice(1)) - Number(b.id.slice(1));
       return state.sort === 'priority' ? b.stars - a.stars || byNumber : state.sort === 'newest' ? -byNumber : byNumber;
     });
-    var filtered = Boolean(state.search.trim()) || state.stars !== 'all' || state.type !== 'all' || state.topic !== 'all' || state.source !== 'all';
+    var filtered = Boolean(state.search.trim()) || state.stars !== 'all' || state.type !== 'all' || state.scope !== 'all' || state.genre !== 'all' || state.topic !== 'all' || state.source !== 'all';
     $('resetQuestionFilters').hidden = !filtered;
     $('catalogHint').textContent = notice || (shown.some(function (q) { return q.id === state.question; }) ? '' : '当前阅读题目不在筛选结果中；清除筛选可找回，不影响草稿。');
     $('catalogHint').hidden = !$('catalogHint').textContent;
     $('questionResultCount').textContent = shown.length + ' 道';
     $('questionList').innerHTML = shown.length ? shown.map(function (q) {
-      return '<button class="question-item' + (state.question === q.id ? ' selected' : '') + '" data-question="' + q.id + '" aria-current="' + (state.question === q.id ? 'true' : 'false') + '"><span class="item-meta"><span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + q.id.toUpperCase() + ' · ' + escapeHTML(q.type) + '</span></span><span class="item-title">' + escapeHTML(shortTitle(q)) + '</span></button>';
+      var category = q.scope === '目标品类' ? (q.genres || []).join(' / ') : '通用';
+      return '<button class="question-item' + (state.question === q.id ? ' selected' : '') + '" data-question="' + q.id + '" aria-current="' + (state.question === q.id ? 'true' : 'false') + '"><span class="item-meta"><span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + q.id.toUpperCase() + ' · ' + escapeHTML(q.type) + '</span></span><span class="item-category">' + escapeHTML(category) + '</span><span class="item-title">' + escapeHTML(shortTitle(q)) + '</span></button>';
     }).join('') : '<p class="empty-state">没有匹配的题目，试试其他关键词。</p>';
     renderQuestionPagination(shown);
   }
@@ -266,7 +267,8 @@
   }
   function renderAnswer() {
     var q = currentQuestion();
-    $('questionMeta').innerHTML = '<span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + escapeHTML(q.type) + '</span><span>' + escapeHTML(q.id.toUpperCase()) + ' · 训练改编</span>';
+    var category = q.scope === '目标品类' ? (q.genres || []).join(' / ') : '通用能力';
+    $('questionMeta').innerHTML = '<span class="stars" aria-label="重要程度 ' + q.stars + ' 星">' + stars(q.stars) + '</span><span>' + escapeHTML(q.type) + '</span><span class="category-badge">' + escapeHTML(category) + '</span><span>' + escapeHTML(q.id.toUpperCase()) + ' · 训练改编</span>';
     $('questionTitle').textContent = q.title;
     $('mobileQuestionLabel').textContent = q.id.toUpperCase() + ' · ' + shortTitle(q);
     $('questionSources').innerHTML = q.sources.map(function (r) { var s = seed.sources[r.id]; return '<div><span class="source-tag">' + escapeHTML(s.platform) + '</span>' + sourceLink(r.id) + '<p class="source-meta">' + escapeHTML(s.author + ' · ' + s.date + ' · ' + s.kind + ' · 核对：' + (s.checkedAt || '待核对')) + '</p><p class="source-explanation">' + escapeHTML(r.note) + '</p></div>'; }).join('') + '<p class="source-meta">个人回忆和学习清单不等于官方试卷。链接失效时按标题与作者站内检索；核对日期不代表保证永久可访问。</p>';
@@ -555,6 +557,18 @@
   $('resetQuestionFilters').addEventListener('click', function () { clearQuestionFilters(); renderQuestions(); });
   $('importanceFilter').addEventListener('change', function (event) { state.stars = event.target.value; renderQuestions(); });
   $('typeFilter').addEventListener('change', function (event) { state.type = event.target.value; renderQuestions(); });
+  var genres = ['MMO', 'RPG', '卡牌', '射击', '动作', '策略'];
+  $('genreFilter').innerHTML = '<option value="all">全部目标品类</option>' + genres.map(function (genre) { return '<option value="' + genre + '">' + genre + '</option>'; }).join('');
+  $('scopeFilter').addEventListener('change', function (event) {
+    state.scope = event.target.value;
+    if (state.scope === '通用') { state.genre = 'all'; $('genreFilter').value = 'all'; }
+    renderQuestions();
+  });
+  $('genreFilter').addEventListener('change', function (event) {
+    state.genre = event.target.value;
+    if (state.genre !== 'all') { state.scope = '目标品类'; $('scopeFilter').value = '目标品类'; }
+    renderQuestions();
+  });
   $('topicFilter').innerHTML = '<option value="all">全部主题</option>' + Array.from(new Set(questions.map(function (q) { return q.topic; }).filter(Boolean))).map(function (topic) { return '<option value="' + escapeHTML(topic) + '">' + escapeHTML(topic) + '</option>'; }).join('');
   $('topicFilter').addEventListener('change', function (event) { state.topic = event.target.value; renderQuestions(); });
   var sourcePlatforms = Array.from(new Set(questions.flatMap(function (q) { return q.sources.map(function (r) { return seed.sources[r.id].platform; }); })));
